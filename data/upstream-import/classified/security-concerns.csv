@@ -1,0 +1,37 @@
+project_id,name,canonical_key,category,flags,source_issue_numbers
+p_97f9777a4505,,endpoint:mcp.originp.com/mcp,needs_review,hidden_unicode_characters [comment:2938333793]: zero-width or bidi control characters present,
+p_6a7b1f16fa4a,Orchestro,github.com/khaoss85/mcp-orchestro,eligible,hidden_unicode_characters [issue:3503130281]: zero-width or bidi control characters present,362
+p_e6b26fa55a16,android-mcp-toolkit,github.com/nam0101/android-mcp-toolkit,eligible,hidden_unicode_characters [comment:3623226734]: zero-width or bidi control characters present,
+p_716530d3e35a,bago,github.com/bago-one/bagoblog,needs_review,pipe_to_shell_install [issue:3963733007]: curl -sL https://bago.one/mcp/setup.sh | bash,510
+p_07291a590a3b,AgentNet — Agent-to-agent referral network,github.com/oxgeneral/agentnet,eligible,restricted_endpoint_target [issue:3969968206]: http://79.137.184.124:8421/mcp | restricted_endpoint_target [issue:3969968206]: http://79.137.184.124:8420/,520
+p_05dc6b38cf34,Vexa MCP Server - Meeting Transcripts for AI Agents,github.com/vexa-ai/vexa,eligible,official_scope_impersonation_possible [comment:4004028355]: npm:@anthropic-ai/vexa-mcp claimed; repo owner is Vexa-ai,
+p_68eca5324d12,agentic-platform,github.com/andysalvo/agentic-platform,eligible,restricted_endpoint_target [issue:4086476980]: http://165.22.46.178:8080/mcp,845
+p_11e7d4097ca3,Gulim Font Skill,github.com/gykim80/gulim,ineligible,pipe_to_shell_install [issue:4102106266]: curl -sL https://raw.githubusercontent.com/gykim80/gulim/main/install.sh | bash,924
+p_4a2d3e843280,Spix — AI Agent Communications,github.com/spix-hq/spix-mcp,eligible,pipe_to_shell_install [comment:4104520490]: curl -fsSL https://spix.sh/install.sh | sh,
+p_26c358ef6993,SignalStack,github.com/ud4090v/signalstack-mcp,eligible,restricted_endpoint_target [issue:4167337313]: http://96.126.106.225:3458/mcp,1375
+p_ea883aa544f8,Tap — Browser MCP for logged-in tasks,github.com/leonting1010/tap,eligible,pipe_to_shell_install [issue:4169785474]: curl -fsSL https://raw.githubusercontent.com/LeonTing1010/tap/master/install.sh | sh,1383; 1386
+p_dae68c3cca36,zcash-mcp,github.com/frontier-compute/zcash-mcp,eligible,official_scope_impersonation_possible [comment:4203197152]: npm:@anthropic/zcash-mcp claimed; repo owner is Frontier-Compute,1594
+p_96fdc251152d,nexus-finance-mcp — Finance & Research Intelligence Platform,github.com/pollmap/nexus-finance-mcp,needs_review,restricted_endpoint_target [comment:4203736232]: http://62.171.141.206/mcp,
+p_5f189234775c,Hermetic,github.com/hermetic-sys/hermetic,needs_review,pipe_to_shell_install [issue:4301538888]: curl -fsSL https://hermeticsys.com/install.sh | sh,2131
+p_75cae315243c,ashlr-plugin,github.com/ashlrai/ashlr-plugin,eligible,pipe_to_shell_install [issue:4414742735]: curl -fsSL plugin.ashlr.ai/install.sh | bash,2260
+p_4ae927d1229c,Sense,github.com/luuuc/sense,eligible,pipe_to_shell_install [issue:4454321218]: curl -fsSL https://luuuc.github.io/sense/install.sh | sh,2315
+p_1c032f9137b5,ATEX AI Gateway,github.com/lm203688/atex,eligible,restricted_endpoint_target [issue:4527600167]: http://150.158.119.19:8420/mcp,2523
+p_601d009191af,Dockerfile Audit,github.com/unbearabledev/dockerfile-audit,eligible,pipe_to_shell_install [issue:4590551435]: curl | bash,2630
+p_a138387a824f,FiveCoins Validation Plan,github.com/andreuserrasastre/fivecoins-ai-profit-experiment,needs_review,hidden_unicode_characters [issue:4676141705]: zero-width or bidi control characters present,2826
+p_050dda0b18e8,"ctlsurf - system-of-record notebook for AI coding agents (remote / hosted, free tier)",endpoint:app.ctlsurf.com/api/mcp,eligible,pipe_to_shell_install [issue:4898532603]: curl -fsSL https://app.ctlsurf.com/install.sh | bash,3173
+p_badcc313149f,Codehelper (VeyrForge),github.com/veyrforge/codehelper,eligible,pipe_to_shell_install [issue:4944182704]: curl -fsSL https://raw.githubusercontent.com/VeyrForge/codehelper/main/scripts/install.sh | sh,3265
+p_e99d22580215,backscroll,github.com/soren-achebe/backscroll,eligible,pipe_to_shell_install [issue:5002806122]: curl|sh,3339
+p_a05b3ff0eb91,ClawJob MCP Server,github.com/jackychen129/clawjob/packages/clawjob-mcp,needs_review,pipe_to_shell_install [issue:5025311441]: curl -fsSL https://raw.githubusercontent.com/jackychen129/clawjob/main/packages/clawjob-mcp/install-,3373
+p_39499dfe49d9,AgentIQ,github.com/chrisgu/agentiq-mcp,eligible,hidden_unicode_characters [issue:5094180224]: zero-width or bidi control characters present,3476
+p_7dc2af0931bd,mcp-x,github.com/hpkings777/mcp-x,needs_review,pipe_to_shell_install [issue:5111789253]: curl -fsSL https://raw.githubusercontent.com/Hpkings777/mcp-x/main/install.sh | bash,3511
+p_ca374b02a65f,spawnpoint,github.com/spawnpoint-inc/spawnpoint-plugin,needs_review,pipe_to_shell_install [issue:5127040766]: curl -fsSL https://spawnpoint.lol/install | bash,3527
+p_84119d581612,NeoBrowser,github.com/pitiflautico/neobrowser,needs_review,pipe_to_shell_install [issue:5143696684]: curl -fsSL https://raw.githubusercontent.com/pitiflautico/neobrowser/main/install.sh | sh,3546
+p_e606c12ed8a6,Synapse MCP,github.com/myelixlabs/synapse-mcp,eligible,pipe_to_shell_install [comment:5441203141]: curl -fsSL https://downloads.synapse-mcp.dev/install.sh | sh,
+p_bfbdb4fd516b,Casefile,github.com/azimov777/casefile,eligible,pipe_to_shell_install [issue:5531435928]: curl -fsSL https://raw.githubusercontent.com/azimov777/casefile/main/install.sh | sh,4291; 4350
+p_7216fa372e1a,agent-inbox,github.com/ee324/a2awire,eligible,pipe_to_shell_install [issue:5555190397]: curl|sh,4319; 4322
+p_a6028ec0da6b,Horse Truth Machine Intelligence,github.com/datapunterau/horseedge,eligible,hidden_unicode_characters [issue:5589618988]: zero-width or bidi control characters present,4343; 4392
+p_56be788c8eac,Claude Telegram Supercharged,github.com/k1p1l0/claude-telegram-supercharged,eligible,pipe_to_shell_install [issue:5590165695]: curl -fsSL https://raw.githubusercontent.com/k1p1l0/claude-telegram-supercharged/master/install.sh |,4396
+p_e393348c004b,Agothe Agent Contract Preflight,github.com/agothe-ai/agent-contract-preflight,eligible,hidden_unicode_characters [issue:5706488882]: zero-width or bidi control characters present,4740; 4741
+p_89e2c0246731,iphone-use (iphone-use-mcp),github.com/leeguooooo/iphone-use,eligible,pipe_to_shell_install [issue:5715201269]: curl -fsSL https://raw.githubusercontent.com/leeguooooo/iphone-use/main/install.sh | sh,4771
+p_38bbf5e97a8a,ufo mcp --allow-root /absolute/task-folder,github.com/krauqllc/ufo-cli,eligible,pipe_to_shell_install [comment:6012226730]: curl -fsSL https://universalfileopener.com/install.sh | sh,
+p_089d21edf329,Anyfetch — web search and web fetch with no API keys,github.com/aliasmode/anyfetch,eligible,pipe_to_shell_install [comment:6112281080]: curl -fsSL https://aliasmode.github.io/anyfetch/install.sh | sh,

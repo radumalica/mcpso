@@ -1,6 +1,6 @@
 # Target Architecture
 
-Design principle: **the simplest system that meets demonstrated needs.** Each component below names the audit finding or dataset fact that justifies it; components with no demonstrated need are explicitly deferred. Scale reference points *measured* in this audit: ~3,966 distinct GitHub repositories and ~6,000 submission records in the upstream dataset (growing by roughly 600-900 issues/month recently, see dataset analysis); 5,507 issues in ~10 months; ~14,000 entries in the official MCP Registry snapshot. Those are small numbers for a relational database.
+Design principle: **the simplest system that meets demonstrated needs.** Each component below names the audit finding or dataset fact that justifies it; components with no demonstrated need are explicitly deferred. Scale reference points *measured* in this audit (details and denominators in `submission-dataset-analysis.md`): 4,869 issues, 43 PRs and 2,412 comments collected from the upstream repository; ~6,000 submission records collapsing to roughly 4,900 candidate projects on ~3,970 distinct GitHub repositories; issue volume rising from 441 (Aug 2026) to 647 (Sep 2026) to 925 in the first 16 days of Oct 2026; the official MCP Registry snapshot (read-only) lists tens of thousands of entries (exact count in `classification-summary.json`). Those are small numbers for a relational database; the growth rate, not the size, is the planning constraint.
 
 ## 1. Architecture overview
 

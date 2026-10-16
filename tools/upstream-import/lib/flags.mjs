@@ -16,6 +16,12 @@ const SHELL_PIPE = /\b(?:curl|wget|iwr|Invoke-WebRequest)\b[^\n|]{0,200}\|\s*(?:
 const SECRET_REQUEST = /\b(?:send|paste|share|provide|enter|upload)\b[^.\n]{0,40}\b(?:private key|seed phrase|mnemonic|recovery phrase|wallet password)\b/i;
 const HIDDEN_UNICODE = /[​-‏‪-‮⁠-⁤⁦-⁩﻿]/;
 const LONG_BASE64 = /[A-Za-z0-9+/]{240,}={0,2}/;
+export function isLoopbackUrl(raw) {
+  try {
+    const h = new URL(raw).hostname.toLowerCase();
+    return h === "localhost" || h.endsWith(".localhost") || h === "[::1]" || /^127\.\d+\.\d+\.\d+$/.test(h);
+  } catch { return false; }
+}
 const OFFICIAL_SCOPES = [["@modelcontextprotocol/", ["modelcontextprotocol"]], ["@anthropic-ai/", ["anthropics"]], ["@anthropic/", ["anthropics"]]];
 
 /**
@@ -37,7 +43,11 @@ export function securityFlags(text, claims) {
   if (HIDDEN_UNICODE.test(t)) flags.push({ code: "hidden_unicode_characters", detail: "zero-width or bidi control characters present" });
   if (LONG_BASE64.test(t)) flags.push({ code: "long_encoded_blob", detail: "base64-like string of 240+ chars" });
   for (const e of claims.endpoints || []) {
-    if (e.restricted) flags.push({ code: "restricted_endpoint_target", detail: e.url.slice(0, 100) });
+    // Loopback URLs are ordinary "run it locally" documentation, not a security signal (they are
+    // still never contacted). Other restricted hosts (public/private IP literals, metadata
+    // hostnames, .internal/.local/.onion) are review triggers: a registry listing should not
+    // advertise a bare IP or an internal name as a server endpoint.
+    if (e.restricted && !isLoopbackUrl(e.url)) flags.push({ code: "restricted_endpoint_target", detail: e.url.slice(0, 100) });
   }
   if ((claims.shortener_urls || []).length) flags.push({ code: "shortened_link", detail: claims.shortener_urls[0] });
   for (const id of claims.package_ids || []) {

@@ -60,6 +60,23 @@ export function writeJsonAtomic(file, value) {
   fs.renameSync(tmp, file);
 }
 
+/**
+ * CSV cell escaping with spreadsheet formula-injection protection: cells that start with
+ * `=`, `+`, `-`, `@`, TAB or CR are prefixed with a single quote so Excel/Sheets treat them as text.
+ * (Submitter-controlled text ends up in these files.)
+ */
+export function csvCell(v) {
+  let s = Array.isArray(v) ? v.join("; ") : v ?? "";
+  s = String(s);
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+export function writeCsv(file, cols, rows) {
+  const lines = [cols.join(","), ...rows.map((r) => cols.map((c) => csvCell(r[c])).join(","))];
+  fs.writeFileSync(file, lines.join("\n") + "\n");
+}
+
 export function makeLogger(logFile, { quiet = false } = {}) {
   ensureDir(path.dirname(logFile));
   return (evt) => {

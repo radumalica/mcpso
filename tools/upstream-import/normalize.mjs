@@ -5,9 +5,8 @@
 // Raw data is never modified. Every normalised record keeps a pointer to its source.
 
 import path from "node:path";
-import fs from "node:fs";
 import { parseArgs } from "node:util";
-import { readJsonl, writeJsonlAtomic, ensureDir, writeJsonAtomic } from "./lib/store.mjs";
+import { readJsonl, writeJsonlAtomic, ensureDir, writeJsonAtomic, writeCsv } from "./lib/store.mjs";
 import { extractClaims, classifyIntent } from "./lib/extract.mjs";
 import { securityFlags } from "./lib/flags.mjs";
 
@@ -64,12 +63,12 @@ export function main(argv = process.argv.slice(2)) {
   writeJsonlAtomic(path.join(out, "normalized", "normalized.jsonl"), rows);
 
   const csvCols = ["record_id", "source_type", "source_number", "source_url", "author_login", "created_at", "state", "intent", "name", "repo_key", "package_ids", "endpoints", "hosting", "transports", "license", "category", "security_flags", "quality_flags"];
-  const esc = (v) => { const s = Array.isArray(v) ? v.join("; ") : v ?? ""; return /[",\n]/.test(String(s)) ? `"${String(s).replace(/"/g, '""')}"` : String(s); };
-  const lines = [csvCols.join(",")];
-  for (const r of rows) {
-    lines.push([r.record_id, r.source.type, r.source.number, r.source.url, r.source.author_login, r.source.created_at, r.source.state, r.intent, r.claims.name, r.claims.repo_key, r.claims.package_ids, r.claims.endpoints.map((e) => e.url), r.claims.hosting, r.claims.transports, r.claims.license, r.claims.category, r.security_flags.map((f) => f.code), r.quality_flags].map(esc).join(","));
-  }
-  fs.writeFileSync(path.join(out, "normalized", "normalized.csv"), lines.join("\n") + "\n");
+  writeCsv(path.join(out, "normalized", "normalized.csv"), csvCols, rows.map((r) => ({
+    record_id: r.record_id, source_type: r.source.type, source_number: r.source.number, source_url: r.source.url, author_login: r.source.author_login,
+    created_at: r.source.created_at, state: r.source.state, intent: r.intent, name: r.claims.name, repo_key: r.claims.repo_key, package_ids: r.claims.package_ids,
+    endpoints: r.claims.endpoints.map((e) => e.url), hosting: r.claims.hosting, transports: r.claims.transports, license: r.claims.license, category: r.claims.category,
+    security_flags: r.security_flags.map((f) => f.code), quality_flags: r.quality_flags,
+  })));
   const intents = {};
   for (const r of rows) intents[r.intent] = (intents[r.intent] || 0) + 1;
   writeJsonAtomic(path.join(out, "normalized", "normalize-summary.json"), { generated_at: new Date().toISOString(), records: rows.length, by_source_type: { issues: issues.length, pull_requests: prs.length, submission_thread_comments: rows.filter((r) => r.source.in_submission_thread).length }, intents });

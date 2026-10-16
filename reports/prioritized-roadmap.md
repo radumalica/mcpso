@@ -91,6 +91,7 @@ gantt
 ### R07: Import the upstream dataset into a review queue (M)
 * **Problem:** thousands of unreviewed submissions exist upstream; nothing is imported or de-duplicated.
 * **Evidence:** `submission-dataset-analysis.md` (counts), importer in `tools/upstream-import/`.
+* **Blocker:** removal requests whose target could not be mapped to a project (see `classified/removal-candidates.csv`, `removal-like-comments.csv` and the *unmapped* count in `classification-summary.json`) **block publication of the affected entries** until a human confirms or dismisses each one; suppression is never inferred automatically.
 * **Solution:** load `classified/*` into `source_submission/server/repository`; apply `removal-requests.jsonl` as suppressions *before* publication; publish only `import_ready` entries at evidence level L2, queue `needs_review`, keep `ineligible` unpublished with reasons; schedule incremental sync; preserve attribution/provenance links.
 * **Dependencies:** R06. **Risk:** medium (data quality; legal/attribution).
 * **Acceptance:** counts reconcile with `classification-summary.json`; no suppressed item is published; every published listing links to its source issue(s).

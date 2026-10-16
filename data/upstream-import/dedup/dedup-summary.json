@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-10-16T11:02:26.109Z",
+  "enrichment_applied": true,
+  "renames_applied": 197,
+  "submission_records_with_identity": 6052,
+  "submission_records_without_identity": 97,
+  "projects": 4868,
+  "duplicate_records": 1184,
+  "projects_with_multiple_sources": 661,
+  "projects_by_source_count": {
+    "1": 4207,
+    "2": 492,
+    "3": 110,
+    "4": 33,
+    "5": 7,
+    "6": 3,
+    "7": 4,
+    "8": 2,
+    "9": 3,
+    "11": 1,
+    "12": 1,
+    "14": 1,
+    "17": 1,
+    "46": 1,
+    "81": 1,
+    "94": 1
+  },
+  "ambiguous_projects": 228,
+  "by_identity_type": {
+    "github_repo": 3966,
+    "package": 94,
+    "endpoint": 808
+  }
+}

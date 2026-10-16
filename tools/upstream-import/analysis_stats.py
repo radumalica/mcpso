@@ -44,7 +44,7 @@ print("top 8 largest groups", [(p["source_count"], p["canonical_key"]) for p in 
 print("identity types", C(p["identity_type"] for p in dd))
 print("claim conflicts present (name/license/repo_url)", C(k for p in dd for k in p["claim_conflicts"]))
 print("\n== classification ==")
-print(json.dumps({k: summ[k] for k in ["category", "security_concern_projects", "import_ready", "eligible_but_security_flagged", "reason_rule_counts", "github_projects", "github_repos_resolved", "github_repos_unresolved", "renamed", "archived", "stale", "missing_license_of_resolved", "missing_install_info", "incomplete_metadata", "listed_in_official_registry", "ambiguous_projects", "official_registry_entries_loaded", "bulk_submitter_authors", "bulk_submitter_projects"]}, indent=1))
+print(json.dumps(summ["project_level"], indent=1))
 cat = lambda p: p["category"]
 print("category x hosting", C((cat(p), p["hosting"]) for p in projs))
 print("category x identity", C((cat(p), p["canonical_key"].split("/")[0] if p["canonical_key"].startswith("github.com") else ("endpoint" if p["canonical_key"].startswith("endpoint:") else "package")) for p in projs))

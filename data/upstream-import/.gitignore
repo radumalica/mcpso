@@ -5,3 +5,9 @@ state/
 *.tmp-*
 enrichment/repos.jsonl
 enrichment/official-registry.jsonl
+# Free-text third-party content (issue/README-derived descriptions), large; regenerate from raw. CSV/summary views are committed.
+normalized/normalized.jsonl
+dedup/projects.jsonl
+dedup/projects.pre-enrichment.jsonl
+classified/projects-classified.jsonl
+classified/import-ready.jsonl

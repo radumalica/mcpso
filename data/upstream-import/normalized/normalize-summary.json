@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-10-16T10:43:21.678Z",
+  "records": 6362,
+  "by_source_type": {
+    "issues": 4869,
+    "pull_requests": 43,
+    "submission_thread_comments": 1450
+  },
+  "intents": {
+    "no_identity": 110,
+    "submission": 6098,
+    "code_contribution": 43,
+    "submission_unclear": 51,
+    "question_or_feedback": 48,
+    "removal_request": 7,
+    "link_correction": 5
+  }
+}

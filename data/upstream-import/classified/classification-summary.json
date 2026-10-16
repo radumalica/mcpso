@@ -1,0 +1,130 @@
+{
+  "generated_at": "2026-10-16T11:02:27.920Z",
+  "collected_at": "2026-10-16T09:58:33.644Z",
+  "official_registry": {
+    "entries_loaded": 44497,
+    "complete": true,
+    "run": {
+      "pages": 1542,
+      "entries_seen": 154131,
+      "unique_servers": 44497,
+      "truncated_by_page_cap": false,
+      "finished_at": "2026-10-16T11:01:22.354Z"
+    }
+  },
+  "record_level": {
+    "denominator_normalized_records": 6362,
+    "issues": 4869,
+    "pull_requests": 43,
+    "submission_thread_comments": 1450,
+    "by_intent": {
+      "no_identity": 110,
+      "submission": 6098,
+      "code_contribution": 43,
+      "submission_unclear": 51,
+      "question_or_feedback": 48,
+      "removal_request": 7,
+      "link_correction": 5
+    },
+    "submission_records": 6149,
+    "submission_records_grouped_into_projects": 6052,
+    "submission_records_without_identity": 97,
+    "non_submission_records": 213,
+    "non_submission_breakdown": {
+      "no_identity": 110,
+      "code_contribution": 43,
+      "question_or_feedback": 48,
+      "removal_request": 7,
+      "link_correction": 5,
+      "submission_without_identity": 97
+    },
+    "duplicate_source_records": 1184,
+    "issue_number_gaps": 595
+  },
+  "project_level": {
+    "denominator_projects": 4868,
+    "category": {
+      "eligible": 3502,
+      "needs_review": 1353,
+      "ineligible": 13
+    },
+    "percent": {
+      "eligible": "71.9%",
+      "needs_review": "27.8%",
+      "ineligible": "0.3%"
+    },
+    "projects_with_multiple_sources": 661,
+    "security_concern_projects": 36,
+    "eligible_but_security_flagged": 26,
+    "import_ready": 3476,
+    "reason_rule_counts": {
+      "E1": 2858,
+      "E2": 3502,
+      "E3": 3502,
+      "E4": 3502,
+      "N1": 357,
+      "N3": 279,
+      "N7": 194,
+      "N9": 73,
+      "I2": 1,
+      "N2": 221,
+      "N6": 246,
+      "I1": 1,
+      "E1b": 644,
+      "N4": 6,
+      "N8": 24,
+      "N5": 3,
+      "I3": 11
+    },
+    "eligible_by_evidence_kind": {
+      "sdk-dependency+wording": 302,
+      "manifest-file+registry+sdk-dependency+wording": 1079,
+      "manifest-file+sdk-dependency+wording": 103,
+      "manifest-file+registry": 837,
+      "registry": 1029,
+      "registry+sdk-dependency+wording": 88,
+      "manifest-file": 64
+    },
+    "eligible_with_only_cheap_evidence": 1930,
+    "bulk_submitter_authors": 7,
+    "bulk_submitter_projects": {
+      "total": 655,
+      "eligible": 354,
+      "needs_review": 301,
+      "ineligible": 0
+    },
+    "tools_not_listed_projects": {
+      "total": 236,
+      "eligible": 190,
+      "needs_review": 46,
+      "ineligible": 0
+    }
+  },
+  "repository_health": {
+    "denominator_github_projects": 3966,
+    "resolved": 3530,
+    "unresolved": 436,
+    "unresolved_by_reason": {
+      "not_found_or_private": 436
+    },
+    "renamed_or_transferred": 174,
+    "archived": 48,
+    "stale": 17,
+    "missing_license_of_resolved": 548
+  },
+  "metadata_completeness": {
+    "denominator_projects": 4868,
+    "missing_install_info": 609,
+    "incomplete_metadata": 2410,
+    "listed_in_official_registry": 3460
+  },
+  "ambiguity": {
+    "ambiguous_projects": 228
+  },
+  "removals": {
+    "requests": 7,
+    "mapped_to_a_project_with_strong_basis": 1,
+    "unmapped": 6,
+    "removal_like_comments_outside_thread": 21
+  }
+}

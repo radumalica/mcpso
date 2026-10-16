@@ -16,7 +16,31 @@ import { appendJsonl, compactJsonl, makeLogger, readJsonl, ensureDir } from "./l
 const BATCH = 20;
 const OWNER_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,38}$/;
 const REPO_RE = /^[A-Za-z0-9._-]{1,100}$/;
-const SUBPATH_RE = /^[a-z0-9._/-]{1,200}$/;
+const SUBPATH_RE = /^[A-Za-z0-9._/-]{1,200}$/; // git path lookups are case-sensitive: keep the submitter's case
+
+/** Subpath safe to interpolate into a GraphQL string literal (no quotes, backslashes, `..` segments). */
+export function safeSubpath(s) {
+  if (!s || !SUBPATH_RE.test(s) || s.split("/").some((seg) => seg === ".." || seg === "")) return null;
+  return s;
+}
+
+/**
+ * Evaluation target for a project: original-case owner/repo/subpath where the submitted URL is
+ * available and agrees with the lower-cased canonical key, else the canonical key's parts.
+ */
+export function targetFromProject(p) {
+  const [, keyOwner, keyRepo, ...keySub] = p.canonical_key.split("/");
+  let owner = keyOwner, repo = keyRepo, subpath = keySub.length ? keySub.join("/") : null;
+  const m = String(p.merged_claims?.repo_url || "").match(/^https?:\/\/(?:www\.)?github\.com\/([^/]+)\/([^/?#]+)(?:\/tree\/[^/]+\/(.+?))?\/?$/i);
+  if (m) {
+    const o = m[1], r = m[2].replace(/\.git$/i, "");
+    if (o.toLowerCase() === keyOwner && r.toLowerCase() === keyRepo) {
+      owner = o; repo = r;
+      if (subpath && m[3] && m[3].toLowerCase() === subpath) subpath = m[3];
+    }
+  }
+  return { requested_key: p.canonical_key, owner, repo, subpath };
+}
 
 const MANIFESTS = ["package.json", "pyproject.toml", "requirements.txt", "go.mod", "Cargo.toml", "pom.xml", "build.gradle", "build.gradle.kts", "server.json"];
 
@@ -124,8 +148,13 @@ function derive(node, subpath) {
   }
   const topics = (node.repositoryTopics?.nodes || []).map((n) => n.topic.name);
   const mcpTopics = topics.filter((t) => MCP_TOPICS.has(t));
-  const readme = (subpath ? text("sreadme") : null) || text("readme") || "";
-  const m = readme.match(/.{0,50}(model context protocol|\bmcp[- ](?:server|tool|client)s?\b).{0,50}/is);
+  // Root and subpath evidence are kept strictly separate: a monorepo's root README/manifests say nothing
+  // about a server living in a subdirectory, and vice versa.
+  const readme = text("readme") || "";
+  const subReadme = subpath ? text("sreadme") || "" : "";
+  const MENTION = /.{0,50}(model context protocol|\bmcp[- ](?:server|tool|client)s?\b).{0,50}/is;
+  const m = readme.match(MENTION);
+  const ms = subReadme.match(MENTION);
   const descMention = /model context protocol|\bmcp\b/i.test(node.description || "");
   // Wording that says the project IS a server (as opposed to a client/host or a library that uses MCP).
   const SERVER_WORD = /\bmcp[- ]servers?\b|\bmodel context protocol servers?\b|\bserver (?:for|implementing|exposing) (?:the )?model context protocol\b/i;
@@ -133,6 +162,7 @@ function derive(node, subpath) {
   for (const t of topics) if (/^mcp-servers?(-|$)/.test(t) || t === "model-context-protocol-server") serverWording.push(`topic:${t}`);
   if (SERVER_WORD.test(node.description || "")) serverWording.push("description");
   if (SERVER_WORD.test(readme)) serverWording.push("readme");
+  const serverWordingSub = SERVER_WORD.test(subReadme) ? ["subpath-readme"] : [];
   return {
     resolved: true,
     canonical_key: `github.com/${node.nameWithOwner.toLowerCase()}`,
@@ -146,12 +176,16 @@ function derive(node, subpath) {
     topics, mcp_topics: mcpTopics,
     default_branch: node.defaultBranchRef?.name ?? null,
     manifests_present: MANIFESTS.filter((mm, i) => node[`m${i}`]),
+    evaluated_subpath: subpath,
     subpath_exists: subpath ? !!node.sdir : null,
-    sdk_evidence: evidence,
+    sdk_evidence: evidence, // each entry has scope "root" | "subpath"
     readme_bytes: node.readme?.byteSize ?? 0,
+    subpath_readme_bytes: subpath ? node.sreadme?.byteSize ?? 0 : null,
     readme_mcp_mention: m ? m[0].replace(/\s+/g, " ").trim().slice(0, 120) : null,
+    subpath_readme_mcp_mention: ms ? ms[0].replace(/\s+/g, " ").trim().slice(0, 120) : null,
     description_mentions_mcp: descMention,
     server_wording: serverWording,
+    server_wording_subpath: serverWordingSub,
   };
 }
 
@@ -168,33 +202,29 @@ export async function main(argv = process.argv.slice(2)) {
   const projects = readJsonl(path.join(out, "dedup", "projects.pre-enrichment.jsonl"));
   const file = path.join(out, "enrichment", "repos.jsonl");
   ensureDir(path.dirname(file));
-  const done = new Set(a.refresh ? [] : readJsonl(file).map((r) => r.requested_key));
+  // Resume: rows from failed queries are NOT "done" (a transient 502 must not become a permanent "missing repository").
+  const isFinal = (r) => r.reason !== "query_failed" && !String(r.reason || "").startsWith("error:");
+  const done = new Set(a.refresh ? [] : readJsonl(file).filter(isFinal).map((r) => r.requested_key));
 
-  // unique (base repo, subpath) targets; one query alias per base repo, first subpath wins per repo
+  // One evaluation per (repository, subpath) = one per project canonical key; no result is shared between
+  // sibling subpath projects or between a repo-level project and its subpath projects.
   const targets = new Map();
   for (const p of projects) {
     if (p.identity_type !== "github_repo") continue;
-    const [, owner, repo, ...sub] = p.canonical_key.split("/");
-    const base = `github.com/${owner}/${repo}`;
-    const rawOwner = (p.merged_claims.repo_url || "").match(/github\.com\/([^/]+)\/([^/]+)/i);
-    const subpath = sub.join("/") || null;
-    const t = targets.get(base) || { owner: rawOwner?.[1] || owner, repo: (rawOwner?.[2] || repo).replace(/\.git$/i, ""), subpaths: new Set() };
-    if (subpath) t.subpaths.add(subpath);
-    targets.set(base, t);
+    const t = targetFromProject(p);
+    targets.set(t.requested_key, t);
   }
   const todo = [...targets.entries()].filter(([k]) => !done.has(k));
-  log({ event: "enrich_start", unique_repos: targets.size, todo: todo.length });
+  log({ event: "enrich_start", targets: targets.size, distinct_repos: new Set([...targets.values()].map((t) => `${t.owner}/${t.repo}`.toLowerCase())).size, todo: todo.length });
 
   let batches = 0;
   for (let i = 0; i < todo.length; i += BATCH) {
-    const chunk = todo.slice(i, i + BATCH).filter(([, t]) => OWNER_RE.test(t.owner) && REPO_RE.test(t.repo));
-    const invalid = todo.slice(i, i + BATCH).filter(([, t]) => !(OWNER_RE.test(t.owner) && REPO_RE.test(t.repo)));
+    const valid = ([, t]) => OWNER_RE.test(t.owner) && REPO_RE.test(t.repo);
+    const chunk = todo.slice(i, i + BATCH).filter(valid);
+    const invalid = todo.slice(i, i + BATCH).filter((x) => !valid(x));
     appendJsonl(file, invalid.map(([k]) => ({ requested_key: k, resolved: false, reason: "invalid_name", checked_at: new Date().toISOString() })));
     if (!chunk.length) continue;
-    const parts = chunk.map(([k, t], idx) => {
-      const sub = [...t.subpaths].find((s) => SUBPATH_RE.test(s)) || null;
-      return FRAGMENT(`r${idx}`, t.owner, t.repo, sub);
-    });
+    const parts = chunk.map(([, t], idx) => FRAGMENT(`r${idx}`, t.owner, t.repo, safeSubpath(t.subpath)));
     const body = JSON.stringify({ query: `query { ${parts.join("\n")} rateLimit { cost remaining resetAt } }` });
     let json;
     for (let attempt = 0; attempt < 6; attempt++) {
@@ -216,8 +246,7 @@ export async function main(argv = process.argv.slice(2)) {
         const e = errs.get(`r${idx}`);
         return { ...base, resolved: false, reason: e?.type === "NOT_FOUND" ? "not_found_or_private" : `error:${e?.type || "null"}` };
       }
-      const sub = [...t.subpaths].find((s) => SUBPATH_RE.test(s)) || null;
-      return { ...base, ...derive(node, sub), renamed: node.nameWithOwner.toLowerCase() !== `${t.owner}/${t.repo}`.toLowerCase() };
+      return { ...base, ...derive(node, safeSubpath(t.subpath)), renamed: node.nameWithOwner.toLowerCase() !== `${t.owner}/${t.repo}`.toLowerCase() };
     });
     appendJsonl(file, rows);
     batches++;

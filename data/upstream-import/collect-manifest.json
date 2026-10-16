@@ -1,0 +1,35 @@
+{
+  "repo": "chatmcp/mcpso",
+  "generated_at": "2026-10-16T09:58:33.644Z",
+  "authenticated": true,
+  "counts": {
+    "issues": 4869,
+    "pull_requests": 43,
+    "issue_comments": 2412,
+    "pull_files_records": 43,
+    "errors": 0,
+    "pr_items_returned_by_issues_endpoint_last_run": 43
+  },
+  "stages": {
+    "issues": {
+      "complete": true,
+      "pages": 50,
+      "watermark": "2026-10-16T09:55:56.251Z"
+    },
+    "pulls": {
+      "complete": true,
+      "pages": 1,
+      "watermark": "2026-10-16T09:55:56.251Z"
+    },
+    "comments": {
+      "complete": true,
+      "pages": 25,
+      "watermark": "2026-10-16T09:55:56.251Z"
+    },
+    "pull_files": {
+      "complete": true,
+      "pages": null,
+      "watermark": null
+    }
+  }
+}

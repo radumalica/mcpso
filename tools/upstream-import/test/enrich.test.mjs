@@ -1,6 +1,27 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { scanManifests } from "../enrich.mjs";
+import { scanManifests, targetFromProject, safeSubpath } from "../enrich.mjs";
+
+const proj = (key, repoUrl) => ({ canonical_key: key, merged_claims: { repo_url: repoUrl } });
+
+test("targets keep the submitter's case for owner, repo and subpath (git paths are case-sensitive)", () => {
+  const t = targetFromProject(proj("github.com/acme/mcp-fleet/servers/myserver", "https://github.com/Acme/MCP-Fleet/tree/HEAD/servers/MyServer"));
+  assert.deepEqual(t, { requested_key: "github.com/acme/mcp-fleet/servers/myserver", owner: "Acme", repo: "MCP-Fleet", subpath: "servers/MyServer" });
+});
+
+test("sibling subpath projects get distinct targets; repo-level project has none", () => {
+  const a = targetFromProject(proj("github.com/o/r/a", "https://github.com/o/r/tree/HEAD/a"));
+  const b = targetFromProject(proj("github.com/o/r/b", "https://github.com/o/r/tree/HEAD/b"));
+  const root = targetFromProject(proj("github.com/o/r", "https://github.com/o/r"));
+  assert.notEqual(a.requested_key, b.requested_key);
+  assert.equal(a.subpath, "a"); assert.equal(b.subpath, "b"); assert.equal(root.subpath, null);
+});
+
+test("URL that disagrees with the canonical key is ignored; unsafe subpaths are dropped", () => {
+  assert.equal(targetFromProject(proj("github.com/o/r", "https://github.com/other/r")).owner, "o");
+  assert.equal(safeSubpath("src/ok-1.2"), "src/ok-1.2");
+  for (const bad of ['a"b', "a\\b", "../x", "a//b", "a b", "", null]) assert.equal(safeSubpath(bad), null, String(bad));
+});
 
 test("package.json: SDK dependency and mcpName count; unrelated 'mcp' key does not", () => {
   assert.deepEqual(scanManifests(JSON.stringify({ dependencies: { "@modelcontextprotocol/sdk": "^1" } }), "package.json"), ["npm-dep:@modelcontextprotocol/sdk"]);

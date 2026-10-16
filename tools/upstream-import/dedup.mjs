@@ -208,7 +208,11 @@ export function main(argv = process.argv.slice(2)) {
   const renames = new Map();
   if (a.enrichment && fs.existsSync(a.enrichment)) {
     for (const e of readJsonl(a.enrichment)) {
-      if (e.resolved && e.requested_key && e.canonical_key && e.requested_key !== e.canonical_key) renames.set(e.requested_key, e.canonical_key);
+      if (e.resolved && e.requested_key && e.canonical_key) {
+        // requested_key may carry a subpath; renames are repository-level
+        const from = repoKeyOnly(e.requested_key), to = repoKeyOnly(e.canonical_key);
+        if (from !== to) renames.set(from, to);
+      }
     }
   }
   const { projects, unresolved } = buildProjects(records, { renames });
