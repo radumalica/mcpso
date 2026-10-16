@@ -1,6 +1,6 @@
 # Product Requirements: Free, Trustworthy MCP Registry
 
-> **Scope update:** the product direction changed to a new, independent application with no relation to mcp.so and no use of upstream data or code (see `master-plan.md` rev 2). Items in this report that assume continuing the fork, importing the upstream dataset (R07) or rebranding mcp.so are superseded; the audit findings and lessons remain valid.
+> **Scope update:** the product is a separate application with no relation to mcp.so, built by enhancing this codebase, and it does not use upstream data (see `master-plan.md` rev 3). Items in this report that import the upstream dataset (R07), reuse mcp.so branding or identifiers, or treat the product as a rebrand of mcp.so are superseded; the audit findings and the incremental-migration roadmap remain valid.
 
 Status: proposal derived from the audit. Requirements are tagged **[Launch]** (needed before a public relaunch), **[Next]** (first iteration after validation) or **[Later]**. Priorities link to `prioritized-roadmap.md`.
 

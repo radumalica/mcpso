@@ -1,14 +1,14 @@
 # Master Plan: a new, independent MCP registry
 
-**Revision 2 (scope change).** The product is a **different product and application with no relation to mcp.so**: a new codebase, a new brand, an empty database, and **none of the upstream (`chatmcp/mcpso`) submissions, code, content, branding, analytics IDs or data**. Revision 1 assumed hardening the fork and importing the upstream dataset; both are dropped. What remains of the audit is used only as **evidence-backed lessons and requirements** ("do not repeat this"), plus tooling and rules that are my own work and independent of upstream data (the eligibility criteria and the extraction/classification code, repurposed for submission-time checks).
+**Revision 3 (scope, final).** The product is a **separate application with no relation to mcp.so**, built by **enhancing the current codebase incrementally** (no rewrite from scratch). "Separate" means its own brand, domain, repository, cloud accounts, database (starting empty), analytics and policies, and **none of the upstream (`chatmcp/mcpso`) submissions, content, branding, identifiers or data**. The *code* is kept: it is Apache-2.0 licensed (`LICENSE`), which allows modification and redistribution with notices preserved (see §3). Revision 1 assumed importing the upstream dataset (dropped); revision 2 assumed starting from scratch (dropped). The audit's remediation items R01-R05 therefore apply again, and the target architecture is reached by incremental migration of this code (`target-architecture.md` §7), not by replacement.
 
 **Evidence status.** §1 restates audited facts about the old app (used as lessons). Everything else is a **proposal**, not an audited fact: not user-tested, not costed against real usage, and not checked against the current MCP specification or client ecosystem, which moves quickly. Verify those before committing. No monetisation is planned (excluded by the original brief); §8 lists sustainability questions so they are decided deliberately.
 
-## 1. What the audit contributes (lessons, not a base)
+## 1. What the audit contributes (the defect list to fix in place)
 
-The fork is **not** the foundation. It is frozen: no hardening, no import, no deployment. The audit's value is the list of failure modes the new product must avoid, each with evidence in the named report:
+The current codebase is the **starting point**, and the audit is its defect list. Each row is a confirmed failure in the code that must be fixed in this codebase (and then guarded by tests and CI), with evidence in the named report. Strategy: **strangler-style migration**: close the security and build blockers first (Phase 0), then replace the data layer, submission and read paths module by module behind the new schema, deleting old code as each piece is superseded. The ~2,700-line size makes this practical; much of the UI shell, routing and Tailwind setup can stay.
 
-| Old-app failure (audited) | Requirement for the new product | Source |
+| Failure in the current code (audited) | Fix / requirement | Source |
 |---|---|---|
 | Anonymous POST overwrote and soft-deleted listings; the anon database key was also the write credential; no RLS shipped | every write authenticated and authorised server-side; database access only through a server layer or RLS proven by tests; least-privilege keys | F-01, F-03 |
 | Mass assignment and a `startsWith("https://github.com")` URL check accepted `github.com.evil.example` | schema validation with allow-listed fields; parse URLs, compare hostnames exactly | F-02, Q-03/04 |
@@ -27,18 +27,19 @@ Observations about the ecosystem seen while auditing (used as design inputs only
 * Principles: free to submit and use; **evidence over assertion** (levels, dates, no bare scores); accurate before comprehensive; provenance and attribution for every fact; small-team operable; no execution of third-party code outside an isolated, reviewed sandbox; independence from any other directory.
 * Non-goals: payments or sponsored placement; hosting third-party servers; anonymous ratings; scraping or republishing another directory's content; auto-publishing anything.
 
-## 3. Independence and clean-room rules (new)
+## 3. Separation and independence rules
 
-1. **New repository**, created empty. Nothing is copied from the fork: no code, templates, copy, images, SQL, policies or config. Code is written fresh; ideas ("what a listing page needs") are fine, text and assets are not.
-2. **Own brand.** Name, logo, domain, legal entity and policies are new. The shortlist in `rebranding-proposal.md` was screened only for the earlier rebrand framing and must be re-screened for a wholly new product (availability and trademark checks still not done); drop any name that echoes mcp.so.
-3. **No upstream data.** The upstream issues, comments, the `data/upstream-import/` products and the importer's GitHub collector are not inputs to the new product. They stay in the audit repository as research evidence (and the local snapshot) and are never loaded into the new database.
-4. **No shared infrastructure or identifiers**: new cloud accounts, database project, keys, analytics (if any), and email domain.
-5. **Licence hygiene.** The new codebase gets its own licence chosen deliberately; dependencies are checked for licence compatibility; the audit tooling that is reused (eligibility rules, extraction, classification code) is my own and may move over, but its tests must pass without upstream fixtures.
-6. **Positioning.** Say plainly it is independent and not affiliated with the Model Context Protocol project, Anthropic, or any other directory.
+1. **Separate application and repository.** Create the product's own repository from the current code (a detached copy, not a tracking fork, if the owner wants no visible link), with its own history of changes. The existing fork `radumalica/mcpso` remains the audit record and is not deployed.
+2. **Keep the code, drop everything that identifies or feeds from mcp.so.** Remove or replace: name and logo, favicon and images (`public/`, `preview.png`), copy and legal pages, `ads.txt`, the inherited GA and AdSense identifiers, contact addresses, the sitemap/robots hosts, and any text describing another operator (R04). Review `README`, `pagejson/` and `data/` for upstream-specific content.
+3. **Licence compliance (Apache-2.0).** Keep the `LICENSE`, retain copyright and attribution notices in files derived from upstream, add a `NOTICE` crediting the original project as required by the licence, and mark modified files as modified. Apache-2.0 grants **no trademark rights**: the product must not use the mcp.so name or marks. Verify the licence of the bundled `templates/tailspark` template (no licence file was found in the directory during the audit) and of any assets before launch; replace what cannot be cleared.
+4. **No upstream data.** The upstream issues and comments, the `data/upstream-import/` products and the importer's GitHub collector are not inputs to the product. They stay with the audit as research evidence and are never loaded into the product's database. The existing `data/install.sql` is treated as a design reference only; the new schema is created by new migrations in a fresh database.
+5. **No shared infrastructure or identifiers**: new cloud accounts, database project, keys, analytics (if any) and email domain. Rotate nothing from the old deployment into the new one.
+6. **Own brand and positioning.** New name, domain and entity (cleared for availability and trademark; `rebranding-proposal.md` finalists are candidates only, none confirmed). State plainly the product is independent and not affiliated with the Model Context Protocol project, Anthropic, or any other directory.
+7. **Tooling carried over:** the eligibility rules and extraction/classification code from the audit (my own work) may be reused for submission-time checks; their tests must pass without upstream fixtures.
 
 ## 4. Content strategy without upstream data (the cold-start problem)
 
-An empty registry is useless, and a registry stuffed with unreviewed scraped entries repeats the old product's weakness. Proposed sources, in order of trust:
+An empty registry is useless, and a registry stuffed with unreviewed scraped entries would repeat the current app's weakness. Proposed sources, in order of trust:
 
 | Source | How | Consent | Initial label |
 |---|---|---|---|
@@ -55,8 +56,8 @@ Explicitly excluded: scraping mcp.so or any other directory; using its submissio
 
 | Phase | Goal | Contents | Exit criteria |
 |---|---|---|---|
-| **0 Decide and set up** | Remove the blocking decisions; stand up a clean base | decisions D1-D8 (§8); new repo, licence, brand shortlist cleared (domain/trademark checks); stack and hosting choice; threat model carried over and re-scoped; governance and moderation policy draft | decisions recorded; empty repo with CI (typecheck, lint, tests, audit, secret scan) green on its first commit; security baseline checklist in place |
-| **1 Foundation** | Secure core | data model (identity, provenance, evidence, status history, ownership, removal holds, content type) with migrations and RLS tested in CI; GitHub OAuth; server-side authorisation; rate limits; security headers; structured logging; backups | schema recreated from scratch in CI; authz tests prove no anonymous or cross-owner write; no critical/high advisories |
+| **0 Separate and stop the bleeding** | Make the current code safe, build-clean and unbranded as its own application | decisions D1-D8 (§8); separate repository, accounts, database project and brand (§3); R01 remove public write/LLM routes; R02 upgrade `next`/`react`, drop `vercel`, one lockfile; R03 fix build + CI; R04 remove fake stars, inherited analytics/branding, add NOTICE; R05 RLS enforced and tested in the new database | CI green; no public write path; no critical/high production advisories; no mcp.so identifiers in the tree; RLS proven by test |
+| **1 Foundation** (incremental) | Replace the data layer under the existing UI | new schema via migrations (identity, provenance, evidence, status history, ownership, removal holds, content type) with RLS tested in CI; GitHub OAuth; server-side authorisation; rate limits; headers; structured logging; backups; models/services rewritten module by module with tests (R06, R12, R14) | schema recreated from scratch in CI against an empty database; authz tests prove no anonymous or cross-owner write; old Supabase-anon write path deleted |
 | **2 Core product** | A small but trustworthy registry | owner submission with prefill and duplicate detection; status page; reviewer queue with audit log; catalogue (pagination, filters, content types); listing page with install block, transports, licence, evidence panel; search; correction/removal flow; seed set | an owner can submit and track; a reviewer can decide with a trail; a visitor can find, understand and install a listed server; accessibility pass |
 | **3 Trust and ecosystem** | Better than a plain directory | static inspection pipeline (evidence levels 1-2), freshness/liveness checks, ownership/domain proof, advisory signals, public read-only API and export, badges, feeds, SEO foundations, docs site, ops runbooks | owner-verified listings exist; re-check cadence running; API documented |
 | **4 Differentiation** | Features that bring users back | §6 items marked P3; compare view; collections; client-compatibility matrix; optional official-registry cross-links | each justified by measured use |
@@ -149,7 +150,7 @@ Priority: **P1** needed for a credible launch, **P2** within a quarter of launch
 ## 8. Decisions needed (owner required)
 
 * **D1 Name, domain, brand**: re-screen candidates for a wholly new product; availability and trademark checks still outstanding.
-* **D2 Stack and hosting**: choose a supported framework and a hosting target that is not a deprecated adapter; managed Postgres with RLS tested in CI. (The old stack choices are not binding.)
+* **D2 Stack and hosting**: choose a supported framework and a hosting target that is not a deprecated adapter; managed Postgres with RLS tested in CI. Default: keep Next.js/React on a current supported release and Supabase/Postgres; replace only the deprecated Cloudflare adapter and any layer the audit shows to be unsafe.
 * **D3 Official MCP Registry**: reference/cross-link only, ignore entirely, or later sync as `declared (external)`. Default recommendation: ignore at launch, revisit after Phase 2, and read its terms before any use.
 * **D4 Governance**: who reviews, dispute handling, moderation policy publication, bulk-submitter policy.
 * **D5 Data and content licensing**: terms for listing text, what bulk export carries (facts only vs text), attribution.
@@ -164,7 +165,7 @@ Priority: **P1** needed for a credible launch, **P2** within a quarter of launch
 | Cold start: empty registry feels pointless | curated seed set, author outreach, CI action, a few strong collections; avoid inflating counts |
 | Reviewer capacity | prefill and rules engine (T9), batching (T8), small scope in Phase 2 |
 | Spam, impersonation, fleets of look-alikes | ownership proof, quotas, hidden-Unicode and scope-impersonation checks |
-| Legal exposure from third-party text | facts over prose, takedown path, clean-room rules (§3) |
+| Legal exposure from third-party text | facts over prose, takedown path, separation rules (§3) |
 | Accidental dependence on or resemblance to mcp.so | §3 rules, no copied assets or text, independent review of copy and design before launch |
 | Malicious servers listed as "verified" | dated evidence levels; never imply safety; sandbox only after review |
 | GitHub API limits and outages | caching, incremental refresh, graceful degradation |
@@ -176,9 +177,9 @@ Time-to-first-install from landing; share of listings at evidence level 2 or hig
 
 ## 11. Immediate next steps
 
-1. Record decisions D1-D4 and D8 (brand, stack/hosting, official-registry stance, governance, sustainability).
-2. Create the new empty repository with CI, licence and security baseline (Phase 0 exit).
-3. Define the schema with ownership, content type, evidence levels, status history and removal holds from day one.
+1. Record decisions D1-D4 and D8 (brand, hosting of the existing stack, official-registry stance, governance, sustainability).
+2. Create the separate repository from the current code, add `NOTICE`, and run Phase 0 (R01-R05) on it; verify the `templates/tailspark` licence.
+3. Define the new schema (ownership, content type, evidence levels, status history, removal holds) as migrations on an empty database, and migrate the app onto it module by module.
 4. Prototype the submission flow and reviewer queue against hand-made test fixtures (no upstream data).
 5. Run a short research round (5-8 MCP users, 3-5 server authors) to confirm or drop §6 priorities before Phase 2.
-6. Decide what to do with the old fork and audit repository: keep as private/archived research, and do not deploy or continue it.
+6. Keep the audit fork as the research record; do not deploy it or load its upstream data anywhere.
