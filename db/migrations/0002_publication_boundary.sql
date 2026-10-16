@@ -1,5 +1,5 @@
 -- 0002_publication_boundary.sql
--- DRAFT, NOT APPLIED, NOT VALIDATED (no PostgreSQL server was available when written). Depends on 0001.
+-- Applied and tested on an in-process Postgres (PGlite) via db/tests/run.mjs. NOT yet applied to a real Supabase/Postgres server: owner-role, auth.uid() and platform default privileges are assumptions until then. Depends on 0001.
 -- Purpose: make the publication boundary unbypassable from the database layer, mirroring the executable specification in
 -- tools/upstream-import/lib/gates.mjs (tested). Requirements:
 --   * importing never approves or publishes; only the functions below may set status approved/published
@@ -118,6 +118,13 @@ begin
   return cid;
 end $$;
 revoke all on function import_upsert_candidate(text, text, jsonb, uuid) from public, anon, authenticated;
+-- The importer runs with the server-side service role only (never a browser key); grant it explicitly rather than relying on
+-- platform default privileges.
+do $$ begin
+  if exists (select 1 from pg_roles where rolname = 'service_role') then
+    grant execute on function import_upsert_candidate(text, text, jsonb, uuid) to service_role;
+  end if;
+end $$;
 
 -- ---------------------------------------------------------------- transitions (reviewer only)
 create or replace function _transition(p_candidate uuid, p_action review_action, p_to candidate_status, p_reason text, p_bulk uuid)
@@ -193,13 +200,17 @@ begin
   if k is null then raise exception 'unknown candidate'; end if;
   insert into suppression (canonical_key, reason, takedown_id, created_by) values (k, p_reason, p_takedown, auth.uid()) on conflict (canonical_key) do nothing;
   perform set_config('app.in_transition', 'on', true);
-  update candidate set importable = false, removal_hold = true, updated_at = now() where id = p_candidate;
+  -- One statement: status, importable and the hold change together, otherwise a published candidate would briefly be
+  -- "published and not importable", which the candidate check constraint forbids.
+  update candidate set importable = false, removal_hold = true, updated_at = now(),
+    status = case cur when 'published' then 'withdrawn'::candidate_status
+                      when 'rejected' then cur when 'withdrawn' then cur
+                      else 'rejected'::candidate_status end
+    where id = p_candidate;
   update listing set unpublished_at = coalesce(unpublished_at, now()) where candidate_id = p_candidate;
   if cur = 'published' then
-    update candidate set status = 'withdrawn' where id = p_candidate;
     insert into review_decision (candidate_id, action, from_status, to_status, reason, reviewer_id) values (p_candidate, 'suppress', cur, 'withdrawn', p_reason, auth.uid());
   elsif cur not in ('rejected','withdrawn') then
-    update candidate set status = 'rejected' where id = p_candidate;
     insert into review_decision (candidate_id, action, from_status, to_status, reason, reviewer_id) values (p_candidate, 'suppress', cur, 'rejected', p_reason, auth.uid());
   end if;
   perform set_config('app.in_transition', 'off', true);

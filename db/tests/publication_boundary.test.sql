@@ -1,5 +1,5 @@
 -- publication_boundary.test.sql
--- DRAFT, NEVER EXECUTED (no PostgreSQL server was available). Run against a disposable empty database after migrations 0001-0002,
+-- Executed by db/tests/run.mjs on PGlite (superuser session; role behaviour is tested in roles_rls.test.sql). Not yet run on a real server. Run against a disposable empty database after migrations 0001-0002
 -- as a superuser/owner session; each block raises on failure. Intended to run in CI (see reports/import-test-strategy-and-acceptance.md).
 -- Conventions: request.jwt.claim.sub simulates auth.uid(); app_role rows grant the reviewer role.
 
@@ -102,7 +102,9 @@ do $$ declare s uuid := (select id from candidate where canonical_key = 'github.
   perform import_upsert_candidate('github.com/t/removeme', 'github_repo', '{}', '11111111-1111-1111-1111-111111111111');
   assert (select status from candidate where id = rm) = 'withdrawn', 're-import must not change status';
   assert (select importable from candidate where id = rm) = false, 're-import must keep the key non-importable';
-  perform _expect_error(format('select review_candidate(%L, ''approve'', ''again'')', rm), 'P3');
+  perform _expect_error(format('select review_candidate(%L, ''approve'', ''again'')', rm), 'illegal transition');  -- withdrawn must be reopened first
+  perform review_candidate(rm, 'reopen', 'second look');
+  perform _expect_error(format('select review_candidate(%L, ''approve'', ''again'')', rm), 'P3');               -- ...and the suppression still blocks approval
 
   -- suppression matching: case-insensitive, and a repository suppression covers its subpaths
   insert into suppression (canonical_key, reason, created_by) values ('GitHub.com/T/Whole', 'owner request', '00000000-0000-0000-0000-0000000000a1');

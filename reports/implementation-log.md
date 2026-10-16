@@ -12,6 +12,7 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 | 5 | B5 (part): GitHub client tests with a scripted fake fetch; malformed-JSON defect fixed | done | see `git log` |
 | 6 | B5 (rest): collector resume, idempotence, incremental and provenance tests (fake in-memory API) | done | see `git log` |
 | 7 | B4 (part): import batch id on every collected record; collector --dry-run | done | see `git log` |
+| 8 | B7 (part): run migrations and SQL tests on PGlite; role/RLS behaviour suite; two SQL defects fixed | done | see `git log` |
 
 ## Item 1: search component and clean build
 * **Changed:** `templates/tailspark/landing/components/search/index.tsx` rewritten as a real search form (`role="search"`, native submit so Enter and IME composition work, labelled input, submit button with accessible name, `maxLength` 200, never disabled, pending state via `useTransition`). Removed the invalid global `KeyboardEvent<...>` usage and the `inputDisabled` state that disabled the box after the first search.
@@ -54,3 +55,13 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 * **Tests added (2, in `collect.test.mjs`):** batch id on every record and in the run state; dry run makes exactly 3 requests, creates no raw/state/manifest file, and a real run afterwards is unaffected.
 * **Verified (run here):** `npm test` 93 pass, 0 fail.
 * **Note:** the committed raw snapshot predates this field, so its records have no `batch_id`; the loader (B8) must treat it as optional and assign one batch to the snapshot. Content-hash revisions and per-error retry counts (rest of B4) remain.
+
+## Item 8: migrations executed for the first time (B7, part)
+* **Added:** `db/tests/run.mjs` (applies a Supabase stand-in `supabase_shim.sql` with roles `anon`/`authenticated`/`service_role`, `auth.users`, `auth.uid()`, then every migration in order, then every `*.test.sql`, on a fresh in-process Postgres via PGlite 0.3), `db/tests/package.json` (own dependency, so the app lockfile is untouched; the app tree has an unrelated `@cloudflare/workers-types` peer conflict, item R02), `db/tests/roles_rls.test.sql` (behaviour under `set local role` for anon, a plain user, a reviewer and service_role: reads, direct writes, every transition function, the importer function), `npm run test:db`.
+* **Result:** migrations 0001 and 0002 apply on an empty database; both SQL suites pass.
+* **Defects found by executing the SQL, and fixed:**
+  1. `suppress_candidate` set `importable = false` while the candidate was still `published`, violating the table's own check constraint, so suppressing a published listing failed. Status, `importable` and the hold now change in one statement.
+  2. `import_upsert_candidate` was revoked from client roles but never granted to the importer role; `service_role` got "permission denied". Explicit, role-existence-guarded grant added.
+  * Also corrected a test expectation: a withdrawn candidate must be reopened before it can be approved again; the suppression gate P3 is tested after the reopen.
+* **Mutation check (run once, ad hoc, not committed):** granting `anon` select on `candidate`, opening a reviewer policy to all users, and granting the importer function to `authenticated` were each caught by `roles_rls.test.sql`. Granting `anon` execute on `review_candidate` was not failed by a privilege error but is still refused by the function's own `is_reviewer()` check (two layers).
+* **Limits (important):** PGlite is real Postgres compiled to WASM but is single-user and not Supabase: owner-role `BYPASSRLS`, platform default privileges and the real `auth.uid()`/JWT path are untested. The remaining half of B7 is applying to an empty staging server and re-running both suites.

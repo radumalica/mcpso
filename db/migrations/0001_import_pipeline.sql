@@ -1,5 +1,5 @@
 -- 0001_import_pipeline.sql
--- DRAFT, NOT APPLIED, NOT VALIDATED against a running Postgres (no server was available when written).
+-- Applied and tested on an in-process Postgres (PGlite) via db/tests/run.mjs; NOT yet applied to a real Supabase/Postgres server.
 -- Apply only to a NEW, empty database via the migration runner, never by hand, and run the RLS tests in
 -- db/tests (to be written, see reports/import-test-strategy-and-acceptance.md) before any data is loaded.
 -- Design: reports/import-schema-and-migrations.md. Target: PostgreSQL 15+ (Supabase).

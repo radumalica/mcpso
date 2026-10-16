@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "node --test tests/security/*.test.mjs tools/upstream-import/test/*.test.mjs",
+    "test:db": "npm --prefix db/tests test",
     "typecheck": "tsc --noEmit",
     "pages:build": "npx @cloudflare/next-on-pages",
     "preview": "pnpm pages:build && wrangler pages dev",

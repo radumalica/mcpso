@@ -45,3 +45,4 @@ wrangler.toml
 .vscode
 
 app/api/update-sitemaps
+/db/tests/node_modules
