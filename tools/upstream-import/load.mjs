@@ -142,15 +142,27 @@ async function loadCandidates(db, ds, batchId) {
     evidence: { lane: approvalLane(p), evidence_level: evidenceLevel(p), ambiguity_flags: p.ambiguity_flags ?? [], strong: p.evidence_strong ?? [], weak: p.evidence_weak ?? [], kinds: p.evidence_kinds ?? [], registry_matches: p.official_registry_matches ?? [], unverified_repo_claims: p.official_registry_unverified_repo_claims ?? [] },
     quality_indicators: p.quality_indicators ?? [], security_concern: !!p.security_concern,
   }));
+  let drift = 0;
   for (const part of chunks(rows)) {
     const json = JSON.stringify(part);
     // Status only moves between machine statuses; approved / published / withdrawn / rejected are never touched by a load.
-    await db.query(`update candidate c set status = t.status::candidate_status, name = t.name, security_flags = t.security_flags,
+    await db.query(`update candidate c set status = t.status::candidate_status, name = t.name,
         removal_hold = c.removal_hold or t.removal_hold, importable = c.importable and t.importable, updated_at = now()
       from jsonb_to_recordset($1::jsonb) as t(key text, status text, name text, security_flags text[], removal_hold boolean, importable boolean)
       where c.canonical_key = t.key and c.status::text = any($2::text[])
-        and (c.status::text, c.name, c.security_flags, c.removal_hold, c.importable) is distinct from (t.status, t.name, t.security_flags, c.removal_hold or t.removal_hold, c.importable and t.importable)`,
+        and (c.status::text, c.name, c.removal_hold, c.importable) is distinct from (t.status, t.name, c.removal_hold or t.removal_hold, c.importable and t.importable)`,
       [json, MACHINE_STATUSES]);
+    // Raise-only for EVERY status (also approved / published): a newer classification may add a security flag or a removal hold, and
+    // that must never be dropped because a reviewer already acted. A new flag also voids an earlier individual security clearance
+    // (gate P2 applies again). Flags and holds are never lowered here; clearing is a reviewer function.
+    const raised = await db.query(`update candidate c set
+        security_flags = (select coalesce(array_agg(distinct f order by f), '{}') from unnest(c.security_flags || t.security_flags) f),
+        security_cleared_at = case when t.security_flags <@ c.security_flags then c.security_cleared_at end,
+        security_cleared_by = case when t.security_flags <@ c.security_flags then c.security_cleared_by end,
+        removal_hold = c.removal_hold or t.removal_hold, updated_at = now()
+      from jsonb_to_recordset($1::jsonb) as t(key text, security_flags text[], removal_hold boolean)
+      where c.canonical_key = t.key and (not (t.security_flags <@ c.security_flags) or (t.removal_hold and not c.removal_hold))`, [json]);
+    drift += raised.affectedRows ?? raised.rowCount ?? 0;
     await db.query(`insert into eligibility_evaluation (candidate_id, evaluator_version, category, reasons, evidence, quality_indicators, security_concern)
       select c.id, $2, t.category, t.reasons, t.evidence, t.quality_indicators, t.security_concern
       from jsonb_to_recordset($1::jsonb) as t(key text, category text, reasons jsonb, evidence jsonb, quality_indicators text[], security_concern boolean)
@@ -163,7 +175,7 @@ async function loadCandidates(db, ds, batchId) {
       [json, LOADER_VERSION]);
   }
   const groups = await loadAmbiguityGroups(db, ds);
-  return { candidates: rows.length, ...groups };
+  return { candidates: rows.length, flags_or_holds_raised: drift, ...groups };
 }
 
 const flagCode = (f) => (typeof f === "string" ? f : f?.code);
@@ -264,6 +276,7 @@ export async function reconcileDatabase(db, ds) {
   }
   const blocking = ds.classified.filter((c) => (c.ambiguity_flags ?? []).map(flagCode).some((f) => BLOCKING_AMBIGUITY.has(f))).length;
   check("candidates with a blocking ambiguity flag have a duplicate group", blocking, await n("select count(distinct m.candidate_id) n from duplicate_group_member m join duplicate_group g on g.id = m.group_id where g.method like 'dedup:ambiguity:%'"));
+  check("approved or published candidates with an unresolved flag or hold", 0, await n("select count(*) n from candidate where status in ('approved','published') and (removal_hold or (cardinality(security_flags) > 0 and security_cleared_at is null))"));
   check("approved or published", 0, await n("select count(*) n from candidate where status in ('approved','published')"));
   check("listings", 0, await n("select count(*) n from listing"));
   check("security-flagged candidates", count(ds.classified, (c) => (c.security_flags ?? []).length > 0), await n("select count(*) n from candidate where cardinality(security_flags) > 0"));

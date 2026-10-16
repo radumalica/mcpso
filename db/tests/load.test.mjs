@@ -187,3 +187,38 @@ test("informational flags (monorepo subpath) do not create a group", async () =>
   const r = await loadDataset({ db, dataDir: writeMiniDataset(tmp(), ds), sourceRepo: "example/source" });
   assert.equal(r.counts.ambiguity_groups_created, 1);
 });
+
+async function approveDirectly(db, key) {
+  await db.query("set app.in_transition = 'on'");
+  await db.query("update candidate set status = 'approved' where canonical_key = $1", [key]);
+  await db.query("set app.in_transition = 'off'");
+}
+
+test("a reload raises a new flag and hold on an already-approved candidate and voids the earlier clearance", async () => {
+  const { db, dir } = await loaded();
+  await db.query("update candidate set removal_hold = false where canonical_key = $1", [KEYS.A]);
+  await approveDirectly(db, KEYS.A);
+  await db.query("update candidate set security_cleared_at = now() where canonical_key = $1", [KEYS.A]);
+  const ds = miniDataset();
+  ds.classified[0].security_flags = ["pipe_to_shell_install"];
+  writeMiniDataset(dir, ds);
+  const r = await loadDataset({ db, dataDir: dir, sourceRepo: "example/source" });
+  const row = (await db.query("select status::text s, security_flags f, security_cleared_at c, removal_hold h from candidate where canonical_key = $1", [KEYS.A])).rows[0];
+  assert.equal(row.s, "approved", "status is not changed by a load");
+  assert.deepEqual(row.f, ["pipe_to_shell_install"]);
+  assert.equal(row.c, null, "a new flag voids the earlier clearance");
+  assert.equal(row.h, true, "the classifier hold is applied too");
+  assert.ok(r.counts.flags_or_holds_raised >= 1);
+  const rec = await reconcileDatabase(db, r.dataset);
+  assert.ok(rec.checks.some((c) => !c.ok && /unresolved flag or hold/.test(c.name)), "reconcile must flag an approved candidate that is now held");
+});
+
+test("flags and holds are never lowered by a reload, and an unchanged reload raises nothing", async () => {
+  const { db, dir } = await loaded();
+  await db.query("update candidate set security_flags = array['pipe_to_shell_install','other'], security_cleared_at = now() where canonical_key = $1", [KEYS.B]);
+  const again = await loadDataset({ db, dataDir: dir, sourceRepo: "example/source" });
+  const row = (await db.query("select security_flags f, security_cleared_at c from candidate where canonical_key = $1", [KEYS.B])).rows[0];
+  assert.deepEqual([...row.f].sort(), ["other", "pipe_to_shell_install"]);
+  assert.ok(row.c, "a clearance survives when no new flag appears");
+  assert.equal(again.counts.flags_or_holds_raised, 0);
+});
