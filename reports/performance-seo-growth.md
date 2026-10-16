@@ -1,5 +1,7 @@
 # Performance, SEO and Growth
 
+> **Scope update:** the product direction changed to a new, independent application with no relation to mcp.so and no use of upstream data or code (see `master-plan.md` rev 2). Items in this report that assume continuing the fork, importing the upstream dataset (R07) or rebranding mcp.so are superseded; the audit findings and lessons remain valid.
+
 Measured items come from the audit runs (`reports/evidence/`); everything about *future* traffic is a recommendation or hypothesis. **No production metrics exist or were fabricated**: no public deployment was measured, no field data (CrUX/RUM) or Search Console access was available.
 
 ## 1. Current state (measured / read from source)

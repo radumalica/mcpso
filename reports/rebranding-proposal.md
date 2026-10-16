@@ -1,5 +1,7 @@
 # Rebranding Proposal: independent, free-to-submit MCP server registry
 
+> **Scope update:** the product direction changed to a new, independent application with no relation to mcp.so and no use of upstream data or code (see `master-plan.md` rev 2). Items in this report that assume continuing the fork, importing the upstream dataset (R07) or rebranding mcp.so are superseded; the audit findings and lessons remain valid.
+
 Status: proposal only. No repository branding, package names, logos or config were changed. Nothing here reuses the name, logo or assets of mcp.so.
 Checks run: 2026-10-16, about 10:00-10:10 UTC, from a single Linux host (DNS via system resolver, RDAP and APIs over HTTPS).
 

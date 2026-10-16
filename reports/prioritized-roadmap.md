@@ -1,5 +1,7 @@
 # Prioritised Implementation Roadmap
 
+> **Scope update:** the product direction changed to a new, independent application with no relation to mcp.so and no use of upstream data or code (see `master-plan.md` rev 2). Items in this report that assume continuing the fork, importing the upstream dataset (R07) or rebranding mcp.so are superseded; the audit findings and lessons remain valid.
+
 Effort units (relative, for one engineer familiar with the stack; deliberately coarse, not hour estimates): **S** ≈ up to 2 days · **M** ≈ 3-8 days · **L** ≈ 2-4 weeks · **XL** > 1 month. Risk = risk of the *change* breaking things or stalling. IDs reference findings in the other reports (A=architecture, Q=code quality, F=security, D=dependency, U=UI/UX, T=threat model).
 
 Priority legend: **P0** critical (security, data exposure, broken core, release blockers) · **P1** high · **P2** medium · **P3** low.

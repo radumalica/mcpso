@@ -1,5 +1,7 @@
 # Executive Summary
 
+> **Scope update:** the product direction changed to a new, independent application with no relation to mcp.so and no use of upstream data or code (see `master-plan.md` rev 2). Items in this report that assume continuing the fork, importing the upstream dataset (R07) or rebranding mcp.so are superseded; the audit findings and lessons remain valid.
+
 **Subject:** fork `radumalica/mcpso` of `chatmcp/mcpso` (the free variant of mcp.so), audited 2026-10-16 as the starting point for a free, independent, professional MCP registry.
 **Nature of this work:** audit and planning only. No application code, dependency, schema or deployment configuration was changed. Every statement below is tagged **C** (confirmed by execution or direct reading), **S** (suspected; plausible but not demonstrable from the repository alone) or is a measured count with its denominator. Detail and evidence are in the numbered reports in this directory and `reports/evidence/`.
 
