@@ -1,63 +1,40 @@
-## MCP Directory
+# MCP Registry (working title)
 
-a directory for Awesome MCP Servers.
+An independent, read-only directory of Model Context Protocol (MCP) servers. Every entry states what was checked, when, and what was
+not checked. Nothing is published without a recorded human approval. See `NOTICE` for attribution (Apache-2.0).
 
-live preview: [https://mcp.so](https://mcp.so)
+## How it fits together
 
-![preview](./preview.png)
+| Part | Where | Purpose |
+|---|---|---|
+| Public site | `app/`, `components/`, `lib/`, `models/` | Next.js, server-rendered, reads only the `public_listing` view; no accounts, no writes, no third-party scripts |
+| Import pipeline | `tools/upstream-import/` | collect public requests, normalise, de-duplicate, evaluate, load into the database, sample for hand-checks, review tooling |
+| Database | `db/migrations/` | schema, row-level security, publication gates and audited transition functions |
+| Tests | `tests/`, `db/tests/`, `tools/upstream-import/test/` | security guards, importer, SQL suites, end-to-end checks |
+| Plan and evidence | `reports/` | master plan v5, policies, audit reports, `implementation-log.md` |
 
-## Quick Start
-
-1. clone the repo
-
-```bash
-git clone https://github.com/chatmcp/mcp-directory.git
-cd mcp-directory
-```
-
-2. install dependencies
+## Run it
 
 ```bash
-pnpm install
+npm ci
+cp .env.example .env.local      # set SUPABASE_URL, SUPABASE_ANON_KEY (read-only) and SITE_* values
+npm run dev
 ```
 
-3. prepare database
+Only the public anon key belongs in this application. The service-role key is used by the importer and review tooling and must never
+be present in this application's environment.
 
-create a database with [Supabase](https://supabase.com/)
-
-run the sql file in `data/install.sql`
-
-4. set env variables
-
-put a .env file in the root directory
-
-with env variables:
-
-```env
-SUPABASE_URL=""
-SUPABASE_ANON_KEY=""
-
-NEXT_PUBLIC_WEB_URL="http://localhost:3000"
-```
-
-5. run the dev server
+## Checks
 
 ```bash
-pnpm dev
+npm run typecheck && npm run lint
+npm test                        # security guards, app view-model, importer
+npm run test:db                 # migrations + SQL suites + loader/review tests (in-process Postgres)
+npm run test:e2e                # production build against a fake read-only data API
+npm audit --omit=dev
 ```
 
-6. preview the site
+## Status
 
-open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Community
-
-- [MCP Server Telegram](https://t.me/+N0gv4O9SXio2YWU1)
-- [MCP Server Discord](https://discord.gg/RsYPRrnyqg)
-- [ChatMCP Official Twitter](https://x.com/chatmcp)
-
-## About the author
-
-- [idoubi](https://bento.me/idoubi)
-- [Follow me on Twitter](https://x.com/idoubicv)
-- [Buy me a coffee](https://www.buymeacoffee.com/idoubi)
+Pre-launch. Open owner decisions (name and domain, hosting, rights and privacy sign-off) are tracked in `reports/master-plan-v5.md`;
+what has been built and verified is tracked in `reports/implementation-log.md`.

@@ -2,20 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Design tokens. Contrast: text on background and muted text on background are both above 4.5:1 in light and dark. */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #14181f;
+  --muted: #4a5260;
+  --line: #c9ced8;
+  --panel: #f3f5f9;
+  --accent: #1d4ed8;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f1218;
+    --foreground: #eef1f6;
+    --muted: #b4bccb;
+    --line: #394150;
+    --panel: #181d27;
+    --accent: #3b66e0;
   }
 }
 
 body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  text-decoration-thickness: 1px;
+}
+
+.prose-page p,
+.prose-page ul,
+.prose-page ol {
+  margin-top: 0.75rem;
+}
+.prose-page h2 {
+  margin-top: 2rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.prose-page ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.prose-page ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.prose-page a {
+  text-decoration: underline;
 }

@@ -1,0 +1,20 @@
+MCP Registry (working title)
+
+This product is a modified derivative work. It started from the open-source project "mcpso" (since renamed "mcp-directory"),
+published at https://github.com/chatmcp/mcp-directory under the Apache License, Version 2.0 (see the LICENSE file).
+The copyright in the original work remains with its authors. This product is independent: it is not affiliated with, endorsed
+by or operated by the original project or its operators, and it uses none of their branding, accounts, data feeds or services.
+
+Statement of modifications (Apache License 2.0, section 4(b)). Compared with the original, this version:
+  - replaces the whole public site, page templates and data model with a read-only catalogue served from a reviewed read model;
+  - removes all write endpoints, request-time language-model and web-scraping code, analytics, advertising and the inherited
+    page template;
+  - adds an import and review pipeline (tools/upstream-import, db/) with its own database schema, publication gates and tests;
+  - upgrades the framework and dependencies and changes the build and test setup.
+Files that were changed from the original carry no separate per-file notice; the version control history records every change.
+
+Third-party components are used under their own licences, installed from the npm registry (see package.json and the lock file).
+No third-party fonts, images or page templates are bundled in this repository.
+
+Data: the import pipeline reads public GitHub issues and repositories. Imported text is kept as source records and is not
+republished; published summaries are written for this directory. See reports/import-eligibility-policy.md.

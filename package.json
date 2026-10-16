@@ -1,5 +1,5 @@
 {
-  "name": "navfast",
+  "name": "mcp-registry",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,9 +7,10 @@
     "watch": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint app components models providers utils templates",
-    "test": "node --test tests/security/*.test.mjs tools/upstream-import/test/*.test.mjs",
+    "lint": "eslint app components lib models utils",
+    "test": "node --test tests/security/*.test.mjs tests/app/*.test.mjs tools/upstream-import/test/*.test.mjs",
     "test:db": "npm --prefix db/tests test",
+    "test:e2e": "next build && node --test tests/e2e/site.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

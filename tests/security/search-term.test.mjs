@@ -30,7 +30,7 @@ test("length is capped", () => {
 });
 
 test("the keyword query sanitises its input before building the filter", () => {
-  const src = fs.readFileSync(path.join(ROOT, "models/project.ts"), "utf8");
+  const src = fs.readFileSync(path.join(ROOT, "models/listing.ts"), "utf8");
   assert.match(src, /sanitizeSearchTerm\(/);
-  assert.doesNotMatch(src, /ilike\.%\$\{keyword\}%/);
+  assert.doesNotMatch(src, /ilike\.%\$\{(q|keyword|opts\.q)\}%/);
 });
