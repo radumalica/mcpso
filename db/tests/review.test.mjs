@@ -31,7 +31,7 @@ test("the queue follows the review order: ambiguity, security flag, removal hold
     [KEYS.C, 1, "ambiguous group"], [KEYS.B, 2, "security flag"], [KEYS.A, 3, "removal hold"],
   ]);
   assert.equal(q[1].security_flags, "pipe_to_shell_install");
-  assert.equal(q[0].ambiguity_flags, "shared_endpoint");
+  assert.equal(q[0].ambiguity_flags, "shared_endpoint_across_repos");
 });
 
 test("the sheet has blank decision columns and survives a CSV round trip", async () => {
@@ -127,4 +127,27 @@ test("decided candidates leave the queue", async () => {
   const db = await setup();
   await applyDecisions(db, [{ canonical_key: KEYS.C, action: "reject", reason: "not a server" }], { reviewerId: REVIEWER });
   assert.deepEqual((await reviewQueue(db)).map((r) => r.canonical_key), [KEYS.B, KEYS.A]);
+});
+
+test("an ambiguity group blocks approval (P4) until a reviewer resolves it, with a reason and an audit row", async () => {
+  const db = await setup();
+  const id = (await db.query("select id from candidate where canonical_key = $1", [KEYS.C])).rows[0].id;
+  assert.equal(await count(db, "select count(*) n from duplicate_group where needs_manual_review"), 1);
+  const gates = async () => (await db.query("select publication_gate_failures($1) f", [id])).rows[0].f;
+  assert.ok((await gates()).includes("P4 unresolved duplicate group"));
+  const [bad] = await applyDecisions(db, [{ canonical_key: KEYS.C, action: "approve", reason: "try" }], { reviewerId: REVIEWER });
+  assert.match(bad.error, /P4 unresolved duplicate group/);
+  const [ok] = await applyDecisions(db, [{ canonical_key: KEYS.C, action: "resolve_duplicate_group", reason: "endpoint belongs to this project only" }], { reviewerId: REVIEWER });
+  assert.equal(ok.ok, true);
+  assert.ok(!(await gates()).includes("P4 unresolved duplicate group"));
+  assert.equal(await count(db, "select count(*) n from audit_log where action = 'resolve_duplicate_group'"), 1);
+  const [again] = await applyDecisions(db, [{ canonical_key: KEYS.C, action: "resolve_duplicate_group", reason: "twice" }], { reviewerId: REVIEWER });
+  assert.match(again.error, /no unresolved duplicate group/);
+});
+
+test("a plain user cannot resolve a group", async () => {
+  const db = await setup();
+  const [r] = await applyDecisions(db, [{ canonical_key: KEYS.C, action: "resolve_duplicate_group", reason: "x" }], { reviewerId: PLAIN });
+  assert.equal(r.ok, false);
+  assert.equal(await count(db, "select count(*) n from duplicate_group where needs_manual_review"), 1);
 });

@@ -9,7 +9,7 @@
 // until the Phase D launch gates pass).
 import { writeCsv } from "./lib/store.mjs";
 
-export const ACTIONS = ["approve", "reject", "reopen", "mark_unavailable", "unpublish", "clear_security_flag", "clear_removal_hold", "suppress"];
+export const ACTIONS = ["approve", "reject", "reopen", "mark_unavailable", "unpublish", "clear_security_flag", "clear_removal_hold", "suppress", "resolve_duplicate_group"];
 export const QUEUE_COLUMNS = ["priority", "queue", "canonical_key", "status", "category", "lane", "evidence_level", "ambiguity_flags", "security_flags", "removal_hold", "rules"];
 export const SHEET_COLUMNS = [...QUEUE_COLUMNS, "decision", "reason"];
 
@@ -64,6 +64,7 @@ export function validateDecisions(sheet) {
 
 const SQL_CALL = {
   suppress: "select suppress_candidate($1::uuid, $2)",
+  resolve_duplicate_group: "select resolve_duplicate_group(g.group_id, $2) from duplicate_group_member g join duplicate_group d on d.id = g.group_id where g.candidate_id = $1::uuid and d.needs_manual_review",
   clear_security_flag: "select clear_security_flag($1::uuid, $2)",
   clear_removal_hold: "select clear_removal_hold($1::uuid, $2)",
 };
@@ -84,7 +85,10 @@ export async function applyDecisions(db, decisions, { reviewerId, dryRun = false
       try {
         const cand = (await db.query("select id from candidate where canonical_key = $1", [d.canonical_key])).rows[0];
         if (!cand) throw new Error("unknown candidate");
-        if (SQL_CALL[d.action]) await db.query(SQL_CALL[d.action], [cand.id, d.reason]);
+        if (SQL_CALL[d.action]) {
+          const r = await db.query(SQL_CALL[d.action], [cand.id, d.reason]);
+          if (d.action === "resolve_duplicate_group" && r.rows.length === 0) throw new Error("no unresolved duplicate group for this candidate");
+        }
         else await db.query("select review_candidate($1::uuid, $2::review_action, $3)", [cand.id, d.action, d.reason]);
         await db.query(`release savepoint ${sp}`);
         results.push({ ...d, ok: true, error: null });

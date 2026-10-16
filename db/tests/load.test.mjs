@@ -168,3 +168,22 @@ test("readDataset reads the layout written by the pipeline", () => {
   assert.equal(ds.raw.length, 12);
   assert.equal(ds.projects.length, 3);
 });
+
+test("blocking ambiguity flags create one manual-review group each; reloads and resolved groups are not recreated", async () => {
+  const { db, dir } = await loaded();
+  assert.equal(await num(db, "select count(*) n from duplicate_group where needs_manual_review and method like 'dedup:ambiguity:%'"), 1);
+  await db.query("update duplicate_group set needs_manual_review = false");
+  const again = await loadDataset({ db, dataDir: dir, sourceRepo: "example/source" });
+  assert.equal(again.counts.ambiguity_groups_created, 0);
+  assert.equal(await num(db, "select count(*) n from duplicate_group"), 1);
+  assert.equal(await num(db, "select count(*) n from duplicate_group where needs_manual_review"), 0, "a resolved group stays resolved");
+});
+
+test("informational flags (monorepo subpath) do not create a group", async () => {
+  const db = await freshDatabase();
+  const ds = miniDataset();
+  ds.classified[0].ambiguity_flags = ["monorepo_subpath_project"];
+  ds.classified[2].ambiguity_flags = [{ code: "shared_package_across_repos", detail: "x" }];
+  const r = await loadDataset({ db, dataDir: writeMiniDataset(tmp(), ds), sourceRepo: "example/source" });
+  assert.equal(r.counts.ambiguity_groups_created, 1);
+});

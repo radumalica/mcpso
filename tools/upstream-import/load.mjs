@@ -20,6 +20,9 @@ export const LOADER_VERSION = "load-v1";
 const KIND = { issue: "issue", pull_request: "pull_request", issue_comment: "issue_comment" };
 const PREFIX = { issue: "issue", pull_request: "pr", issue_comment: "comment" };
 const VOLATILE = new Set(["collected_at", "batch_id"]); // change on every collection; not part of the content hash
+// Ambiguity flags that mean "the identity of this project is unclear" and therefore block approval (gate P4) until a reviewer
+// resolves the group. monorepo_subpath_project is informational and does not block.
+export const BLOCKING_AMBIGUITY = new Set(["shared_package_across_repos", "shared_endpoint_across_repos", "same_repo_incompatible_names"]);
 const MACHINE_STATUSES = ["candidate", "needs_review", "eligible", "ineligible"];
 const CHUNK = 500;
 
@@ -159,7 +162,28 @@ async function loadCandidates(db, ds, batchId) {
           is distinct from (excluded.category, excluded.reasons, excluded.evidence, excluded.quality_indicators, excluded.security_concern)`,
       [json, LOADER_VERSION]);
   }
-  return { candidates: rows.length };
+  const groups = await loadAmbiguityGroups(db, ds);
+  return { candidates: rows.length, ...groups };
+}
+
+const flagCode = (f) => (typeof f === "string" ? f : f?.code);
+
+/** One manual-review group per candidate with a blocking ambiguity flag; never recreated once a group exists (resolved or not). */
+async function loadAmbiguityGroups(db, ds) {
+  let created = 0;
+  for (const p of ds.classified) {
+    const codes = [...new Set((p.ambiguity_flags ?? []).map(flagCode).filter((c) => BLOCKING_AMBIGUITY.has(c)))].sort();
+    if (!codes.length) continue;
+    const cand = (await db.query("select id from candidate where canonical_key = $1", [p.canonical_key])).rows[0];
+    const has = (await db.query(`select 1 from duplicate_group_member m join duplicate_group g on g.id = m.group_id
+      where m.candidate_id = $1 and g.method like 'dedup:ambiguity:%'`, [cand.id])).rows.length;
+    if (has) continue;
+    const g = (await db.query(`insert into duplicate_group (method, confidence, needs_manual_review, rationale)
+      values ($1, 'low', true, $2) returning id`, [`dedup:ambiguity:${codes.join("+")}`, `ambiguity flags: ${codes.join(", ")}`])).rows[0];
+    await db.query("insert into duplicate_group_member (group_id, candidate_id, role) values ($1, $2, 'possible')", [g.id, cand.id]);
+    created++;
+  }
+  return { ambiguity_groups_created: created };
 }
 
 async function loadDispositions(db, ds, batchId) {
@@ -238,6 +262,8 @@ export async function reconcileDatabase(db, ds) {
     check(`candidates ${cat}`, count(ds.classified, (c) => c.category === cat), await n("select count(*) n from candidate where status::text = $1", [cat]));
     check(`current evaluations ${cat}`, count(ds.classified, (c) => c.category === cat), await n("select count(*) n from eligibility_evaluation where is_current and category = $1", [cat]));
   }
+  const blocking = ds.classified.filter((c) => (c.ambiguity_flags ?? []).map(flagCode).some((f) => BLOCKING_AMBIGUITY.has(f))).length;
+  check("candidates with a blocking ambiguity flag have a duplicate group", blocking, await n("select count(distinct m.candidate_id) n from duplicate_group_member m join duplicate_group g on g.id = m.group_id where g.method like 'dedup:ambiguity:%'"));
   check("approved or published", 0, await n("select count(*) n from candidate where status in ('approved','published')"));
   check("listings", 0, await n("select count(*) n from listing"));
   check("security-flagged candidates", count(ds.classified, (c) => (c.security_flags ?? []).length > 0), await n("select count(*) n from candidate where cardinality(security_flags) > 0"));

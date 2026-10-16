@@ -18,6 +18,7 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 | 11 | Loader fix: removal hold fails closed from stored dispositions (security review finding) | done | see `git log` |
 | 12 | C2: interim review workflow (queues, decision applier); fixes gate-failure array bug in 0002 and a loose SQL test helper | done | see `git log` |
 | 13 | Dead code removed: services/ (LLM, prompts, page reader), write functions in models; read-only guard test | done | see `git log` |
+| 14 | Ambiguity groups in the database (gate P4 now effective), migration 0003, resolve action | done | see `git log` |
 
 ## Item 1: search component and clean build
 * **Changed:** `templates/tailspark/landing/components/search/index.tsx` rewritten as a real search form (`role="search"`, native submit so Enter and IME composition work, labelled input, submit button with accessible name, `maxLength` 200, never disabled, pending state via `useTransition`). Removed the invalid global `KeyboardEvent<...>` usage and the `inputDisabled` state that disabled the box after the first search.
@@ -112,3 +113,10 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 * **Added:** `tests/security/no-write-or-llm-code.test.mjs` (3 tests: no `services/`, no OpenAI/Jina references in application code, no `.insert/.update/.upsert/.delete` in `models/`). The guard immediately found `models/user.ts` and `insertCategory`, which a manual grep for the project functions had missed.
 * **Verified (run here):** `npm test` 105 pass; `tsc --noEmit` clean; clean `next build` compiles.
 * **Left for R02:** the `openai` package stays in `package.json` until the dependency/lockfile cleanup (changing it needs an install against the conflicting tree).
+
+## Item 14: gate P4 made effective (ambiguity groups, migration 0003)
+* **Gap found:** publication gate P4 blocks approval for a candidate in a `duplicate_group` that `needs_manual_review`, but nothing created such groups, so the 228 ambiguous projects were not protected by P4 (they were only `needs_review` by classification, which a reviewer can approve directly).
+* **Added:** loader creates one manual-review group per candidate carrying a *blocking* flag (`shared_package_across_repos`, `shared_endpoint_across_repos`, `same_repo_incompatible_names`; `monorepo_subpath_project` is informational and ignored), once per candidate (reloads and resolved groups are not recreated); migration `0003_duplicate_review.sql` with `resolve_duplicate_group(group, reason)` (reviewer only, reason required, audited, refuses an already-resolved group); review action `resolve_duplicate_group` (reports an error instead of success when nothing is unresolved); reconcile check that every blocking-flag candidate has a group.
+* **Tests (+4):** two loader tests (group creation/idempotence/resolved stays resolved; informational flag ignored; string and object flag shapes both read) and two review tests (approval refused with `P4 unresolved duplicate group`, resolve clears it with an audit row, second resolve reported as an error; a plain user cannot resolve).
+* **Verified (run here):** `npm run test:db` 30 Node tests + both SQL suites + migration 0003 pass. Full snapshot: 228 groups created (equals the 228 ambiguous projects measured earlier), reconciliation OK, reload creates 0.
+* **Limit:** groups are per candidate (the pipeline does not export which candidates share a package or endpoint as structured data), so a reviewer resolving one member does not see its partners in the group row; the partner keys are in the classifier's flag detail. Linking partners as members needs a structured export from `dedup.mjs`.
