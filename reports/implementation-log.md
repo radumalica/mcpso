@@ -10,6 +10,7 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 | 3 | A3 (part): remove inherited analytics/ads, fake star rating, upstream star widget, zoom lock, upstream-host sitemaps and ads.txt | done | see `git log` |
 | 4 | A6 (part): search-term filter-injection fix and baseline security headers | done | see `git log` |
 | 5 | B5 (part): GitHub client tests with a scripted fake fetch; malformed-JSON defect fixed | done | see `git log` |
+| 6 | B5 (rest): collector resume, idempotence, incremental and provenance tests (fake in-memory API) | done | see `git log` |
 
 ## Item 1: search component and clean build
 * **Changed:** `templates/tailspark/landing/components/search/index.tsx` rewritten as a real search form (`role="search"`, native submit so Enter and IME composition work, labelled input, submit button with accessible name, `maxLength` 200, never disabled, pending state via `useTransition`). Removed the invalid global `KeyboardEvent<...>` usage and the `inputDisabled` state that disabled the box after the first search.
@@ -40,3 +41,9 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 * **Defect found by the tests and fixed:** a 200 response with an unparseable body threw a raw `SyntaxError` out of `get()`; it now throws `GitHubError("malformed JSON in 200 response")` (`lib/github.mjs`).
 * **Verified (run here):** `npm test` 85 pass, 0 fail (55 importer + 16 client + 14 app/security).
 * **Not done in B5:** collector resume/idempotence/incremental-run tests (next item).
+
+## Item 6: collector tests (B5, rest)
+* **Changed:** `collect.mjs#main(argv, { clientOptions })` accepts client options (fetch, sleep, retries) so the collector can run against a fake API; default behaviour unchanged.
+* **Added:** `tools/upstream-import/test/collect.test.mjs` (6 tests, fake in-memory API with 2-item pages, temp output directories, no network, `GITHUB_TOKEN` unset): pagination across Link hops, PR items excluded from issues (and counted in the manifest), provenance fields and `collected_at` on every record, a completed run re-run makes zero list requests and leaves the file byte-identical, an interrupted run (`--max-pages 1`) resumes without duplicates or gaps, an incremental run sends `since`, replaces an edited record and adds a new one, a state file from another repository is refused.
+* **Verified (run here):** `npm test` 91 pass, 0 fail.
+* **Not done:** `--dry-run`, per-record `import_batch_id`, content-hash revisions and error retry counts (B4), still to come.

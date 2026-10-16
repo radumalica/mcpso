@@ -175,7 +175,7 @@ async function runPullFiles({ client, log, state, saveState, file, errFile, repo
   log({ event: "stage_done", stage: "pull_files", prs: pulls.length });
 }
 
-export async function main(argv = process.argv.slice(2)) {
+export async function main(argv = process.argv.slice(2), { clientOptions = {} } = {}) {
   const { values: a } = parseArgs({
     args: argv,
     options: {
@@ -195,7 +195,7 @@ export async function main(argv = process.argv.slice(2)) {
   const runStartedAt = new Date().toISOString();
   const log = makeLogger(path.join(out, "logs", `collect-${runStartedAt.replace(/[:.]/g, "-")}.log`), { quiet: a.quiet });
   const token = resolveToken({ useGh: a["use-gh-token"] });
-  const client = new GitHubClient({ token, log });
+  const client = new GitHubClient({ token, log, ...clientOptions });
   log({ event: "start", repo: a.repo, authenticated: !!token, stages: a.stages, incremental: a.incremental });
 
   const stateFile = path.join(out, "state", "collect.json");
