@@ -72,7 +72,7 @@ Source records of a project are never deleted; `source_record_ids` keeps all, an
 
 ## 6. Classification (`classify.mjs`)
 
-Applies the rules in `submission-eligibility-criteria.md` verbatim and writes rule IDs into every result (`reasons[]`). Categories: `eligible`, `needs_review`, `ineligible`; **`security_concern` is an independent flag**; `import_ready = eligible ∧ ¬security_concern`. Informational quality indicators (missing license, archived, stale, missing install info, incomplete metadata, bulk submitter, …) never change the category.
+Applies the rules in `submission-eligibility-criteria.md` verbatim and writes rule IDs into every result (`reasons[]`). Categories: `eligible`, `needs_review`, `ineligible`; **`security_concern` is an independent flag**; `import_ready = eligible ∧ ¬security_concern ∧ ¬removal_request_pending` (any project a removal request may refer to, or whose issue carries removal-like wording, is held for a human decision). Informational quality indicators (missing license, archived, stale, missing install info, incomplete metadata, bulk submitter, …) never change the category.
 
 ## 7. Outputs
 

@@ -1,6 +1,6 @@
 # Submission Dataset Analysis
 
-Scope: the **entire** upstream submission stream of `chatmcp/mcpso` (renamed `chatmcp/mcp-directory`; single source), collected read-only on **2026-10-16 ~09:58 UTC**. This is a full collection of what the GitHub API returned, not a sample (completeness caveats in §1). Every figure comes from `data/upstream-import/` (`collect-manifest.json`, `import-manifest.json`, `normalized/normalize-summary.json`, `dedup/dedup-summary.json`, `classified/classification-summary.json`) and is reproducible with the tools in `tools/upstream-import/`. Method: `submission-import-methodology.md`; rules: `submission-eligibility-criteria.md`.
+Scope: the **entire** upstream submission stream of `chatmcp/mcpso` (renamed `chatmcp/mcp-directory`; single source), collected read-only on **2026-10-16 ~09:58 UTC**. This is a full collection of what the GitHub API returned, not a sample (completeness caveats in §1). Every figure comes from `data/upstream-import/` (`collect-manifest.json`, `import-manifest.json`, `normalized/normalize-summary.json`, `dedup/dedup-summary.json`, `classified/classification-summary.json`) and is reproducible with the tools in `tools/upstream-import/` **from the 2026-10-16 raw snapshot**. That snapshot (raw JSONL with SHA-256 sums, normalized/dedup/classified JSONL, enrichment, registry snapshot, logs) is kept outside version control at `~/mcpso-audit-snapshot-2026-10-16/` on the audit host; a fresh collection will differ because the upstream repository keeps growing. Method: `submission-import-methodology.md`; rules: `submission-eligibility-criteria.md`.
 
 Submissions are **GitHub issues** (plus comments on issue #1); pull requests are code contributions only (see §2).
 
@@ -75,7 +75,7 @@ Official MCP Registry snapshot (read-only, public API, paged): **44,497 unique s
 | needs_review | 1,353 | 27.8% |
 | ineligible | 13 | 0.3% |
 
-`import_ready` (eligible, no security concern, no blocking ambiguity): **3,476**.
+`import_ready` (eligible, no security concern, not held for removal review): **3,467** (3,502 eligible − 26 security-flagged − 9 held). 19 projects in total (9 eligible) are held because a removal request may refer to them (3 candidate mappings in `removal-candidates.csv`: 1 strong, 2 weak same-author) or their own issue carries removal-like wording (`removal-like-comments.csv`, which is deliberately broad and includes false positives such as a tool named "withdraw"); held projects are reviewed by a human, never suppressed or published automatically.
 
 **Why so few are ineligible.** Ineligible requires positive evidence that a project is out of scope: upstream infrastructure (I1: 1), empty/template repo (I2: 1), or a repository with a README of reasonable size and *no MCP signal at all* (I3: 11). Everything uncertain goes to review instead. This is by design (the criteria never reject on a heuristic) and it means the *ineligible* share is not an estimate of how many submissions are not real servers.
 
@@ -95,7 +95,7 @@ Hosting claimed (eligible, n=3,502): remote 1,571; local 1,007; both 319; unspec
 
 ## 6. Removals and link corrections
 
-7 removal requests and 5 link corrections exist. Only **1** removal request maps to a project with a strong basis; **6 are unmapped** (`classified/removal-candidates.csv`); another 21 comments outside the thread look removal-like (`removal-like-comments.csv`, excerpts only). Policy: nothing is auto-suppressed, and **entries with an open or unmapped removal request must not be published until a human decides** (roadmap R07).
+7 removal requests and 5 link corrections exist. Only **1** removal request maps to a project with a strong basis; **6 are unmapped** (`classified/removal-candidates.csv`); another 21 comments outside the thread look removal-like (`removal-like-comments.csv`, URLs only; comment text is not republished). Policy: nothing is auto-suppressed, and **entries with an open or unmapped removal request must not be published until a human decides** (roadmap R07).
 
 ## 7. Spot-check of the classifier
 
@@ -107,4 +107,4 @@ Hosting claimed (eligible, n=3,502): remote 1,571; local 1,007; both 319; unspec
 * **Eligibility is not verification.** No server was run, no endpoint contacted, no package installed, no code security-reviewed. An eligible project is one that shows enough public evidence to be worth *listing candidates for review*; trust labels must come from separate verification.
 * Not measured: server quality, tool counts, whether remote endpoints are alive, license correctness beyond the GitHub API field, true precision/recall of the classifier, domain or trademark status of any name.
 * Figures are a snapshot of 2026-10-16; the upstream issue stream grows by several hundred per week, so counts will be stale quickly (re-run `collect → normalize → dedup → enrich → classify`; incremental watermarks are implemented).
-* Free-text JSONL products (normalized, dedup, classified, import-ready) are git-ignored in this repository because they embed third-party text; the CSV/summary views are committed. Regenerate with `tools/upstream-import/README.md`.
+* Free-text JSONL products (normalized, dedup, classified, import-ready) are git-ignored in this repository because they embed third-party text; the CSV/summary views are committed. Regenerate them from the raw snapshot as described in `tools/upstream-import/README.md` (raw upstream text was deliberately not committed to this public repository).

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T11:02:27.935Z",
+  "generated_at": "2026-10-16T11:08:54.803Z",
   "source_repository": "chatmcp/mcpso",
   "stages": {
     "collect": {
@@ -108,7 +108,7 @@
       }
     },
     "classify": {
-      "generated_at": "2026-10-16T11:02:27.920Z",
+      "generated_at": "2026-10-16T11:08:54.787Z",
       "projects": 4868,
       "category": {
         "eligible": 3502,

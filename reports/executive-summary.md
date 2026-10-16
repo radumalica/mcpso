@@ -31,7 +31,7 @@ See `security-audit.md` and `threat-model.md`. Critical: **F-01** public create/
 | `next build` on a throwaway copy with that one line patched | succeeded; first-load JS: home 175 kB, detail page 481 kB, legal pages 446 kB, category 135 kB |
 | `next lint` | not runnable (blocks on an interactive ESLint setup prompt; no config exists) |
 | Application tests | none exist |
-| Importer tests (`tools/upstream-import/test`, run as `node --test` on the four test files) | 30 of 30 passed |
+| Importer tests (`tools/upstream-import/test`, run as `node --test` on the four test files) | 31 of 31 passed |
 | Secret scan (regex, tree + history) | no secrets found; limitation: no gitleaks/trufflehog installed |
 | SAST (semgrep etc.) | not run (tools not installed) |
 | Browser review | headless Chromium at desktop and 390 px; screenshots in `evidence/ui/`; no real-device, screen-reader or Lighthouse field testing |
@@ -50,7 +50,7 @@ Collected on 2026-10-16 (full collection, 0 API errors; `submission-dataset-anal
 
 ## 8. Deduplication and eligibility results
 
-From 6,052 identity-bearing submission records: **4,868 candidate projects**; 1,184 duplicate records merged (19.6%); 197 renames/transfers merged; 228 projects ambiguous. Of the 4,868 projects: **3,502 eligible (71.9%)**, **1,353 needs review (27.8%)**, **13 ineligible (0.3%)**; 3,476 are import-ready (eligible with no security flag and no blocking ambiguity). Repositories: 3,530 of 3,966 resolved (89.0%), 436 not found or private, 48 archived. 36 projects carry a security flag (22 pipe-to-shell installs, 7 hidden-Unicode, 5 loopback/restricted endpoints, 2 possible official-scope impersonations); no prompt-injection signature matched. **Caveats that matter:** eligibility is public-evidence triage, **not verification or a security review**; 1,930 of the 3,502 eligible (55.1%) rest on cheap evidence only (registry listing and/or manifest file); the ineligible share is small by design because only positive evidence of out-of-scope rejects a project; 7 removal requests exist and 6 cannot be mapped to a project, which blocks affected entries until a human decides. A 71-project hand check found no clear false positives among 40 eligible samples, and about 3/5 of sampled `needs_review` N1 projects look like genuine servers; this is a sanity check, not a precision measurement.
+From 6,052 identity-bearing submission records: **4,868 candidate projects**; 1,184 duplicate records merged (19.6%); 197 renames/transfers merged; 228 projects ambiguous. Of the 4,868 projects: **3,502 eligible (71.9%)**, **1,353 needs review (27.8%)**, **13 ineligible (0.3%)**; 3,467 are import-ready (eligible, no security flag, and not held for a pending or possible removal request; 26 eligible projects are security-flagged and 9 more are held for removal review). Repositories: 3,530 of 3,966 resolved (89.0%), 436 not found or private, 48 archived. 36 projects carry a security flag (22 pipe-to-shell installs, 7 hidden-Unicode, 5 loopback/restricted endpoints, 2 possible official-scope impersonations); no prompt-injection signature matched. **Caveats that matter:** eligibility is public-evidence triage, **not verification or a security review**; 1,930 of the 3,502 eligible (55.1%) rest on cheap evidence only (registry listing and/or manifest file); the ineligible share is small by design because only positive evidence of out-of-scope rejects a project; 7 removal requests exist and 6 cannot be mapped to a project, which blocks affected entries until a human decides. A 71-project hand check found no clear false positives among 40 eligible samples, and about 3/5 of sampled `needs_review` N1 projects look like genuine servers; this is a sanity check, not a precision measurement.
 
 ## 9. Differentiation
 
@@ -67,7 +67,7 @@ Then the registry data model and review-queue import (R06–R07), authenticated 
 
 ## 11. Findings table
 
-Confidence: **C** confirmed, **S** suspected. Severity is for the registry's intended public deployment.
+Confidence: **C** confirmed, **S** suspected. Severity is for the registry's intended public deployment. F-, D-, U- severities are copied from the detailed reports; `code-quality-audit.md` rates Q- items by impact only, so the Q- severities here are assigned in this summary.
 
 | ID | Severity | Conf. | Finding | Evidence | Files | Remediation |
 |---|---|---|---|---|---|---|

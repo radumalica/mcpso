@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { classifyProject, registryMatches, buildRegistryIndex } from "../classify.mjs";
+import { classifyProject, registryMatches, buildRegistryIndex, applyRemovalHold } from "../classify.mjs";
 
 const NOREG = { viaPackageOrEndpoint: [], viaRepoOwnerNamespace: [], repoClaimOnly: [] };
 const ctx = { collectedAt: "2026-10-16T00:00:00Z", bulkAuthors: new Set() };
@@ -86,4 +86,13 @@ test("ineligible only for infrastructure, empty/template, or no MCP signal at al
 test("security concern is independent of category", () => {
   const r = cls(proj("github.com/o/r", { top: { security_flags: [{ code: "pipe_to_shell_install", detail: "curl | sh" }] } }), repo({ sdk_evidence: [{ scope: "root", signal: "server.json:registry-manifest" }] }));
   assert.equal(r.category, "eligible"); assert.equal(r.security_concern, true); assert.equal(r.import_ready, false);
+});
+
+test("projects with a pending removal request are never import-ready, and inputs are not mutated", () => {
+  const rows = [{ project_id: "a", import_ready: true, category: "eligible", quality_indicators: [] }, { project_id: "b", import_ready: true, category: "eligible", quality_indicators: [] }];
+  const out = applyRemovalHold(rows, new Set(["a"]));
+  assert.equal(out[0].import_ready, false); assert.equal(out[0].category, "eligible");
+  assert.deepEqual(out[0].quality_indicators, ["removal_request_pending"]);
+  assert.equal(out[1].import_ready, true);
+  assert.equal(rows[0].import_ready, true); assert.deepEqual(rows[0].quality_indicators, []);
 });

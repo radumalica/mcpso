@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T11:02:27.920Z",
+  "generated_at": "2026-10-16T11:08:54.787Z",
   "collected_at": "2026-10-16T09:58:33.644Z",
   "official_registry": {
     "entries_loaded": 44497,
@@ -56,7 +56,9 @@
     "projects_with_multiple_sources": 661,
     "security_concern_projects": 36,
     "eligible_but_security_flagged": 26,
-    "import_ready": 3476,
+    "import_ready": 3467,
+    "held_for_removal_review": 19,
+    "eligible_held_for_removal_review": 9,
     "reason_rule_counts": {
       "E1": 2858,
       "E2": 3502,

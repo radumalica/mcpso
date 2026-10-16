@@ -164,6 +164,9 @@ export function classifyProject(p, repoInfo, reg, { collectedAt, bulkAuthors }) 
   };
 }
 
+export const applyRemovalHold = (rows, holdIds) =>
+  rows.map((r) => (holdIds.has(r.project_id) ? { ...r, import_ready: false, quality_indicators: [...r.quality_indicators, "removal_request_pending"] } : r));
+
 const pct = (n, d) => (d ? `${((100 * n) / d).toFixed(1)}%` : "n/a");
 
 function latestRegistryRun(out) {
@@ -209,7 +212,7 @@ export function main(argv = process.argv.slice(2)) {
     return { p, r: classifyProject(p, info, registryMatches(p, regIdx), { collectedAt, bulkAuthors }) };
   });
 
-  const rows = results.map(({ p, r }) => ({
+  const rowsBase = results.map(({ p, r }) => ({
     ...r,
     name: p.merged_claims.name, description: p.merged_claims.description, repo_url: p.merged_claims.repo_url, homepage: p.merged_claims.homepage,
     endpoints: p.merged_claims.endpoints, package_ids: p.merged_claims.package_ids, install_command: p.merged_claims.install_command,
@@ -217,6 +220,40 @@ export function main(argv = process.argv.slice(2)) {
     source_count: p.source_count, source_issue_numbers: p.source_issue_numbers, authors: p.authors, first_seen: p.first_seen, last_seen: p.last_seen,
     ambiguity_flags: p.ambiguity_flags.map((f) => f.code), merge_reasons: p.merge_reasons.map((m) => m.rule),
   }));
+  const removals = records.filter((r) => r.intent === "removal_request").map((r) => ({
+    record_id: r.record_id, url: r.source.url, author: r.source.author_login, state: r.source.state,
+    repo_keys: r.claims.repo_candidates.map((c) => c.key), mcp_so_slugs: r.claims.mcp_so_slugs,
+  }));
+  writeJsonlAtomic(path.join(dir, "removal-requests.jsonl"), removals);
+  // Candidate mapping to projects (NEVER auto-suppressed: manual confirmation required)
+  const cand = [];
+  for (const rm of removals) {
+    for (const p of rowsBase) {
+      const basis = [];
+      if (rm.repo_keys.some((k) => repoKeyOnly(k) === repoKeyOnly(p.canonical_key))) basis.push("repo-url");
+      const nameSlug = slugify(p.name), repoSlug = slugify(p.canonical_key.split("/")[2]);
+      if (rm.mcp_so_slugs.some((s) => slugify(s) && (slugify(s) === nameSlug || slugify(s) === repoSlug))) basis.push("mcp.so-slug=name/repo");
+      if (p.authors.some((au) => au === rm.author)) basis.push("same-author");
+      if (basis.length && (basis.includes("repo-url") || basis.includes("mcp.so-slug=name/repo"))) cand.push({ removal_record: rm.record_id, removal_url: rm.url, requester: rm.author, project_id: p.project_id, canonical_key: p.canonical_key, name: p.name, match_basis: basis.join("+") });
+      else if (basis.length === 1 && basis[0] === "same-author") cand.push({ removal_record: rm.record_id, removal_url: rm.url, requester: rm.author, project_id: p.project_id, canonical_key: p.canonical_key, name: p.name, match_basis: "same-author(weak)" });
+    }
+  }
+  writeCsv(path.join(dir, "removal-candidates.csv"), ["removal_record", "removal_url", "requester", "project_id", "canonical_key", "name", "match_basis"], cand);
+  const removalsMapped = new Set(cand.filter((c) => !c.match_basis.includes("weak")).map((c) => c.removal_record));
+
+  // Removal-like wording in comments outside the submission thread (authors may ask on their own issue)
+  const rawComments = fs.existsSync(path.join(out, "raw", "issue_comments.jsonl")) ? readJsonl(path.join(out, "raw", "issue_comments.jsonl")) : [];
+  const REMOVE_RE = /\b(?:please\s+)?(?:remove|delete|take\s*down|unlist|de-?list|withdraw)\b[^.\n]{0,60}\b(?:listing|server|entry|project|mcp\.so)\b|\bwithdraw(?:n|ing)?\b/i;
+  const removalLike = rawComments.filter((c) => c.source_number !== 1 && REMOVE_RE.test(c.body || "")).map((c) => ({
+    comment_url: c.source_url, parent_issue: c.source_number, author: c.author_login,
+    project_ids: projects.filter((p) => p.source_issue_numbers.includes(c.source_number)).map((p) => p.project_id),
+  }));
+  writeCsv(path.join(dir, "removal-like-comments.csv"), ["comment_url", "parent_issue", "author", "project_ids"], removalLike);
+
+  // Hold: any project a removal request may refer to (even weakly) or whose own issue carries removal-like wording
+  // is NOT import-ready until a human decides. Never auto-suppressed, never auto-published.
+  const removalHold = new Set([...cand.map((c) => c.project_id), ...removalLike.flatMap((c) => c.project_ids)]);
+  const rows = applyRemovalHold(rowsBase, removalHold);
   writeJsonlAtomic(path.join(dir, "projects-classified.jsonl"), rows);
   const csvCols = ["project_id", "category", "import_ready", "security_concern", "name", "canonical_key", "repo_url", "source_count", "first_seen", "hosting", "package_ids", "endpoints", "evidence_strong", "evidence_weak", "official_registry_matches", "quality_indicators", "security_flags", "ambiguity_flags"];
   writeCsv(path.join(dir, "projects-classified.csv"), csvCols, rows);
@@ -236,36 +273,6 @@ export function main(argv = process.argv.slice(2)) {
   for (const p of projects) p.source_record_ids.slice(1).forEach((id) => dups.push({ record_id: id, duplicate_of_project: p.project_id, canonical_key: p.canonical_key, primary_record: p.source_record_ids[0] }));
   writeCsv(path.join(dir, "duplicate-source-records.csv"), ["record_id", "duplicate_of_project", "canonical_key", "primary_record"], dups);
 
-  const removals = records.filter((r) => r.intent === "removal_request").map((r) => ({
-    record_id: r.record_id, url: r.source.url, author: r.source.author_login, state: r.source.state,
-    repo_keys: r.claims.repo_candidates.map((c) => c.key), mcp_so_slugs: r.claims.mcp_so_slugs,
-  }));
-  writeJsonlAtomic(path.join(dir, "removal-requests.jsonl"), removals);
-  // Candidate mapping to projects (NEVER auto-suppressed: manual confirmation required)
-  const cand = [];
-  for (const rm of removals) {
-    for (const p of rows) {
-      const basis = [];
-      if (rm.repo_keys.some((k) => repoKeyOnly(k) === repoKeyOnly(p.canonical_key))) basis.push("repo-url");
-      const nameSlug = slugify(p.name), repoSlug = slugify(p.canonical_key.split("/")[2]);
-      if (rm.mcp_so_slugs.some((s) => slugify(s) && (slugify(s) === nameSlug || slugify(s) === repoSlug))) basis.push("mcp.so-slug=name/repo");
-      if (p.authors.some((au) => au === rm.author)) basis.push("same-author");
-      if (basis.length && (basis.includes("repo-url") || basis.includes("mcp.so-slug=name/repo"))) cand.push({ removal_record: rm.record_id, removal_url: rm.url, requester: rm.author, project_id: p.project_id, canonical_key: p.canonical_key, name: p.name, match_basis: basis.join("+") });
-      else if (basis.length === 1 && basis[0] === "same-author") cand.push({ removal_record: rm.record_id, removal_url: rm.url, requester: rm.author, project_id: p.project_id, canonical_key: p.canonical_key, name: p.name, match_basis: "same-author(weak)" });
-    }
-  }
-  writeCsv(path.join(dir, "removal-candidates.csv"), ["removal_record", "removal_url", "requester", "project_id", "canonical_key", "name", "match_basis"], cand);
-  const removalsMapped = new Set(cand.filter((c) => !c.match_basis.includes("weak")).map((c) => c.removal_record));
-
-  // Removal-like wording in comments outside the submission thread (authors may ask on their own issue)
-  const rawComments = fs.existsSync(path.join(out, "raw", "issue_comments.jsonl")) ? readJsonl(path.join(out, "raw", "issue_comments.jsonl")) : [];
-  const REMOVE_RE = /\b(?:please\s+)?(?:remove|delete|take\s*down|unlist|de-?list|withdraw)\b[^.\n]{0,60}\b(?:listing|server|entry|project|mcp\.so)\b|\bwithdraw(?:n|ing)?\b/i;
-  const removalLike = rawComments.filter((c) => c.source_number !== 1 && REMOVE_RE.test(c.body || "")).map((c) => ({
-    comment_url: c.source_url, parent_issue: c.source_number, author: c.author_login,
-    project_ids: projects.filter((p) => p.source_issue_numbers.includes(c.source_number)).map((p) => p.project_id),
-    excerpt: (c.body || "").replace(/\s+/g, " ").slice(0, 140),
-  }));
-  writeCsv(path.join(dir, "removal-like-comments.csv"), ["comment_url", "parent_issue", "author", "project_ids", "excerpt"], removalLike);
 
   writeJsonlAtomic(path.join(dir, "link-corrections.jsonl"), records.filter((r) => r.intent === "link_correction").map((r) => ({ record_id: r.record_id, url: r.source.url, author: r.source.author_login, repo_keys: r.claims.repo_candidates.map((c) => c.key), mcp_so_slugs: r.claims.mcp_so_slugs })));
   const nonSub = records.filter((r) => !projOf.has(r.record_id));
@@ -313,6 +320,8 @@ export function main(argv = process.argv.slice(2)) {
       security_concern_projects: cnt((r) => r.security_concern),
       eligible_but_security_flagged: eligible.filter((r) => r.security_concern).length,
       import_ready: cnt((r) => r.import_ready),
+      held_for_removal_review: cnt((r) => r.quality_indicators.includes("removal_request_pending")),
+      eligible_held_for_removal_review: eligible.filter((r) => r.quality_indicators.includes("removal_request_pending")).length,
       reason_rule_counts: rows.reduce((m, r) => { for (const x of r.reasons) m[x.rule] = (m[x.rule] || 0) + 1; return m; }, {}),
       eligible_by_evidence_kind: eligible.reduce((m, r) => { const k = r.evidence_kinds.join("+") || "none"; m[k] = (m[k] || 0) + 1; return m; }, {}),
       eligible_with_only_cheap_evidence: eligible.filter((r) => !r.evidence_kinds.includes("sdk-dependency")).length,

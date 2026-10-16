@@ -1,22 +1,22 @@
-comment_url,parent_issue,author,project_ids,excerpt
-https://github.com/chatmcp/mcpso/issues/697#issuecomment-4011403173,697,bartonguestier1725-collab,,Withdrawing this submission. Apologies for the noise.
-https://github.com/chatmcp/mcpso/issues/834#issuecomment-4180850847,834,MBrassey,p_82eec153a611,"**Update:** Now at 26 MCP tools (was 18). Added one-shot signing (stake/unstake/withdraw in one call), webhooks, address detection, withdraw"
-https://github.com/chatmcp/mcpso/issues/2568#issuecomment-4581330704,2568,agniquantintel,p_8aab5dcada5d,Withdrawing this submission for now (going private-first). Please don't list. Thanks!
-https://github.com/chatmcp/mcpso/pull/2656#issuecomment-4697505419,2656,twzrd-sol,,Withdrawing this PR — it was off-topic for this list and was opened by an over-broad automated submission process on our side. Apologies for
-https://github.com/chatmcp/mcpso/issues/2826#issuecomment-4726723629,2826,AndreuSerraSastre,p_a138387a824f,Closing this issue because the FiveCoins AI profit experiment is being ended and withdrawn. The server should no longer be listed.
-https://github.com/chatmcp/mcpso/issues/2567#issuecomment-4834440731,2567,shirangi,p_7d69fd258c46,One more thing on this — there appear to be two duplicate listings of the same MCP server under different author slugs: - https://mcp.so/ser
-https://github.com/chatmcp/mcpso/issues/2854#issuecomment-4841009136,2854,shirangi,,"Gentle bump — this has been open ~2 weeks with no response, and the listing still serves the stale/withdrawn tool surface. As the package ma"
-https://github.com/chatmcp/mcpso/issues/3198#issuecomment-5064075100,3198,nagarjunr,p_b076dfff159a,Withdrawing this submission -- the source repo has been made private and the package removed from PyPI. Project has pivoted to a different f
-https://github.com/chatmcp/mcpso/issues/3199#issuecomment-5064075375,3199,nagarjunr,p_3db4ceb87538,Withdrawing this submission -- the source repo has been made private and the package removed from PyPI. Project has pivoted to a different f
-https://github.com/chatmcp/mcpso/issues/3200#issuecomment-5064075635,3200,nagarjunr,p_ffea756578ec,Withdrawing this submission -- the source repo has been made private and the package removed from PyPI. Project has pivoted to a different f
-https://github.com/chatmcp/mcpso/issues/3201#issuecomment-5064075910,3201,nagarjunr,p_0587c231725e,Withdrawing this submission -- the source repo has been made private and the package removed from PyPI. Project has pivoted to a different f
-https://github.com/chatmcp/mcpso/issues/3202#issuecomment-5064076253,3202,nagarjunr,p_5d281417f83c,Withdrawing this submission -- the source repo has been made private and the package removed from PyPI. Project has pivoted to a different f
-https://github.com/chatmcp/mcpso/issues/3204#issuecomment-5064076473,3204,nagarjunr,p_c8892538a171,Withdrawing this submission -- the source repo has been made private and the package removed from PyPI. Project has pivoted to a different f
-https://github.com/chatmcp/mcpso/issues/3395#issuecomment-5151737545,3395,ztemerbekov,p_d741becdc061,"Withdrawing this submission for now: the source repository is currently private, so the project cannot yet be independently reviewed or inst"
-https://github.com/chatmcp/mcpso/issues/2187#issuecomment-5166148789,2187,Darko893,,I am sunsetting Haunt and withdrawing this submission. Thank you for the time and consideration. 
-https://github.com/chatmcp/mcpso/issues/3688#issuecomment-5378329896,3688,rrenamed,p_59db8a45354d,"Withdrawing this for now, no action needed. Our MCP tool surface is changing this week, so the tool list above would be incomplete on arriva"
-https://github.com/chatmcp/mcpso/issues/3827#issuecomment-5471631944,3827,seblosiv,p_4cf381763daf,"Following up, since a search for ""neurobird"" on mcp.so currently returns no servers. The submission details are unchanged and everything is "
-https://github.com/chatmcp/mcpso/issues/3251#issuecomment-5651408281,3251,GLouv,p_0ae19ce7aba5,"Following up on this submission, and flagging one correction we owe you. The listing at mcp.so/servers/browser-mcp-agent360dk is out of date"
-https://github.com/chatmcp/mcpso/issues/5024#issuecomment-6079822954,5024,judmackrill,p_6ca62b962ace,Withdrawing this submission for now — we'll resubmit once our public endpoint details are finalized. Thanks!
-https://github.com/chatmcp/mcpso/issues/5034#issuecomment-6084527223,5034,jhsenjaliya,p_6bb726818a5f,Withdrawing this submission to correct the publishing account. LocalCloud will be resubmitted by cloud-orbitor with the same project and doc
-https://github.com/chatmcp/mcpso/issues/3134#issuecomment-6208758553,3134,Echolonius,p_03beb48e0a99,Withdrawing this submission. Thanks!
+comment_url,parent_issue,author,project_ids
+https://github.com/chatmcp/mcpso/issues/697#issuecomment-4011403173,697,bartonguestier1725-collab,
+https://github.com/chatmcp/mcpso/issues/834#issuecomment-4180850847,834,MBrassey,p_82eec153a611
+https://github.com/chatmcp/mcpso/issues/2568#issuecomment-4581330704,2568,agniquantintel,p_8aab5dcada5d
+https://github.com/chatmcp/mcpso/pull/2656#issuecomment-4697505419,2656,twzrd-sol,
+https://github.com/chatmcp/mcpso/issues/2826#issuecomment-4726723629,2826,AndreuSerraSastre,p_a138387a824f
+https://github.com/chatmcp/mcpso/issues/2567#issuecomment-4834440731,2567,shirangi,p_7d69fd258c46
+https://github.com/chatmcp/mcpso/issues/2854#issuecomment-4841009136,2854,shirangi,
+https://github.com/chatmcp/mcpso/issues/3198#issuecomment-5064075100,3198,nagarjunr,p_b076dfff159a
+https://github.com/chatmcp/mcpso/issues/3199#issuecomment-5064075375,3199,nagarjunr,p_3db4ceb87538
+https://github.com/chatmcp/mcpso/issues/3200#issuecomment-5064075635,3200,nagarjunr,p_ffea756578ec
+https://github.com/chatmcp/mcpso/issues/3201#issuecomment-5064075910,3201,nagarjunr,p_0587c231725e
+https://github.com/chatmcp/mcpso/issues/3202#issuecomment-5064076253,3202,nagarjunr,p_5d281417f83c
+https://github.com/chatmcp/mcpso/issues/3204#issuecomment-5064076473,3204,nagarjunr,p_c8892538a171
+https://github.com/chatmcp/mcpso/issues/3395#issuecomment-5151737545,3395,ztemerbekov,p_d741becdc061
+https://github.com/chatmcp/mcpso/issues/2187#issuecomment-5166148789,2187,Darko893,
+https://github.com/chatmcp/mcpso/issues/3688#issuecomment-5378329896,3688,rrenamed,p_59db8a45354d
+https://github.com/chatmcp/mcpso/issues/3827#issuecomment-5471631944,3827,seblosiv,p_4cf381763daf
+https://github.com/chatmcp/mcpso/issues/3251#issuecomment-5651408281,3251,GLouv,p_0ae19ce7aba5
+https://github.com/chatmcp/mcpso/issues/5024#issuecomment-6079822954,5024,judmackrill,p_6ca62b962ace
+https://github.com/chatmcp/mcpso/issues/5034#issuecomment-6084527223,5034,jhsenjaliya,p_6bb726818a5f
+https://github.com/chatmcp/mcpso/issues/3134#issuecomment-6208758553,3134,Echolonius,p_03beb48e0a99
