@@ -17,6 +17,8 @@ export interface ListingFacts {
   hosting: string | null;
   transports: string[];
   licence: string | null;
+  repoLicence: string | null;
+  repoPushedAt: string | null;
   repoName: string | null;
   archived: boolean;
   fork: boolean;
@@ -75,6 +77,8 @@ function parseFacts(raw: unknown): ListingFacts {
     hosting: str(f.hosting, 100),
     transports: strList(f.transports, 10),
     licence: str(f.license_claimed, 100),
+    repoLicence: str(repo.license, 100),
+    repoPushedAt: str(repo.pushed_at, 40),
     repoName: str(repo.name_with_owner, 200),
     archived: repo.archived === true,
     fork: repo.fork === true,

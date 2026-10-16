@@ -69,7 +69,9 @@ export default async function ListingPage({ params }: Props) {
             <a className={external} rel={rel} target="_blank" href={f.homepage}>{hostOf(f.homepage)}</a>
           </Row>
         ) : null}
-        {f.licence ? <Row label="Licence (as declared)">{f.licence}</Row> : null}
+        {f.repoLicence ? <Row label="Licence (repository metadata)">{f.repoLicence}</Row> : null}
+        {f.licence && f.licence !== f.repoLicence ? <Row label="Licence (as declared)">{f.licence}</Row> : null}
+        {f.repoPushedAt ? <Row label="Repository last updated">{formatDate(f.repoPushedAt)}</Row> : null}
         {f.transports.length ? <Row label="Transports (as declared)">{f.transports.join(", ")}</Row> : null}
         {f.hosting ? <Row label="Hosting (as declared)">{f.hosting}</Row> : null}
         {f.packageIds.length ? <Row label="Packages (as declared)">{f.packageIds.join(", ")}</Row> : null}

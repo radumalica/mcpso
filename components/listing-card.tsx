@@ -16,7 +16,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
         <span>
           Evidence: {EVIDENCE_LABEL[listing.evidenceLevel]}, {formatDate(listing.evidenceCheckedAt)}
         </span>
-        {facts.licence ? <span>Licence (as declared): {facts.licence}</span> : null}
+        {facts.repoLicence ? <span>Licence (repository metadata): {facts.repoLicence}</span> : facts.licence ? <span>Licence (as declared): {facts.licence}</span> : null}
         {facts.archived ? <span>Repository archived</span> : null}
       </p>
     </li>

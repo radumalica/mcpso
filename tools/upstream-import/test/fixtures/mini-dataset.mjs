@@ -45,19 +45,20 @@ export function miniDataset() {
     project("p_c", KEY_C, "endpoint", ["comment:301"], { merge_reasons: ["R4 endpoint"] }),
   ];
   const classified = [
-    { project_id: "p_a", canonical_key: KEY_A, category: "eligible", reasons: [{ rule: "E1", detail: "synthetic" }], security_concern: false, security_flags: [],
+    { project_id: "p_a", last_seen: "2026-09-01T00:00:00Z", repo: { name_with_owner: "Synthetic/alpha", archived: false, fork: false, license: "MIT", pushed_at: "2026-01-02T00:00:00Z" }, canonical_key: KEY_A, category: "eligible", reasons: [{ rule: "E1", detail: "synthetic" }], security_concern: false, security_flags: [],
       evidence_strong: ["sdk-dependency"], evidence_weak: [], evidence_kinds: ["sdk-dependency"], official_registry_matches: [], official_registry_unverified_repo_claims: [],
       quality_indicators: ["removal_request_pending"], importable: true, name: "alpha", repo_url: "https://example.test/alpha", authors: ["user1"], endpoints: [], package_ids: [], transports: [] },
-    { project_id: "p_b", canonical_key: KEY_B, category: "needs_review", reasons: [{ rule: "N1", detail: "synthetic" }], security_concern: true, security_flags: ["pipe_to_shell_install"],
+    { project_id: "p_b", last_seen: "2026-09-02T00:00:00Z", repo_url: "https://example.test/beta", repo: { name_with_owner: "Synthetic/beta", archived: true, fork: false, license: null, pushed_at: "2025-01-02T00:00:00Z" }, canonical_key: KEY_B, category: "needs_review", reasons: [{ rule: "N1", detail: "synthetic" }], security_concern: true, security_flags: ["pipe_to_shell_install"],
       evidence_strong: [], evidence_weak: ["readme-mention"], evidence_kinds: [], official_registry_matches: [], official_registry_unverified_repo_claims: [],
       quality_indicators: [], importable: true, name: "beta", authors: ["user3"], endpoints: [], package_ids: [], transports: [] },
-    { project_id: "p_c", canonical_key: KEY_C, category: "ineligible", reasons: [{ rule: "I1", detail: "synthetic" }], security_concern: false, security_flags: [],
+    { project_id: "p_c", last_seen: "2026-09-03T00:00:00Z", canonical_key: KEY_C, category: "ineligible", reasons: [{ rule: "I1", detail: "synthetic" }], security_concern: false, security_flags: [],
       evidence_strong: [], evidence_weak: [], evidence_kinds: [], official_registry_matches: [], official_registry_unverified_repo_claims: [],
       quality_indicators: [], ambiguity_flags: ["shared_endpoint_across_repos"], importable: true, name: "gamma", authors: [], endpoints: ["https://example.test/mcp"], package_ids: [], transports: ["http"] },
   ];
   const removals = [{ record_id: "issue:106", url: "https://example.test/issues/6", state: "open", repo_keys: [KEY_A], mcp_so_slugs: [] }];
   const linkCorrections = [{ record_id: "issue:108", url: "https://example.test/issues/8", repo_keys: [KEY_B, KEY_A], mcp_so_slugs: [] }]; // two keys: no single target
-  return { raw, normalized, projects, classified, removals, linkCorrections, unresolved: [{ record_id: "issue:107", url: "https://example.test/issues/7", intent: "submission" }], rec };
+  const enrichment = [{ requested_key: KEY_A, resolved: true, checked_at: "2026-10-01T00:00:00.000Z", license_spdx: "MIT", pushed_at: "2026-01-02T00:00:00Z" }];
+  return { raw, normalized, projects, classified, removals, linkCorrections, enrichment, unresolved: [{ record_id: "issue:107", url: "https://example.test/issues/7", intent: "submission" }], rec };
 }
 
 export function writeMiniDataset(dir, ds = miniDataset()) {
@@ -75,6 +76,7 @@ export function writeMiniDataset(dir, ds = miniDataset()) {
   w("classified/projects-classified.jsonl", ds.classified);
   w("classified/removal-requests.jsonl", ds.removals);
   w("classified/link-corrections.jsonl", ds.linkCorrections);
+  w("enrichment/repos.jsonl", ds.enrichment ?? []);
   return dir;
 }
 

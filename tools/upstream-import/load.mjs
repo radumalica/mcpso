@@ -43,7 +43,12 @@ const chunks = (arr, n = CHUNK) => Array.from({ length: Math.ceil(arr.length / n
 const recordId = (kind, sourceId) => `${PREFIX[kind]}:${sourceId}`;
 
 /** Tier 1/2 facts only: no submitter handles, no free-text descriptions. */
-export function candidateFacts(p) {
+export function repoKeyOf(canonicalKey) {
+  return canonicalKey.startsWith("github.com/") ? canonicalKey.split("/").slice(0, 3).join("/") : null;
+}
+
+/** `enriched` is the enrichment record for the candidate's repository (retrieval date, pushed date, licence metadata), if any. */
+export function candidateFacts(p, enriched = null) {
   const repo = p.repo ?? null;
   return {
     repo_url: p.repo_url ?? null,
@@ -54,7 +59,13 @@ export function candidateFacts(p) {
     hosting: p.hosting ?? null,
     transports: p.transports ?? [],
     license_claimed: p.license_claimed ?? null,
-    repo: repo && { name_with_owner: repo.name_with_owner ?? null, archived: !!repo.archived, fork: !!repo.fork },
+    repo: repo && {
+      name_with_owner: repo.name_with_owner ?? null, archived: !!repo.archived, fork: !!repo.fork,
+      license: repo.license ?? enriched?.license_spdx ?? null,
+      pushed_at: repo.pushed_at ?? enriched?.pushed_at ?? null,
+      checked_at: enriched?.checked_at ?? null, // when this directory's pipeline read the repository facts
+    },
+    declared_at: p.last_seen ?? null, // date of the latest public request or declaration (used for declared-only entries)
     official_registry_matches: p.official_registry_matches ?? [],
   };
 }
@@ -87,6 +98,7 @@ export function readDataset(dir) {
   return {
     raw,
     projects: rd("dedup", "projects.jsonl"),
+    enrichment: rd("enrichment", "repos.jsonl"), // optional (git-ignored); without it facts carry no retrieval date
     classified: rd("classified", "projects-classified.jsonl"),
     normalized: rd("normalized", "normalized.jsonl"),
     removals: rd("classified", "removal-requests.jsonl"),
@@ -131,9 +143,10 @@ async function loadRawRecords(db, ds, repo, batchId) {
 
 async function loadCandidates(db, ds, batchId) {
   const identity = new Map(ds.projects.map((p) => [p.project_id, p.identity_type]));
+  const enriched = new Map((ds.enrichment ?? []).filter((e) => e.resolved).map((e) => [e.requested_key, e]));
   for (const p of ds.classified) {
     if (!identity.has(p.project_id)) throw new Error(`classified project ${p.project_id} has no dedup entry`);
-    await db.query("select import_upsert_candidate($1, $2, $3::jsonb, $4::uuid)", [p.canonical_key, identity.get(p.project_id), JSON.stringify(candidateFacts(p)), batchId]);
+    await db.query("select import_upsert_candidate($1, $2, $3::jsonb, $4::uuid)", [p.canonical_key, identity.get(p.project_id), JSON.stringify(candidateFacts(p, enriched.get(repoKeyOf(p.canonical_key)))), batchId]);
   }
   const rows = ds.classified.map((p) => ({
     key: p.canonical_key, status: p.category, name: p.name ?? null, security_flags: p.security_flags ?? [],

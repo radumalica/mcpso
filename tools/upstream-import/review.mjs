@@ -7,7 +7,9 @@
 // for any future UI. It is a library over a `db.query` handle (a CLI needs the connection setup that comes with the hosting decision, D2).
 // This tool has no bulk path and cannot publish: `publish` is not an accepted action (C6: nothing is published
 // until the Phase D launch gates pass).
+import crypto from "node:crypto";
 import { writeCsv } from "./lib/store.mjs";
+import { buildDraft, slugFor, slugWithSuffix } from "./lib/drafts.mjs";
 
 export const ACTIONS = ["approve", "reject", "reopen", "mark_unavailable", "unpublish", "clear_security_flag", "clear_removal_hold", "suppress", "resolve_duplicate_group"];
 export const QUEUE_COLUMNS = ["priority", "queue", "canonical_key", "status", "category", "lane", "evidence_level", "ambiguity_flags", "security_flags", "removal_hold", "rules"];
@@ -118,6 +120,64 @@ async function asReviewer(db, reviewerId, sql, params) {
     await db.query("rollback").catch(() => {});
     throw e;
   }
+}
+
+// ---- Listing drafts (migration 0006, checklist C5)
+
+/**
+ * Build template drafts for candidates and save them through `save_listing_draft` as the reviewer. Candidates are picked by canonical
+ * key; without keys, up to `limit` eligible candidates that have no draft yet. Returns { saved, skipped: [{key, reason}] }.
+ */
+export async function prepareDrafts(db, reviewerId, { keys = null, limit = 200 } = {}) {
+  const rows = (keys
+    ? await db.query(`select c.id, c.canonical_key, c.identity_type, c.facts, (ev.evidence->>'evidence_level')::int as level
+        from candidate c join eligibility_evaluation ev on ev.candidate_id = c.id and ev.is_current where c.canonical_key = any($1::text[])`, [keys])
+    : await db.query(`select c.id, c.canonical_key, c.identity_type, c.facts, (ev.evidence->>'evidence_level')::int as level
+        from candidate c join eligibility_evaluation ev on ev.candidate_id = c.id and ev.is_current
+        where c.status = 'eligible' and not exists (select 1 from listing_draft d where d.candidate_id = c.id) order by c.canonical_key limit $1`, [limit])).rows;
+  const saved = [], skipped = [];
+  if (!reviewerId) throw new Error("reviewerId is required");
+  await db.query("begin");
+  try {
+    await db.query("select set_config('request.jwt.claim.sub', $1, true)", [reviewerId]);
+    for (const r of rows) {
+      const draft = buildDraft(r, r.level);
+      if (draft.skipped) { skipped.push({ key: r.canonical_key, reason: draft.skipped }); continue; }
+      await db.query("select save_listing_draft($1::uuid, $2::jsonb)", [r.id, JSON.stringify(draft)]);
+      saved.push(r.canonical_key);
+    }
+    await db.query("commit");
+  } catch (e) {
+    await db.query("rollback").catch(() => {});
+    throw e;
+  }
+  return { saved, skipped };
+}
+
+/** Approve summary texts after the reviewer has read a sample. At most 200 per call; reviewer-written summaries one at a time. */
+export async function approveSummaries(db, reviewerId, keys, reason) {
+  const ids = (await db.query("select id from candidate where canonical_key = any($1::text[])", [keys])).rows.map((r) => r.id);
+  if (ids.length !== keys.length) throw new Error("unknown candidate in the list");
+  return (await asReviewer(db, reviewerId, "select approve_listing_summaries($1::uuid[], $2) as n", [ids, reason])).n;
+}
+
+/**
+ * Publish an approved candidate. Refuses unless the caller states that the Phase D launch gates (publication-gate-checklist.md,
+ * LG1-LG10) have passed. A slug collision falls back to a suffixed slug.
+ */
+export async function publishApproved(db, reviewerId, key, { launchGatesPassed = false } = {}) {
+  if (launchGatesPassed !== true) throw new Error("nothing is published before the launch gates LG1-LG10 have passed");
+  const c = (await db.query("select id, facts, canonical_key from candidate where canonical_key = $1", [key])).rows[0];
+  if (!c) throw new Error("unknown candidate");
+  const name = (await db.query("select title from listing_draft where candidate_id = $1", [c.id])).rows[0]?.title ?? key;
+  for (const slug of [slugFor(name), slugWithSuffix(name, crypto.createHash("sha256").update(key).digest("hex"))]) {
+    try {
+      return (await asReviewer(db, reviewerId, "select publish_listing($1::uuid, $2) as id", [c.id, slug])).id;
+    } catch (e) {
+      if (!/duplicate key|unique/i.test(String(e.message))) throw e;
+    }
+  }
+  throw new Error("could not find a free slug");
 }
 
 // Takedown workflow (migration 0004). A request arrives through the published contact address and is recorded by a reviewer.
