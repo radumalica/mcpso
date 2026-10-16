@@ -1,0 +1,116 @@
+{
+  "generated_at": "2026-10-16T11:29:44.803Z",
+  "source": {
+    "repository": "chatmcp/mcpso (renamed chatmcp/mcp-directory)",
+    "collected_at": "2026-10-16T09:58:33.644Z"
+  },
+  "stages": {
+    "1_retrieved_raw": {
+      "issues": 4869,
+      "pull_requests": 43,
+      "comments_total": 2412,
+      "submission_thread_comments": 1450,
+      "api_errors": 0,
+      "retry_events_logged": 0,
+      "rate_limit_waits_logged": 0,
+      "source_number_gaps_unretrievable": 595
+    },
+    "2_normalized_records": {
+      "total": 6362,
+      "by_intent": {
+        "no_identity": 110,
+        "submission": 6098,
+        "code_contribution": 43,
+        "submission_unclear": 51,
+        "question_or_feedback": 48,
+        "removal_request": 7,
+        "link_correction": 5
+      }
+    },
+    "3_relevant_addition_requests": {
+      "submission_type_records": 6149,
+      "with_identity": 6052,
+      "without_identity": 97
+    },
+    "4_dedup": {
+      "canonical_candidates": 4868,
+      "duplicate_source_records_merged": 1184,
+      "projects_with_multiple_sources": 661,
+      "ambiguous_for_manual_review": 228
+    },
+    "5_eligibility": {
+      "eligible": 3502,
+      "needs_review": 1353,
+      "ineligible": 13,
+      "security_flagged": 36,
+      "held_for_removal_review": 19,
+      "import_ready": 3467
+    },
+    "6_review_and_publication": {
+      "approved": 0,
+      "published": 0,
+      "note": "No reviewer decision has been recorded and nothing is published; these counts stay 0 until the review stage runs."
+    },
+    "content_rights": {
+      "source_records_with_unresolved_rights_status": 6362,
+      "note": "Rights review has not been performed for any record (policy: import-eligibility-policy.md section 6)."
+    }
+  },
+  "checks": [
+    {
+      "name": "normalized records = issues + PRs + submission-thread comments",
+      "left": 6362,
+      "right": 6362,
+      "ok": true
+    },
+    {
+      "name": "normalized records = sum of intents",
+      "left": 6362,
+      "right": 6362,
+      "ok": true
+    },
+    {
+      "name": "submission-type records = grouped + without identity",
+      "left": 6149,
+      "right": 6149,
+      "ok": true
+    },
+    {
+      "name": "submission-type records = submission + submission_unclear",
+      "left": 6149,
+      "right": 6149,
+      "ok": true
+    },
+    {
+      "name": "normalized records = submission-type + non-submission",
+      "left": 6362,
+      "right": 6362,
+      "ok": true
+    },
+    {
+      "name": "grouped records = projects + duplicate records",
+      "left": 6052,
+      "right": 6052,
+      "ok": true
+    },
+    {
+      "name": "projects = eligible + needs_review + ineligible",
+      "left": 4868,
+      "right": 4868,
+      "ok": true
+    },
+    {
+      "name": "dedup projects = classification projects",
+      "left": 4868,
+      "right": 4868,
+      "ok": true
+    },
+    {
+      "name": "import_ready + security-flagged eligible + removal-held eligible <= eligible",
+      "left": true,
+      "right": true,
+      "ok": true
+    }
+  ],
+  "all_checks_pass": true
+}

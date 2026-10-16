@@ -1,12 +1,16 @@
 # Master Plan: a new, independent MCP registry
 
-**Revision 3 (scope, final).** The product is a **separate application with no relation to mcp.so**, built by **enhancing the current codebase incrementally** (no rewrite from scratch). "Separate" means its own brand, domain, repository, cloud accounts, database (starting empty), analytics and policies, and **none of the upstream (`chatmcp/mcpso`) submissions, content, branding, identifiers or data**. The *code* is kept: it is Apache-2.0 licensed (`LICENSE`), which allows modification and redistribution with notices preserved (see §3). Revision 1 assumed importing the upstream dataset (dropped); revision 2 assumed starting from scratch (dropped). The audit's remediation items R01-R05 therefore apply again, and the target architecture is reached by incremental migration of this code (`target-architecture.md` §7), not by replacement.
+**Revision 4 (current; supersedes revisions 1-3).** The product is an **independently operated registry** built by **enhancing the current Apache-2.0 codebase incrementally**, with its own brand, domain, repository, infrastructure, database, analytics, policies and data model. **Importing, deduplicating, evaluating and selectively publishing the historical MCP server addition requests from the upstream `chatmcp/mcpso` issue tracker is a core, first-class workstream and the initial data-acquisition strategy.** It is not replaced by a manually curated launch. The settled decision history is in `master-plan-changelog.md`.
+
+What "independent" means here: no runtime dependence on the upstream project's API, site or infrastructure; no upstream branding, name, tracking identifiers or implied affiliation; no assumption that the code licence grants rights to third-party submissions, descriptions, logos or screenshots (see `import-eligibility-policy.md` §6). The *code* is kept: Apache-2.0 (`LICENSE`) permits modification and redistribution with notices preserved (§3). The audit's remediation items R01-R05 apply first, and the architecture is reached by incremental migration of this code (`target-architecture.md` §7).
+
+**Companion documents:** `master-plan-changelog.md` (decisions changed), `import-data-flow.md` (diagram and stage contract), `import-schema-and-migrations.md` and `db/migrations/0001_import_pipeline.sql` (draft, unapplied), `import-eligibility-policy.md` (statuses, gates, rights), `import-test-strategy-and-acceptance.md`, `risk-register.md`, `implementation-checklist.md`.
 
 **Evidence status.** §1 restates audited facts about the old app (used as lessons). Everything else is a **proposal**, not an audited fact: not user-tested, not costed against real usage, and not checked against the current MCP specification or client ecosystem, which moves quickly. Verify those before committing. No monetisation is planned (excluded by the original brief); §8 lists sustainability questions so they are decided deliberately.
 
 ## 1. What the audit contributes (the defect list to fix in place)
 
-The current codebase is the **starting point**, and the audit is its defect list. Each row is a confirmed failure in the code that must be fixed in this codebase (and then guarded by tests and CI), with evidence in the named report. Strategy: **strangler-style migration**: close the security and build blockers first (Phase 0), then replace the data layer, submission and read paths module by module behind the new schema, deleting old code as each piece is superseded. The ~2,700-line size makes this practical; much of the UI shell, routing and Tailwind setup can stay.
+The current codebase is the **starting point**, and the audit is its defect list. Each row is a confirmed failure in the code that must be fixed in this codebase (and then guarded by tests and CI), with evidence in the named report. Strategy: **strangler-style migration**: close the security and build blockers first (Phase A), then replace the data layer, submission and read paths module by module behind the new schema, deleting old code as each piece is superseded. The ~2,700-line size makes this practical; much of the UI shell, routing and Tailwind setup can stay.
 
 | Failure in the current code (audited) | Fix / requirement | Source |
 |---|---|---|
@@ -19,51 +23,62 @@ The current codebase is the **starting point**, and the audit is its defect list
 | No pagination, no mobile navigation, search that disables itself, zoom locked, "star" alt text | pagination and filters from day one, accessible and responsive by design (WCAG 2.2 AA) | Q-02, Q-08, U-03, U-09..U-12 |
 | Submit = "open a GitHub issue" with free-text extraction | structured, authenticated submission with validation and duplicate check | U-04 |
 
-Observations about the ecosystem seen while auditing (used as design inputs only, **not** as data): submitters publish fleets of near-identical servers from one account, resubmit the same project repeatedly, rename repositories, and many "MCP" repositories are CLIs, skills, scanners or docs-only repos with an MCP side feature. The new registry needs duplicate and bulk-submission controls, canonical identity, and a content-type taxonomy for that reason.
+Observations about the upstream submissions seen while auditing (design inputs for the importer and review tools; the measured counts are in §4): submitters publish fleets of near-identical servers from one account, resubmit the same project repeatedly, rename repositories, and many "MCP" repositories are CLIs, skills, scanners or docs-only repos with an MCP side feature. The new registry needs duplicate and bulk-submission controls, canonical identity, and a content-type taxonomy for that reason.
 
 ## 2. Vision, principles, non-goals
 
 * Vision: the place to find an MCP server you can trust enough to try, with an honest account of what is known about it and when.
 * Principles: free to submit and use; **evidence over assertion** (levels, dates, no bare scores); accurate before comprehensive; provenance and attribution for every fact; small-team operable; no execution of third-party code outside an isolated, reviewed sandbox; independence from any other directory.
-* Non-goals: payments or sponsored placement; hosting third-party servers; anonymous ratings; scraping or republishing another directory's content; auto-publishing anything.
+* Non-goals: payments or sponsored placement; hosting third-party servers; anonymous ratings; republishing third-party prose, logos or screenshots without a rights decision; auto-publishing anything (importing never publishes); using the upstream project's infrastructure at runtime.
 
 ## 3. Separation and independence rules
 
 1. **Separate application and repository.** Create the product's own repository from the current code (a detached copy, not a tracking fork, if the owner wants no visible link), with its own history of changes. The existing fork `radumalica/mcpso` remains the audit record and is not deployed.
 2. **Keep the code, drop everything that identifies or feeds from mcp.so.** Remove or replace: name and logo, favicon and images (`public/`, `preview.png`), copy and legal pages, `ads.txt`, the inherited GA and AdSense identifiers, contact addresses, the sitemap/robots hosts, and any text describing another operator (R04). Review `README`, `pagejson/` and `data/` for upstream-specific content.
 3. **Licence compliance (Apache-2.0).** Keep the `LICENSE`, retain copyright and attribution notices in files derived from upstream, add a `NOTICE` crediting the original project as required by the licence, and mark modified files as modified. Apache-2.0 grants **no trademark rights**: the product must not use the mcp.so name or marks. Verify the licence of the bundled `templates/tailspark` template (no licence file was found in the directory during the audit) and of any assets before launch; replace what cannot be cleared.
-4. **No upstream data.** The upstream issues and comments, the `data/upstream-import/` products and the importer's GitHub collector are not inputs to the product. They stay with the audit as research evidence and are never loaded into the product's database. The existing `data/install.sql` is treated as a design reference only; the new schema is created by new migrations in a fresh database.
+4. **Upstream data is imported as source records, under the policy in `import-eligibility-policy.md`.** The upstream issues and submission-thread comments are retrieved once (and incrementally while useful) by an offline importer, stored as internal raw source records with provenance, and turned into candidates. Tier 3 content (third-party prose, logos, screenshots) is not republished; listings carry facts, source links and original reviewer-approved summaries. After the import the upstream project is not a runtime dependency. The existing `data/install.sql` is a design reference only; the schema is created by new migrations in a fresh database (`import-schema-and-migrations.md`). Rights and privacy questions that remain open are listed in the policy (§6) and block the first public publication until reviewed.
 5. **No shared infrastructure or identifiers**: new cloud accounts, database project, keys, analytics (if any) and email domain. Rotate nothing from the old deployment into the new one.
 6. **Own brand and positioning.** New name, domain and entity (cleared for availability and trademark; `rebranding-proposal.md` finalists are candidates only, none confirmed). State plainly the product is independent and not affiliated with the Model Context Protocol project, Anthropic, or any other directory.
 7. **Tooling carried over:** the eligibility rules and extraction/classification code from the audit (my own work) may be reused for submission-time checks; their tests must pass without upstream fixtures.
 
-## 4. Content strategy without upstream data (the cold-start problem)
+## 4. Data acquisition: the upstream import workstream (first-class)
 
-An empty registry is useless, and a registry stuffed with unreviewed scraped entries would repeat the current app's weakness. Proposed sources, in order of trust:
+The registry bootstraps from the historical MCP server addition requests in `chatmcp/mcpso` (renamed `chatmcp/mcp-directory`). The historical estimate of "about 2,900 requests" is **not** the current figure and is not a target; the importer reports what it finds. Measured on 2026-10-16 (full collection, 0 API errors; reproducible from the raw snapshot, a fresh run will differ because upstream keeps growing):
 
-| Source | How | Consent | Initial label |
-|---|---|---|---|
-| **Owner submission** (primary) | authenticated form with auto-prefill from the repo/manifest URL; eligibility and duplicate checks at submit time | explicit | `submitted` → review → `listed` |
-| **Reviewer-curated seed set** (≈50-200 high-signal servers) | reviewers add servers they have personally assessed from public primary sources (the project's own repo, docs and releases), recording who assessed what and when | owner notified, claimable, removable on request | `listed (unclaimed)` with the evidence actually gathered |
-| **Author outreach and a CI action** | `validate`/`submit` GitHub Action and CLI; invite maintainers of seed entries to claim | explicit | `claimed` |
-| **Official MCP Registry (optional, decision D3)** | read-only reference to its public API as a *separate* source of declared metadata and cross-links; terms of use read and honoured first | n/a | `declared (external)`, never presented as reviewed |
+| Item | Count |
+|---|---|
+| Issues retrieved | 4,869 (4,403 open, 466 closed) |
+| Pull requests | 43 (code contributions; kept as provenance only; they overlap the issues endpoint and are separated by type) |
+| Comments | 2,412 (1,450 on the submission thread #1 are treated as submissions) |
+| Normalised records | 6,362 = 4,869 issues + 43 PRs + 1,450 thread comments |
+| Relevant addition requests (submission-type) | 6,149 (6,052 with a usable identity; 97 without) |
+| Not submissions | 213 (questions/feedback 48, no identity 110, code contributions 43, removal requests 7, link corrections 5) |
+| Canonical candidates after deduplication | 4,868 (1,184 duplicate records merged; 197 renames/transfers merged; 228 flagged ambiguous) |
+| Machine evaluation | eligible 3,502; needs_review 1,353; ineligible 13; import-ready 3,467 (excludes 26 security-flagged and 9 removal-held eligible) |
+| Unretrievable | 595 issue numbers in 1..5,507 (deleted, transferred or inaccessible); 436 repositories not found or private |
+| Approved / published | 0 / 0: no review has taken place and nothing is published |
 
-Explicitly excluded: scraping mcp.so or any other directory; using its submissions, descriptions or ratings; bulk auto-listing from GitHub topic searches without a review step. Public facts about a repository (name, licence, last release) may be fetched per listing within GitHub's terms and rate limits, with attribution and a retrieval date.
+Full reconciliation: `data/upstream-import/reconciliation.md` (produced by `tools/upstream-import/reconcile.mjs`; it fails if the stage counts do not add up). Candidates are not listings: **importing never publishes**. The pipeline stages, automation boundaries, statuses (`candidate`, `needs_review`, `eligible`, `ineligible`, `duplicate`, `published`, `rejected`, `unavailable`), bulk-action limits, publication gates P1-P7 and the content-rights tiers are defined in `import-eligibility-policy.md`; the flow is in `import-data-flow.md`.
 
-**Unclaimed vs claimed** listings are a core concept: unclaimed entries carry a banner, show only verifiable facts, and can be corrected or removed by the verified owner at any time (see S5/T3).
+**What already exists** (audit branch, executed): resumable paginated collector with rate-limit handling, backoff and incremental watermark; normaliser; deduplicator with rename merge; GraphQL enrichment (no code execution, no install); classifier with rule IDs, security flags and removal holds; reconciliation script; 34 passing tests; CSV review lists. **What remains** for Phase B: dry-run mode, batch identifiers on every record, GitHub-client/interruption/idempotence tests, a synthetic fixture set, the database migrations and loader (`implementation-checklist.md`).
+
+**Rights position.** Public availability of an issue does not make its contents free to republish. Published listings carry tier 1-2 facts, source links and original, reviewer-approved summaries; third-party prose, logos and screenshots stay internal or are excluded. Open legal/privacy questions are flagged, not resolved, in the policy (§6). If part of the data cannot be used (for example author handles or comment text), the fallback keeps the permissible references (canonical repository URL, source issue link and number, date) and drops the rest; the import itself is not abandoned.
+
+**Other (additive) sources**, in the same candidate pipeline and under the same gates: owner submissions through the authenticated form with prefill; maintainers invited to claim unclaimed listings; a `validate`/`submit` CI action; optional read-only cross-reference to the official MCP Registry as a separate "declared" source (decision D3), never presented as reviewed.
+
+**Unclaimed vs claimed** listings: imported listings start unclaimed (banner, facts only) and can be corrected or removed by the verified owner at any time (S5/T3); a removal creates a suppression entry so re-imports cannot resurrect it.
 
 ## 5. Workstreams and phases
 
 | Phase | Goal | Contents | Exit criteria |
 |---|---|---|---|
-| **0 Separate and stop the bleeding** | Make the current code safe, build-clean and unbranded as its own application | decisions D1-D8 (§8); separate repository, accounts, database project and brand (§3); R01 remove public write/LLM routes; R02 upgrade `next`/`react`, drop `vercel`, one lockfile; R03 fix build + CI; R04 remove fake stars, inherited analytics/branding, add NOTICE; R05 RLS enforced and tested in the new database | CI green; no public write path; no critical/high production advisories; no mcp.so identifiers in the tree; RLS proven by test |
-| **1 Foundation** (incremental) | Replace the data layer under the existing UI | new schema via migrations (identity, provenance, evidence, status history, ownership, removal holds, content type) with RLS tested in CI; GitHub OAuth; server-side authorisation; rate limits; headers; structured logging; backups; models/services rewritten module by module with tests (R06, R12, R14) | schema recreated from scratch in CI against an empty database; authz tests prove no anonymous or cross-owner write; old Supabase-anon write path deleted |
-| **2 Core product** | A small but trustworthy registry | owner submission with prefill and duplicate detection; status page; reviewer queue with audit log; catalogue (pagination, filters, content types); listing page with install block, transports, licence, evidence panel; search; correction/removal flow; seed set | an owner can submit and track; a reviewer can decide with a trail; a visitor can find, understand and install a listed server; accessibility pass |
-| **3 Trust and ecosystem** | Better than a plain directory | static inspection pipeline (evidence levels 1-2), freshness/liveness checks, ownership/domain proof, advisory signals, public read-only API and export, badges, feeds, SEO foundations, docs site, ops runbooks | owner-verified listings exist; re-check cadence running; API documented |
-| **4 Differentiation** | Features that bring users back | §6 items marked P3; compare view; collections; client-compatibility matrix; optional official-registry cross-links | each justified by measured use |
-| **5 Frontier** | Only after a security design review | sandboxed conformance runner, endpoint prober, tool-description scanning (§7) | separate threat model and budget approved |
+| **A Independent foundation and critical fixes** | Safe, unbranded, separate application | decisions D1-D8 (§8); separate repository, accounts, database project, brand; R01 remove/lock public write and LLM routes; R02 upgrade `next`/`react`, drop `vercel`, one lockfile; R03 fix build + CI; R04 remove inherited branding, analytics, fake stars, add NOTICE and attribution; R05 RLS default-deny proven by tests; moderation/takedown/privacy policies drafted; counsel review scheduled | CI green; no anonymous write path; no critical/high production advisories; no upstream identifiers in the tree; licence obligations met |
+| **B Importer and data model** | Repeatable, tested pipeline and schema | harden the existing importer (dry-run, batch ids, client/resume/idempotence tests, fixtures); migrations 0001-0002 on an empty staging database; loader; RLS tests; stratified **sample run** end to end | importer acceptance criteria met (`import-test-strategy-and-acceptance.md` §3); sample hand-checked |
+| **C Full ingestion and review** | Reviewed candidate set | fresh full/incremental collect to a cut-off date; full pipeline; reconciliation report; review ambiguous, security-flagged and removal-held first, then needs_review; chosen strata bulk-approved under policy limits; original summaries; publish the first wave in batches of at most 500 | data acceptance criteria met; counts reconcile from source records to listings; nothing published with unresolved rights/security/removal flags |
+| **D Registry launch** | Usable public registry | admin review UI (filters, source records, duplicate compare, why-panel, bulk with preview/undo, metadata correction, audit history); catalogue with pagination, search, filters; listing pages with source links and evidence level/date; authenticated submission, correction and removal flows; ops (backups, monitoring, runbooks); accessibility; monitor quality and moderation workload | launch acceptance criteria met; counsel sign-off on rights and privacy |
+| **E Advanced features** | Differentiation, only after D is stable | §6 P2/P3 items (compatibility matrix, install snippets, API/export, feeds, badges, ownership proof, advisory signals); §7 frontier items after their own security review | each justified by measured use |
 
-Sequencing rules: no verification claim before the evidence model exists; no execution feature before the sandbox design is reviewed; the removal/correction path ships before anything is public; nothing is auto-published.
+Sequencing rules: Phase A before anything is advertised or loaded; no verification claim before the evidence model exists ("verified" is not used at launch); no execution feature before a sandbox design review; removal/correction path ships before anything is public; nothing is auto-published; advanced features are never a prerequisite for importing and reviewing the candidate set. Interim review before the admin UI exists: exported queues plus scripted calls to the transition functions with every decision recorded (checklist C3).
 
 ## 6. Feature catalogue
 
@@ -149,37 +164,29 @@ Priority: **P1** needed for a credible launch, **P2** within a quarter of launch
 
 ## 8. Decisions needed (owner required)
 
-* **D1 Name, domain, brand**: re-screen candidates for a wholly new product; availability and trademark checks still outstanding.
-* **D2 Stack and hosting**: choose a supported framework and a hosting target that is not a deprecated adapter; managed Postgres with RLS tested in CI. Default: keep Next.js/React on a current supported release and Supabase/Postgres; replace only the deprecated Cloudflare adapter and any layer the audit shows to be unsafe.
-* **D3 Official MCP Registry**: reference/cross-link only, ignore entirely, or later sync as `declared (external)`. Default recommendation: ignore at launch, revisit after Phase 2, and read its terms before any use.
-* **D4 Governance**: who reviews, dispute handling, moderation policy publication, bulk-submitter policy.
-* **D5 Data and content licensing**: terms for listing text, what bulk export carries (facts only vs text), attribution.
-* **D6 LLM use**: default no LLM-generated public text without reviewer approval; if used, authenticated, budget-capped, sanitised.
-* **D7 Evidence thresholds**: whether a registry-style listing alone may publish as `declared`, or a manifest/code signal is required.
-* **D8 Sustainability**: the plan assumes a small volunteer or grant-funded team; hosting, runner and storage costs are not estimated here and must be before Phase 4-5.
+* **D1 Name, domain, brand**: availability and trademark checks outstanding (`rebranding-proposal.md` finalists are unconfirmed).
+* **D2 Stack and hosting**: default keep Next.js/React on a current supported release and Supabase/Postgres; replace the deprecated Cloudflare adapter and any layer the audit shows to be unsafe.
+* **D3 Official MCP Registry**: used by the importer as a read-only external reference for evidence; whether it is also exposed as a "declared (external)" source or cross-linked is open. It is never presented as reviewed status. Read its terms before any use beyond the audit snapshot.
+* **D4 Governance**: who reviews, dispute handling, moderation policy, bulk-submitter policy, reviewer authentication.
+* **D5 Rights and privacy (blocking for first publication)**: the five open questions in `import-eligibility-policy.md` §6 (internal retention of third-party text, attribution by GitHub handle and opt-out, reuse of logos/screenshots, export licensing, obligations from upstream terms); counsel review required.
+* **D6 LLM use**: default none for public text; any draft summary needs reviewer approval; no unbounded external calls.
+* **D7 Evidence thresholds**: whether registry-only evidence (1,930 of 3,502 eligible) may publish as `declared`, or a manifest/SDK signal is required (policy §3.1 proposes the latter for bulk approval).
+* **D8 Sustainability and cost**: not estimated here; estimate before Phase D.
+* **D9 Dataset cut-off and launch subset**: date of the final collect, size of the first publication wave, and whether needs_review candidates are visible internally only until decided.
+* **D10 Raw storage**: raw JSON in the main database or restricted object storage; retention period.
 
 ## 9. Risks
 
-| Risk | Mitigation |
-|---|---|
-| Cold start: empty registry feels pointless | curated seed set, author outreach, CI action, a few strong collections; avoid inflating counts |
-| Reviewer capacity | prefill and rules engine (T9), batching (T8), small scope in Phase 2 |
-| Spam, impersonation, fleets of look-alikes | ownership proof, quotas, hidden-Unicode and scope-impersonation checks |
-| Legal exposure from third-party text | facts over prose, takedown path, separation rules (§3) |
-| Accidental dependence on or resemblance to mcp.so | §3 rules, no copied assets or text, independent review of copy and design before launch |
-| Malicious servers listed as "verified" | dated evidence levels; never imply safety; sandbox only after review |
-| GitHub API limits and outages | caching, incremental refresh, graceful degradation |
-| Scope creep from §6-§7 | every P2/P3 item needs measured need |
+Full register with likelihood, impact and mitigations: `risk-register.md` (API limits, upstream drift, data quality, merge mistakes, content rights, personal data, security, application-security debt, moderation workload, takedowns, misleading trust claims, affiliation confusion, importer defects, scope creep, dependency on third-party services, stale listings, cost). The highest-rated: application security debt (Phase A is a hard prerequisite), data quality of imported candidates, content rights, and moderation workload.
 
-## 10. Success metrics (to be measured after launch; none exist)
+## 10. Success metrics (to be measured; none exist yet)
 
-Time-to-first-install from landing; share of listings at evidence level 2 or higher; median submission-to-decision time; correction/removal turnaround; duplicate rate at submission; share of listings re-checked in the last 30 days; accessibility audit pass rate; API adoption; reviewer backlog age. Targets are set after a baseline month.
+Import: reconciliation identities hold on every run; candidates with a source mapping = 100%; duplicate-merge reversals per 1,000 merges; hand-check false-positive rate per stratum (k of n); review throughput (decisions per reviewer-day) and queue age; share of published listings at evidence level 1 or higher with a last-checked date; takedown turnaround. Product: time-to-first-install from landing; accessibility audit pass rate; re-check coverage in the last 30 days; API adoption. Targets are set after a baseline.
 
 ## 11. Immediate next steps
 
-1. Record decisions D1-D4 and D8 (brand, hosting of the existing stack, official-registry stance, governance, sustainability).
-2. Create the separate repository from the current code, add `NOTICE`, and run Phase 0 (R01-R05) on it; verify the `templates/tailspark` licence.
-3. Define the new schema (ownership, content type, evidence levels, status history, removal holds) as migrations on an empty database, and migrate the app onto it module by module.
-4. Prototype the submission flow and reviewer queue against hand-made test fixtures (no upstream data).
-5. Run a short research round (5-8 MCP users, 3-5 server authors) to confirm or drop §6 priorities before Phase 2.
-6. Keep the audit fork as the research record; do not deploy it or load its upstream data anywhere.
+1. Approve the policy and decisions D1-D5 and D9 (brand, stack, official-registry stance, governance, rights/privacy review, cut-off).
+2. Phase A: create the separate repository from the current code with `NOTICE`; run R01-R05; verify the `templates/tailspark` licence.
+3. Phase B: add dry-run and batch ids to the importer, write the missing client/resume/idempotence tests and a synthetic fixture set; review and apply migration 0001 to an empty staging database; write the loader.
+4. Run the stratified sample end to end in staging and hand-check it; then plan the full run (Phase C) against a fresh collect.
+5. Prepare the interim review workflow (exported queues plus scripted transitions) so review can start before the admin UI exists.

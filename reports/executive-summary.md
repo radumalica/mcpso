@@ -1,6 +1,6 @@
 # Executive Summary
 
-> **Scope update:** the product is a separate application with no relation to mcp.so, built by enhancing this codebase, and it does not use upstream data (see `master-plan.md` rev 3). Items in this report that import the upstream dataset (R07), reuse mcp.so branding or identifiers, or treat the product as a rebrand of mcp.so are superseded; the audit findings and the incremental-migration roadmap remain valid.
+> **Scope update (master plan rev 4):** the product is an independently operated registry built by enhancing this codebase; importing and evaluating the upstream addition requests (R07) is a core workstream, but with its own brand, infrastructure and data model and without upstream branding or runtime dependence. Statements here that treat the product as a rebrand of mcp.so are superseded; see `master-plan.md` and `master-plan-changelog.md`.
 
 **Subject:** fork `radumalica/mcpso` of `chatmcp/mcpso` (the free variant of mcp.so), audited 2026-10-16 as the starting point for a free, independent, professional MCP registry.
 **Nature of this work:** audit and planning only. No application code, dependency, schema or deployment configuration was changed. Every statement below is tagged **C** (confirmed by execution or direct reading), **S** (suspected; plausible but not demonstrable from the repository alone) or is a measured count with its denominator. Detail and evidence are in the numbered reports in this directory and `reports/evidence/`.

@@ -1,6 +1,6 @@
 # Prioritised Implementation Roadmap
 
-> **Scope update:** the product is a separate application with no relation to mcp.so, built by enhancing this codebase, and it does not use upstream data (see `master-plan.md` rev 3). Items in this report that import the upstream dataset (R07), reuse mcp.so branding or identifiers, or treat the product as a rebrand of mcp.so are superseded; the audit findings and the incremental-migration roadmap remain valid.
+> **Scope update (master plan rev 4):** the product is an independently operated registry built by enhancing this codebase; importing and evaluating the upstream addition requests (R07) is a core workstream, but with its own brand, infrastructure and data model and without upstream branding or runtime dependence. Statements here that treat the product as a rebrand of mcp.so are superseded; see `master-plan.md` and `master-plan-changelog.md`.
 
 Effort units (relative, for one engineer familiar with the stack; deliberately coarse, not hour estimates): **S** ≈ up to 2 days · **M** ≈ 3-8 days · **L** ≈ 2-4 weeks · **XL** > 1 month. Risk = risk of the *change* breaking things or stalling. IDs reference findings in the other reports (A=architecture, Q=code quality, F=security, D=dependency, U=UI/UX, T=threat model).
 
