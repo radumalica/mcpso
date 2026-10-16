@@ -32,7 +32,10 @@ export default async function Removal({ searchParams }: Props) {
 
       <h2>What happens next</h2>
       <ol>
-        <li>The project named in the request is put on hold straight away: nothing about it can be approved or newly published while the request is open.</li>
+        <li>
+          When a person records your request, a removal or rights request puts the project on hold: its entry is hidden and nothing about
+          it can be approved or published while the request is open. A correction request does not hide the entry.
+        </li>
         <li>We check that the request comes from someone who controls the project, for example with write access to its repository.</li>
         <li>A person decides and records the reason. A removal also stops the project from being added again by a later import.</li>
       </ol>

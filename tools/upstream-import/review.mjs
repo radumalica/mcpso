@@ -104,3 +104,24 @@ export async function applyDecisions(db, decisions, { reviewerId, dryRun = false
   }
   return results;
 }
+
+/** Run one reviewer-only SQL function as `reviewerId` in its own transaction; returns the first row. */
+async function asReviewer(db, reviewerId, sql, params) {
+  if (!reviewerId) throw new Error("reviewerId is required");
+  await db.query("begin");
+  try {
+    await db.query("select set_config('request.jwt.claim.sub', $1, true)", [reviewerId]);
+    const r = await db.query(sql, params);
+    await db.query("commit");
+    return r.rows[0];
+  } catch (e) {
+    await db.query("rollback").catch(() => {});
+    throw e;
+  }
+}
+
+// Takedown workflow (migration 0004). A request arrives through the published contact address and is recorded by a reviewer.
+export const recordTakedown = async (db, reviewerId, { kind, ref, contact = null, details = null }) =>
+  (await asReviewer(db, reviewerId, "select record_takedown_request($1, $2, $3, $4) as id", [kind, ref, contact, details])).id;
+export const verifyTakedownOwnership = (db, reviewerId, id, basis) => asReviewer(db, reviewerId, "select verify_takedown_ownership($1::uuid, $2)", [id, basis]);
+export const resolveTakedown = (db, reviewerId, id, decision, reason) => asReviewer(db, reviewerId, "select resolve_takedown_request($1::uuid, $2, $3)", [id, decision, reason]);
