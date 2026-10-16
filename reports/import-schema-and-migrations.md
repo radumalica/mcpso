@@ -1,6 +1,6 @@
 # Proposed Database Schema and Migration Plan (Revision 5)
 
-Draft SQL: `db/migrations/0001_import_pipeline.sql` and `db/migrations/0002_publication_boundary.sql`, tests `db/tests/publication_boundary.test.sql`. **None has been applied or executed**: no PostgreSQL server was available. Apply only to a new, empty staging database through a migration runner, run the SQL tests, and resolve the open checks listed in the file headers. The inherited `data/install.sql` is a design reference only and is not migrated or extended.
+SQL: `db/migrations/0001` … `0006` (table below), tests in `db/tests/` (`npm run test:db`). **Executed on an in-process PostgreSQL (PGlite) only; not yet applied to a real Supabase/PostgreSQL server.** Apply to a new, empty staging database through a migration runner, re-run the suites, and resolve the open checks (owner-role `BYPASSRLS`, real `auth.uid()`, platform default privileges, query plans on the loaded dataset). The inherited `data/install.sql` is a design reference only and is not migrated or extended.
 
 ## 1. Layers and tables
 
@@ -47,13 +47,15 @@ Clearing a security flag or a removal hold (`clear_security_flag`, `clear_remova
 
 ## 5. Migration plan
 
-| Migration | Content | Gate before applying |
+| Migration | Content | Status |
 |---|---|---|
-| 0001 (draft) | tables, enums, RLS default-deny, `public_listing` view | second-person SQL review; applied to an empty staging database in CI |
-| 0002 (draft) | `listing_draft`, `publication_gate_failures`, guards, `import_upsert_candidate`, transition/bulk/undo/clear functions | `db/tests/publication_boundary.test.sql` green |
-| 0003 | search structures (full-text/trigram on listing title/summary/facts), indexes for review-queue filters | query plans checked on the loaded dataset |
-| 0004 | submissions, owner claims, takedown workflow tables extensions | after the review UI exists |
-| later | scheduled re-check facts, API keys, feeds | per roadmap |
+| 0001 | tables, enums, RLS default-deny, `public_listing` view | executed on PGlite; suppress/constraint defect fixed in 0002 |
+| 0002 | `listing_draft`, `publication_gate_failures` (P1-P8), guard triggers, `import_upsert_candidate` (explicit grant to the importer role), transition, bulk, undo, clear and suppress functions | executed; gate-failure array-literal defect fixed |
+| 0003 | `resolve_duplicate_group` (audited; clears gate P4 for ambiguity groups the loader creates) | executed |
+| 0004 | takedown workflow (`record_takedown_request`, `verify_takedown_ownership`, `resolve_takedown_request`); `public_listing` now also requires `not removal_hold`; gates P3 and bulk approval ignore an accepted *correction* | executed |
+| 0005 | `pg_trgm` GIN indexes for the catalogue search, ordering index, review-queue indexes | executed; planner use checked on 400 rows only |
+| 0006 | `save_listing_draft`, `approve_listing_summaries` (gates P5, P6) | executed |
+| later | submissions and owner claims (D3 of the checklist), scheduled re-check facts, API keys, feeds | not started |
 
 Rules: forward-only files in version control; every migration runs in CI against an empty database and against the previous version with fixtures; rollback is a compensating migration or a restore of the staging snapshot, never an edit of an applied file; no manual schema changes.
 

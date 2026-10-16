@@ -25,6 +25,7 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 | 18 | D4/LG3: takedown workflow (record, verify owner, resolve), held entries hidden from the public view, 0004 | done | see `git log` |
 | 19 | A5/CI: search indexes (0005), CI workflow, secret scan, final dependency cleanup | done | see `git log` |
 | 20 | C5: facts-only template drafts, summary approval, publish helper with launch-gate guard (0006); retrieval dates in facts | done | see `git log` |
+| 21 | Plan documents synchronised with the executed state (master plan §10-11, schema document, checklist statuses) | done | see `git log` |
 
 ## Item 1: search component and clean build
 * **Changed:** `templates/tailspark/landing/components/search/index.tsx` rewritten as a real search form (`role="search"`, native submit so Enter and IME composition work, labelled input, submit button with accessible name, `maxLength` 200, never disabled, pending state via `useTransition`). Removed the invalid global `KeyboardEvent<...>` usage and the `inputDisabled` state that disabled the box after the first search.
@@ -169,3 +170,6 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 * **Measured on the real snapshot (local, not persisted):** of 3,502 eligible candidates, **3,358 get a draft** (evidence level 0: 607, level 1: 1,253, level 2: 1,498) and **144 are skipped**: 107 without a repository retrieval date (typically a sub-path of a repository whose enrichment key differs) and 37 without a public source link. No summary is approved; nothing is published.
 * **Defect found by the real data:** the forbidden-word safety check in the template builder fired on a repository whose own name contains "secure"; the check now runs on the template wording with the identifier removed (regression test added).
 * **Limits:** template summaries are intentionally plain; reviewer-written summaries remain the route for entries that need more. The 144 skipped candidates need either an enrichment pass or a reviewer-written draft. Evidence date semantics: `checked_at` is when this pipeline read the repository (2026-10-16 for the snapshot), so entries would need re-checking before a later launch (wording says "checked on {date}", never "current").
+
+## Item 21: plan documents synchronised
+* **Updated:** `master-plan-v5.md` §10-11 (migrations now executed on PGlite, still not on a real server), `import-schema-and-migrations.md` (migration table 0001-0006 with status), `implementation-checklist.md` (status notes on A1-A6, B4-B6, C5, D1-D6). No claim in these documents goes beyond what the tests in this branch show.

@@ -100,7 +100,7 @@ D1 name/domain; D2 stack/hosting; D3 official-registry stance (evidence referenc
 
 ## 10. Findings that cannot be verified here
 
-* The SQL migrations and tests have **not been executed** (no PostgreSQL server); RLS owner-bypass, `auth.uid()` and trigger behaviour are assumptions.
+* **Update (implementation, branch `impl/v5-phase-a`, see `implementation-log.md` items 8-20):** migrations 0001-0006 and their SQL and Node test suites now run on an in-process PostgreSQL (PGlite) and pass; executing them found and fixed five defects (suppression constraint, missing importer grant, gate-failure array literal, accepted corrections blocking forever, vacuous negative tests). They have **not** been applied to a real Supabase/PostgreSQL server: RLS owner-bypass, `auth.uid()` from a real JWT, platform default privileges and query plans on the loaded dataset remain assumptions.
 * All legal and privacy conclusions: none are drawn; Q1-Q7 are open and need counsel.
 * Origin of the "~2,900" estimate.
 * Extraction and classification precision beyond fixed-seed hand-checked samples (71 projects, small).
@@ -111,7 +111,7 @@ D1 name/domain; D2 stack/hosting; D3 official-registry stance (evidence referenc
 ## 11. Immediate next steps
 
 1. Confirm D7, D9 and the MVP scope; engage counsel for Q1, Q2, Q6, Q7.
-2. Run migrations 0001-0002 and the SQL tests on a disposable Postgres; fix what they reveal.
+2. ~~Run migrations 0001-0002 on a disposable Postgres~~ done on PGlite (migrations 0001-0006); **next: apply them to an empty staging Supabase/Postgres and re-run the suites**.
 3. Phase A on the product repository.
 4. Importer hardening and client tests (Phase B), then the stratified sample.
 5. Fix a cut-off date and run the full pipeline (Phase C); review in risk order; publish only after LG1-LG10.
