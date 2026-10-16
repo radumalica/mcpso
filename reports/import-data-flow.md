@@ -11,7 +11,7 @@ flowchart TD
   NORM -->|submission-type: 6,149| ID{identity found?}
   ID -- no: 97 --> UNK[unresolved list for review]
   ID -- yes: 6,052 --> DEDUP[3 deduplicate<br/>exact / high / probable rules]
-  DEDUP -->|1,184 duplicate records merged| MAP[(source_candidate_map<br/>every record to one candidate)]
+  DEDUP -->|1,184 duplicate records merged| MAP[(source_candidate_map<br/>one disposition per record;<br/>6,052 mapped to a candidate)]
   DEDUP --> CAND[(candidate: 4,868 canonical)]
   NORM -->|non-submission: 213<br/>removals 7, link corrections 5, PRs 43| SIDE[side queues: removal holds,<br/>link corrections, provenance only]
   SIDE -->|map to candidates, never auto-suppress| CAND
@@ -69,4 +69,12 @@ GitHub API --1 collect--> source_record (raw, internal)
 | Import-ready (eligible, no security flag, no removal hold) | 3,467 |
 | Approved / published | 0 / 0 (review not started) |
 
-The difference between "about 2,900 requests" and these figures cannot be explained from the data: the origin of the 2,900 estimate is unknown, the upstream repository grew by hundreds of issues per month through 2026 (925 issues in the first 16 days of October), and one identity (record → candidate) can carry several records. The importer therefore reports its own counts and does not target the estimate.
+The difference between "about 2,900 requests" and these figures is not established by the data. The origin of that estimate is unknown. The only figure near it anywhere in this repository is an earlier, superseded dry-run count of about 2,950 *eligible projects* produced on partial data (recorded only in the revision note of `submission-eligibility-criteria.md`); it counted projects, not requests, and is not a result. Other reasons a count can differ: upstream grew by hundreds of issues per month through 2026 (925 in the first 16 days of October), and one canonical candidate can carry several records. The importer reports its own counts and does not target the estimate.
+
+
+## 4. What the source data contains (measured, with limits)
+
+* **Labels:** 0 of 4,869 issues carry any label, so labels cannot be used to separate request types.
+* **Edits:** not measured. `updated_at` differs from `created_at` on 1,245 issues, but REST `updated_at` also changes on comments and state changes, so it does not identify body edits. The importer stores a content hash so later runs can detect edits.
+* **Record classes versus the brief's categories:** the classifier distinguishes submission, submission_unclear, no_identity, question_or_feedback, code_contribution, removal_request and link_correction. Feature requests, bug reports and discussions are all folded into `question_or_feedback` (48 records) and no-identity records; **spam is not a separate class** (bulk and template families are flagged through `bulk_submitter` and `tools_not_listed` quality indicators instead), and unrelated content is only detected when it lacks any identity or MCP signal (I3, 11 projects). Finer classes would need a labelled sample.
+* **Locations of identifiers:** extracted from issue bodies and submission-thread comments; other-issue comments (962) are context only; linked PRs and referenced repositories are used through enrichment (manifest files, README, topics).

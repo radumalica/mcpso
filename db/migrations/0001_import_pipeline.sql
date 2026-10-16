@@ -113,9 +113,12 @@ create table candidate (
 );
 create index on candidate (status);
 
-create table source_candidate_map (                 -- every source record maps to exactly one candidate (incl. rejected/merged)
+create table source_candidate_map (                 -- EVERY source record has exactly one disposition row; only some point at a candidate
   source_record_id uuid primary key references source_record(id) on delete cascade,
-  candidate_id uuid not null references candidate(id),
+  disposition text not null check (disposition in
+    ('mapped','no_identity','not_submission','code_contribution','context_comment','removal_request','link_correction')),
+  candidate_id uuid references candidate(id),      -- required for mapped/removal_request/link_correction when a target is known
+  check ((disposition = 'mapped') = (candidate_id is not null) or disposition in ('removal_request','link_correction')),
   intent text not null,                            -- submission | removal_request | link_correction | code_contribution | ...
   method text not null,                            -- rule id, e.g. R1 exact-repo, R6 rename, manual
   confidence text not null check (confidence in ('exact','high','medium','low','manual')),
@@ -123,7 +126,7 @@ create table source_candidate_map (                 -- every source record maps 
   mapped_batch_id uuid references import_batch(id),
   mapped_at timestamptz not null default now()
 );
-create index on source_candidate_map (candidate_id);
+create index on source_candidate_map (candidate_id) where candidate_id is not null;
 
 create table duplicate_group (
   id uuid primary key default gen_random_uuid(),
@@ -264,6 +267,10 @@ create policy reviewer_read_decisions on review_decision for select to authentic
 grant select on candidate, eligibility_evaluation, review_decision to authenticated;
 
 -- Public read model: only published, not unpublished, and only the tier-1/2 columns.
+-- OPEN CHECK (cannot be verified without a running Postgres): `listing` has FORCE ROW LEVEL SECURITY and no select
+-- policy, and this definer view returns rows only if its owner bypasses RLS. Before use, either add an explicit
+-- select policy on listing limited to unpublished_at is null and make the view security_invoker = true, or prove the
+-- owner/bypass behaviour with the RLS test suite.
 create view public_listing with (security_invoker = false) as
   select slug, title, summary, facts, evidence_level, evidence_checked_at, source_links, published_at
   from listing where unpublished_at is null;

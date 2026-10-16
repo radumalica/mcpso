@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T11:02:26.109Z",
+  "generated_at": "2026-10-16T11:35:52.370Z",
   "enrichment_applied": true,
   "renames_applied": 197,
   "submission_records_with_identity": 6052,
@@ -24,6 +24,14 @@
     "46": 1,
     "81": 1,
     "94": 1
+  },
+  "merge_rule_counts": {
+    "R1": 624,
+    "R6": 235,
+    "R2": 16,
+    "R4": 37,
+    "R3": 42,
+    "R5": 22
   },
   "ambiguous_projects": 228,
   "by_identity_type": {

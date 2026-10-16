@@ -69,7 +69,7 @@ Evidence level shown on each listing: 0 declared (submitted claim only), 1 repos
 ## 5. Source-record handling
 
 * Only **issues** are submissions (and comments on the submission thread); **pull requests** are code contributions and are stored as raw provenance only.
-* Every source record maps to exactly one candidate (including rejected and merged ones) in `source_candidate_map` with method, confidence and rationale.
+* Every source record has exactly one **disposition** row in `source_candidate_map`: `mapped` (to a candidate, including rejected and merged ones, with method, confidence and rationale), `no_identity`, `not_submission`, `code_contribution`, `context_comment` (comments outside the submission thread, kept as context), `removal_request` or `link_correction` (with the candidate they refer to when known). Only `mapped` records (6,052 in the audit run) carry a canonical candidate for the submission itself.
 * Edited or deleted upstream records: a changed content hash stores the previous version; records that disappear upstream are marked, not deleted. 595 issue numbers in the collected range could not be retrieved (deleted, transferred or inaccessible); they are listed and not guessed.
 * Untrusted text (titles, bodies, comments, READMEs) is treated as data: sanitised on render, never executed, never used as instructions to any tool or model.
 * Imported code is never executed, installed or built during ingestion or evaluation.

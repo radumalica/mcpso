@@ -230,6 +230,7 @@ export function main(argv = process.argv.slice(2)) {
     duplicate_records: projects.reduce((n, p) => n + p.source_count - 1, 0),
     projects_with_multiple_sources: projects.filter((p) => p.source_count > 1).length,
     projects_by_source_count: bySize,
+    merge_rule_counts: projects.reduce((m, p) => { for (const r of p.merge_reasons) m[r.rule] = (m[r.rule] || 0) + 1; return m; }, {}),
     ambiguous_projects: projects.filter((p) => p.ambiguity_flags.some((f) => f.code !== "monorepo_subpath_project")).length,
     by_identity_type: projects.reduce((m, p) => ((m[p.identity_type] = (m[p.identity_type] || 0) + 1), m), {}),
   };

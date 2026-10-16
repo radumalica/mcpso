@@ -26,7 +26,7 @@ Targets: ≥ 80% line coverage on new importer and application code (project rul
 1. Two consecutive runs on the same inputs create **zero** new `source_record` or `candidate` rows and identical outputs.
 2. A run killed at a random point resumes and yields output identical to an uninterrupted run (tested on the fixture and on one real full run).
 3. `--dry-run` produces the report and writes no rows.
-4. Every source record has a batch id, retrieval time, source repo, number, URL and a mapping to exactly one candidate (query: records without mapping = 0).
+4. Every source record has a batch id, retrieval time, source repo, number, URL and exactly one disposition row (query: source records without a disposition = 0; records with disposition `mapped` = 6,052 in the audit run, each pointing at one candidate; 7,324 raw records = 6,362 normalised + 962 context-only comments).
 5. The reconciliation identities hold (script exits 0): retrieved = normalised sources; submission-type = with + without identity; grouped = candidates + duplicates; candidates = eligible + needs_review + ineligible; held and flagged counts ≤ eligible.
 6. No outbound request goes to any host other than `api.github.com` (and the read-only official registry host if enabled); concurrency ≤ the configured bound; rate-limit waits observed in logs, not exceeded.
 7. No imported code is executed, installed or built (checked by static review of the importer and a test asserting no `child_process`, `eval` or package-manager invocation in importer modules).

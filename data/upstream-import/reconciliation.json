@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T11:29:44.803Z",
+  "generated_at": "2026-10-16T11:36:59.474Z",
   "source": {
     "repository": "chatmcp/mcpso (renamed chatmcp/mcp-directory)",
     "collected_at": "2026-10-16T09:58:33.644Z"
@@ -8,7 +8,9 @@
     "1_retrieved_raw": {
       "issues": 4869,
       "pull_requests": 43,
+      "raw_source_records": 7324,
       "comments_total": 2412,
+      "context_only_comments": 962,
       "submission_thread_comments": 1450,
       "api_errors": 0,
       "retry_events_logged": 0,
@@ -35,6 +37,16 @@
     "4_dedup": {
       "canonical_candidates": 4868,
       "duplicate_source_records_merged": 1184,
+      "merge_decisions_exact_identifier": 683,
+      "merge_decisions_probable": 293,
+      "merge_decisions_by_rule": {
+        "R1": 624,
+        "R6": 235,
+        "R2": 16,
+        "R4": 37,
+        "R3": 42,
+        "R5": 22
+      },
       "projects_with_multiple_sources": 661,
       "ambiguous_for_manual_review": 228
     },
@@ -42,6 +54,17 @@
       "eligible": 3502,
       "needs_review": 1353,
       "ineligible": 13,
+      "ineligible_reasons": {
+        "I1_registry_infrastructure": 1,
+        "I2_empty_or_template": 1,
+        "I3_no_mcp_signal": 11
+      },
+      "unavailable_or_under_documented": {
+        "repositories_not_found_or_private": 436,
+        "N7_thin_metadata": 194,
+        "N8_insufficient_readme": 24,
+        "N5_subpath_missing": 3
+      },
       "security_flagged": 36,
       "held_for_removal_review": 19,
       "import_ready": 3467
@@ -57,6 +80,18 @@
     }
   },
   "checks": [
+    {
+      "name": "raw source records = normalized records + context-only comments",
+      "left": 7324,
+      "right": 7324,
+      "ok": true
+    },
+    {
+      "name": "submission-thread comment count agrees between normalize and classification",
+      "left": 1450,
+      "right": 1450,
+      "ok": true
+    },
     {
       "name": "normalized records = issues + PRs + submission-thread comments",
       "left": 6362,
@@ -97,6 +132,12 @@
       "name": "projects = eligible + needs_review + ineligible",
       "left": 4868,
       "right": 4868,
+      "ok": true
+    },
+    {
+      "name": "every merge decision is classified exact or probable",
+      "left": 976,
+      "right": 976,
       "ok": true
     },
     {
