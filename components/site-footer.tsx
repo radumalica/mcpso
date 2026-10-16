@@ -8,7 +8,7 @@ export function SiteFooter() {
         <p>{NON_AFFILIATION}</p>
         <p>
           Listing text is written for this directory; facts come from public sources and are labelled with how and when they were checked.
-          A listing is not an endorsement, a review of the code, or a statement that the software is safe to run.
+          A listing is not an endorsement or a review of the code, and says nothing about whether the software is suitable for you to run.
         </p>
         <nav aria-label="Footer" className="flex flex-wrap gap-x-4 gap-y-1">
           <Link href="/about" className="underline">How entries are chosen</Link>

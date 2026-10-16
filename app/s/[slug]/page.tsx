@@ -59,7 +59,7 @@ export default async function ListingPage({ params }: Props) {
       <dl className="mt-2 max-w-3xl divide-y divide-[color:var(--line)]">
         {f.repoUrl ? (
           <Row label="Repository">
-            <a className={external} rel={rel} target="_blank" href={f.repoUrl}>{f.repoName ?? hostOf(f.repoUrl)}</a>
+            <a className={external} rel={rel} target="_blank" href={f.repoUrl}>{f.repoName ? `${f.repoName} (${hostOf(f.repoUrl)})` : hostOf(f.repoUrl)}</a>
             {f.archived ? " (archived)" : ""}
             {f.fork ? " (fork)" : ""}
           </Row>

@@ -10,6 +10,7 @@ async function dbWithListings(n = 400) {
   await db.query("insert into auth.users (id) values ($1)", [REVIEWER]);
   await db.query("insert into import_batch (id, source_repo, mode, tool_version) values ('33333333-3333-3333-3333-333333333333', 'x/y', 'full', 't')");
   // Listings are inserted with the guard disabled: this test is about index use, not the publication boundary.
+  await db.query("select set_config('app.in_transition', 'on', false)");
   await db.query("alter table listing disable trigger listing_guard");
   for (let i = 0; i < n; i++) {
     const c = (await db.query(`insert into candidate (canonical_key, identity_type, status, created_batch_id) values ($1, 'github_repo', 'published', '33333333-3333-3333-3333-333333333333') returning id`, [`github.com/t/r${i}`])).rows[0];

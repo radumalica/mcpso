@@ -43,6 +43,8 @@ export function startFakePostgrest({ rows = makeListings() } = {}) {
     const total = out.length;
     const offset = Number(url.searchParams.get("offset") || 0);
     const limit = url.searchParams.get("limit");
+    // Like PostgREST with Prefer: count=exact: an offset past the last row is 416 / PGRST103 (an empty result at offset 0 is fine).
+    if (offset > 0 && offset >= total) { res.writeHead(416, { "content-type": "application/json", "content-range": `*/${total}` }); res.end(JSON.stringify({ code: "PGRST103", message: "Requested range not satisfiable", details: `An offset of ${offset} was requested, but there are only ${total} rows.` })); return; }
     out = out.slice(offset, limit ? offset + Number(limit) : undefined);
     const select = url.searchParams.get("select");
     if (select && select !== "*") out = out.map((r) => Object.fromEntries(select.split(",").map((c) => [c, r[c]])));

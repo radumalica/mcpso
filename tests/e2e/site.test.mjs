@@ -187,3 +187,50 @@ test("no write request ever reaches the database", async () => {
   for (const m of ["POST", "PUT", "DELETE", "PATCH"]) await get("/?q=alpha", { method: m, body: JSON.stringify({ status: "published" }), headers: { "content-type": "application/json" } });
   assert.deepEqual([...new Set(api.state.requests.map((r) => r.method))], ["GET"], "only reads reach the database");
 });
+
+test("none of the forbidden trust words appears on any page, except where the about page names them in negated form", async () => {
+  const words = ["verified", "safe", "secure", "trusted", "recommended"];
+  const allowed = [
+    /No entry is called verified, trusted, recommended or secure, and there are no ratings\./g,
+    /or is safe to run\./g,
+    /not been tested or security-reviewed/g,
+  ];
+  for (const p of ["/", "/about", "/removal", "/privacy", "/terms", "/s/alpha-tool", "/s/hostile", "/?q=alpha", "/no-such-page"]) {
+    let text = (await get(p)).text.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, " ").replace(/<[^>]+>/g, " ").replace(/<!-- -->/g, "");
+    for (const a of allowed) text = text.replace(a, " ");
+    for (const w of words) assert.ok(!new RegExp(`\\b${w}\\b`, "i").test(text), `"${w}" appears on ${p}`);
+  }
+});
+
+test("security headers are present on every kind of response, including robots, sitemap, 404 and the error page", async () => {
+  const check = (r, p) => {
+    assert.equal(r.headers.get("x-content-type-options"), "nosniff", p);
+    assert.ok(r.headers.get("referrer-policy"), p);
+    assert.ok(r.headers.get("x-frame-options") || /frame-ancestors/.test(r.headers.get("content-security-policy") || ""), p);
+  };
+  for (const p of ["/robots.txt", "/sitemap.xml", "/no-such-page", "/health", "/about"]) check(await get(p), p);
+  api.state.mode = "down";
+  try { const r = await get("/"); assert.equal(r.status, 500); check(r, "500 page"); } finally { api.state.mode = "ok"; }
+});
+
+test("robots.txt blocks only search and filter URLs; noindex pages stay crawlable", async () => {
+  const robots = (await get("/robots.txt")).text;
+  assert.match(robots, /Disallow: \/\*\?\*q=/);
+  assert.match(robots, /Disallow: \/\*\?\*declared=/);
+  for (const p of ["/removal", "/privacy", "/terms"]) assert.ok(!robots.includes(`Disallow: ${p}`), `${p} must stay crawlable so its noindex tag is seen`);
+  assert.ok(!robots.includes("page="), "paginated catalogue pages stay crawlable");
+});
+
+test("/health reports a healthy configuration and never prints values", async () => {
+  const r = await get("/health");
+  assert.equal(r.status, 200);
+  assert.deepEqual(JSON.parse(r.text), { ok: true, problems: [] });
+  assert.equal(r.headers.get("cache-control"), "no-store");
+});
+
+test("the app has no server actions and no middleware or proxy", () => {
+  const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
+  const files = ["app", "lib", "models", "components", "utils"].flatMap((d) => walk(path.join(ROOT, d)));
+  for (const f of files.filter((x) => /\.(ts|tsx|mjs|js)$/.test(x))) assert.ok(!/["']use server["']/.test(fs.readFileSync(f, "utf8")), `server action in ${f}`);
+  for (const n of ["middleware.ts", "middleware.js", "proxy.ts", "proxy.js", "src/middleware.ts", "src/proxy.ts"]) assert.ok(!fs.existsSync(path.join(ROOT, n)), `${n} must not exist`);
+});

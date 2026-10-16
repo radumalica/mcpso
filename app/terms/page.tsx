@@ -14,7 +14,7 @@ export default function Terms() {
       <h2>Information only</h2>
       <p>
         {site.name} is an information service. Entries are provided as is, without warranty. An entry is not an endorsement, a review of
-        the software, or a statement that it is safe, correct or fit for any purpose. You decide whether to use any software listed here
+        the software, or a statement about its quality, correctness or fitness for any purpose. You decide whether to use any software listed here
         and you are responsible for checking it first.
       </p>
 

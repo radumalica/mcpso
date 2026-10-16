@@ -39,7 +39,15 @@ export const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,99}$/;
 export const PAGE_SIZE = 24;
 const MAX_TEXT = 2000;
 
-const str = (v: unknown, max = MAX_TEXT): string | null => (typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null);
+// Untrusted text may carry bidirectional overrides (U+202E, U+2066-2069), zero-width and other invisible format characters that make
+// displayed text differ from what is copied. Line breaks become spaces; every other control or format character is removed.
+const INVISIBLE = /[\p{Cc}\p{Cf}]/gu;
+export const cleanText = (v: string): string => v.replace(/[\r\n\t]+/g, " ").replace(INVISIBLE, "").trim();
+const str = (v: unknown, max = MAX_TEXT): string | null => {
+  if (typeof v !== "string") return null;
+  const t = cleanText(v).slice(0, max);
+  return t ? t : null;
+};
 const strList = (v: unknown, max = 20): string[] =>
   Array.isArray(v) ? v.map((x) => str(x, 300)).filter((x): x is string => x !== null).slice(0, max) : [];
 

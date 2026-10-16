@@ -5,8 +5,8 @@ export const dynamic = "force-dynamic"; // the sitemap URL comes from the runtim
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    // Search result pages and request forms are not for indexing; entries and the catalogue are.
-    rules: [{ userAgent: "*", allow: "/", disallow: ["/*?*q=", "/*?*declared=", "/*?*page=", "/removal", "/privacy", "/terms"] }],
+    // Only search and filter URLs are blocked from crawling. Other pages that carry a noindex tag stay crawlable so the tag can be seen.
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/*?*q=", "/*?*declared="] }],
     sitemap: absoluteUrl("/sitemap.xml"),
   };
 }

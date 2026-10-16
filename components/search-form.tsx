@@ -13,9 +13,9 @@ export function SearchForm({ q, declared }: { q?: string; declared?: boolean }) 
           defaultValue={q ?? ""}
           maxLength={MAX_SEARCH_TERM_LENGTH}
           placeholder="Search by name or description"
-          className="min-w-0 flex-1 rounded border border-[color:var(--line)] bg-transparent px-3 py-2 text-base"
+          className="min-w-0 flex-1 rounded border border-[color:var(--control-border)] bg-transparent px-3 py-2 text-base"
         />
-        <button type="submit" className="rounded bg-[color:var(--accent)] px-4 py-2 text-base font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+        <button type="submit" className="rounded border border-[color:var(--control-border)] bg-[color:var(--accent)] px-4 py-2 text-base font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
           Search
         </button>
       </div>

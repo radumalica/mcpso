@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { parseListing, safeExternalUrl, parsePage, pageCount, catalogueHref, hostOf, PAGE_SIZE } from "../../lib/listing.ts";
+import { cleanText, parseListing, safeExternalUrl, parsePage, pageCount, catalogueHref, hostOf, PAGE_SIZE } from "../../lib/listing.ts";
 import { EVIDENCE_WORDING, EVIDENCE_LABEL, FORBIDDEN_WORDS, evidenceWording, toEvidenceLevel, formatDate } from "../../lib/evidence.ts";
 import { EVIDENCE_WORDING as POLICY_WORDING } from "../../tools/upstream-import/lib/gates.mjs";
 
@@ -77,4 +77,10 @@ test("wording fills in the date, never says verified/safe/trusted, and names the
   assert.equal(toEvidenceLevel("2"), 0);
   assert.equal(toEvidenceLevel(2), 2);
   assert.equal(formatDate("garbage"), "an unknown date");
+});
+
+test("cleanText removes bidirectional overrides, zero-width and control characters and flattens line breaks", () => {
+  assert.equal(cleanText("a\u202Eb\u200Bc\u2066d\u2069e\u0007f"), "abcdef");
+  assert.equal(cleanText("line one\r\nline two\tend"), "line one line two end");
+  assert.equal(cleanText("  padded  "), "padded");
 });

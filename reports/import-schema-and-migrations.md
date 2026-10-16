@@ -55,6 +55,7 @@ Clearing a security flag or a removal hold (`clear_security_flag`, `clear_remova
 | 0004 | takedown workflow (`record_takedown_request`, `verify_takedown_ownership`, `resolve_takedown_request`); `public_listing` now also requires `not removal_hold`; gates P3 and bulk approval ignore an accepted *correction* | executed |
 | 0005 | `pg_trgm` GIN indexes for the catalogue search, ordering index, review-queue indexes | executed; planner use checked on 400 rows only |
 | 0006 | `save_listing_draft`, `approve_listing_summaries` (gates P5, P6) | executed |
+| 0007 | hardening: search_path/pg_temp, narrowed service_role, status guard on INSERT, suppression fixes, undo_bulk_action, summary wording guard | executed |
 | later | submissions and owner claims (D3 of the checklist), scheduled re-check facts, API keys, feeds | not started |
 
 Rules: forward-only files in version control; every migration runs in CI against an empty database and against the previous version with fixtures; rollback is a compensating migration or a restore of the staging snapshot, never an edit of an applied file; no manual schema changes.

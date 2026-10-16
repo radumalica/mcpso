@@ -181,3 +181,29 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 * **B4 completed:** `collect.mjs` keeps the previous version of a re-collected record whose content changed in `raw/revisions.jsonl` (hash excludes `collected_at`/`batch_id`, so a forced re-collection without edits adds nothing); `GitHubClient.retries` is counted and written to the run record. Tests (+2).
 * **Independent reviews:** two read-only review agents (database/SQL, public site security) were started on the pushed branch but both **failed with an API rate limit before reporting**; no review result exists and none is claimed. They should be re-run (the account limit resets at 19:40 UTC).
 * **Verified (run here):** `npm test` 130 pass; `npm run test:db` 48 pass + SQL suites; `tsc`, lint and secret scan clean.
+
+## Item 23: hardening after two independent reviews (database, public site) — migration 0007
+Two read-only review agents re-ran on the pushed branch and reported. Their output is model analysis, not authority; each finding was checked against the code and, for SQL, reproduced or proven by a test before and after.
+
+**Database findings (migration `0007_hardening.sql`, tests in `db/tests/hardening.test.mjs`):**
+* HIGH, fixed: temp tables could shadow `app_role` inside `is_reviewer()` (search path had no `pg_temp`). Every `security definer` function now pins `search_path = public, pg_temp`; `TEMPORARY` is revoked from client roles where the platform allows it (best effort, wrapped; PGlite cannot do it).
+* HIGH, fixed: `suppress_candidate` failed for `duplicate` candidates and for listings that were already withdrawn.
+* HIGH, fixed: on Supabase `service_role` owns ALL rights on every table by default, which could bypass the gates. The shim now mimics those defaults, and 0007 narrows `service_role` to the columns the loader needs. A new trigger lets it void a security clearance but never set one. Candidates can no longer be INSERTed as approved or published (the status guard covers INSERT as well as UPDATE).
+* MEDIUM, fixed: an import under a suppressed prefix made a published candidate violate the `published and not importable` constraint; the import now withdraws it.
+* MEDIUM, fixed: `public_listing` called `is_suppressed()` as `anon`; the function is now `security definer`. Proven by reading the view as `anon` with a published row.
+* MEDIUM, fixed: `undo_bulk_action` overwrote later decisions. It now reverts only still-approved candidates, records each revert, refuses unknown ids and requires a reason.
+* LOW, fixed: re-publishing refreshes evidence level, check date and source links. Helper predicates (`publication_gate_failures`, `is_reviewer` for anon) are no longer executable by clients.
+* New (from the wording review): a trigger rejects any draft summary containing verified, safe, secure, trusted or recommended, wherever the text comes from.
+* **Deferred / unverified:** `like` in `is_suppressed` treats `_` and `%` in a key as wildcards (fails closed, so over-suppresses; keys are `host/owner/repo`, where `_` is legal). A takedown for a key with no candidate cannot pre-suppress. `approve_listing_summaries` does not check candidate status. On Supabase `auth.uid()` may read `request.jwt.claims` rather than `request.jwt.claim.sub`; this must be confirmed on the real project, the shim uses the older setting.
+
+**Public-site findings:**
+* Out-of-range page (`/?page=999`) returned 500 (PostgREST 416): now serves the last page; sitemap pages in steps of 1000; the fake API reproduces the 416.
+* `SITE_URL` unvalidated and defaulting to localhost: now parsed leniently (falls back, never throws), problems are logged in production and exposed by `GET /health` (503 with problem names only, no values). `lib/site.ts` unit-tested.
+* Wording: "safe" removed from the footer and terms; the e2e check now covers all five forbidden words on nine pages with an explicit allow-list for the about page's negated statements.
+* Untrusted text: bidirectional and invisible characters are stripped (`cleanText`, unit-tested); the repository link text shows `name (host)`.
+* `robots.txt` no longer disallows pages that carry `noindex` (it blocked the crawler from seeing the tag); only `?q=` and `?declared=` are disallowed.
+* Form controls have a 3:1 border token (`--control-border`).
+* Tests added: security headers on robots, sitemap, 404, health and the 500 page; no server actions and no middleware/proxy files.
+
+**Verified (run here):** `npm run test:db` 58 pass (migrations 0001-0007, both SQL suites); real snapshot loaded twice with RECONCILIATION OK (7,324 records, 4,868 candidates); `npm test` 131 + 3 new; `npm run test:e2e` 16 pass; `tsc`, lint, secret scan clean.
+**Still not verified:** nothing has run on a real Supabase/PostgreSQL server.
