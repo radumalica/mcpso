@@ -1,152 +1,184 @@
-# Master Plan: a free, independent, trustworthy MCP registry
+# Master Plan: a new, independent MCP registry
 
-Consolidates the audit (`executive-summary.md`, `security-audit.md`, `architecture-audit.md`, `code-quality-audit.md`, `dependency-audit.md`, `ui-ux-audit.md`, `threat-model.md`), the product and architecture proposals (`product-requirements.md`, `target-architecture.md`, `prioritized-roadmap.md` R01-R22, `performance-seo-growth.md`, `rebranding-proposal.md`) and the dataset work (`submission-dataset-analysis.md`), and **adds the missing and future features the audit did not analyse** (§4, §5).
+**Revision 2 (scope change).** The product is a **different product and application with no relation to mcp.so**: a new codebase, a new brand, an empty database, and **none of the upstream (`chatmcp/mcpso`) submissions, code, content, branding, analytics IDs or data**. Revision 1 assumed hardening the fork and importing the upstream dataset; both are dropped. What remains of the audit is used only as **evidence-backed lessons and requirements** ("do not repeat this"), plus tooling and rules that are my own work and independent of upstream data (the eligibility criteria and the extraction/classification code, repurposed for submission-time checks).
 
-**Evidence status.** §1-§3 restate audited facts and existing plans (with the report that holds the evidence). §4-§5 are **proposals**: they are derived from the audited gaps, from patterns visible in the dataset (stated where used), and from general product reasoning. They have not been user-tested, costed against real usage, or checked against the current MCP specification and client ecosystem, which moves quickly; verify those before committing to them. No monetisation is planned (out of scope by the brief); §6 lists sustainability questions only so they are decided deliberately.
+**Evidence status.** §1 restates audited facts about the old app (used as lessons). Everything else is a **proposal**, not an audited fact: not user-tested, not costed against real usage, and not checked against the current MCP specification or client ecosystem, which moves quickly. Verify those before committing. No monetisation is planned (excluded by the original brief); §8 lists sustainability questions so they are decided deliberately.
 
-## 1. Where we start (audited)
+## 1. What the audit contributes (lessons, not a base)
 
-| Area | State | Source |
+The fork is **not** the foundation. It is frozen: no hardening, no import, no deployment. The audit's value is the list of failure modes the new product must avoid, each with evidence in the named report:
+
+| Old-app failure (audited) | Requirement for the new product | Source |
 |---|---|---|
-| Code | ~2,700 TS lines, Next 15.0.4/React 19, Supabase anon key for all access, no auth, no tests, no CI, clean build blocked by one type error | architecture-audit, code-quality-audit |
-| Security | public create/overwrite/soft-delete, mass assignment, unbounded paid-LLM triggers, 143 dependency advisories, RLS unverified | security-audit, dependency-audit |
-| Product | card grid, fake 5-star, no mobile nav, no pagination, no install snippet, submit = open a GitHub issue | ui-ux-audit |
-| Data | 4,868 candidate projects from 6,052 submission records; 3,502 eligible, 1,353 needs review, 13 ineligible; 3,467 import-ready; growth 441 → 647 → 925 (16 days) issues/month Aug-Oct 2026 | submission-dataset-analysis |
-| Ecosystem | official MCP Registry snapshot: 44,497 unique entries | submission-dataset-analysis |
+| Anonymous POST overwrote and soft-deleted listings; the anon database key was also the write credential; no RLS shipped | every write authenticated and authorised server-side; database access only through a server layer or RLS proven by tests; least-privilege keys | F-01, F-03 |
+| Mass assignment and a `startsWith("https://github.com")` URL check accepted `github.com.evil.example` | schema validation with allow-listed fields; parse URLs, compare hostnames exactly | F-02, Q-03/04 |
+| Unauthenticated, unbounded paid-LLM and third-party fetch triggers | no public route that spends money or fetches arbitrary URLs; quotas and budgets | F-04, F-06 |
+| 143 dependency advisories, deprecated deploy adapter, two lockfiles, `npm ci` failing, no CI | one lockfile, supported framework and adapter, CI gates (typecheck, build, audit, secret scan, tests) from the first commit | D-01..D-05, F-14 |
+| Fake 5-star rating, inherited analytics and ad identifiers, policies for a different operator | no invented signals; no third-party trackers by default; policies written for this operator | U-01, F-09, F-12 |
+| Errors returned as HTTP 200; DB errors turned into "0 servers"; soft 404s | correct status codes, visible failures, structured logs | Q-05, Q-07, U-07 |
+| No pagination, no mobile navigation, search that disables itself, zoom locked, "star" alt text | pagination and filters from day one, accessible and responsive by design (WCAG 2.2 AA) | Q-02, Q-08, U-03, U-09..U-12 |
+| Submit = "open a GitHub issue" with free-text extraction | structured, authenticated submission with validation and duplicate check | U-04 |
 
-Strategic conclusion: **stop hardening the prototype; build a small, boring, well-governed registry app behind a new data model, and use the upstream data as a review queue, not as a catalogue.** The official registry already stores metadata at scale (44,497 entries), so the product value is curation, deduplication, dated evidence, and discovery quality, not another list.
+Observations about the ecosystem seen while auditing (used as design inputs only, **not** as data): submitters publish fleets of near-identical servers from one account, resubmit the same project repeatedly, rename repositories, and many "MCP" repositories are CLIs, skills, scanners or docs-only repos with an MCP side feature. The new registry needs duplicate and bulk-submission controls, canonical identity, and a content-type taxonomy for that reason.
 
 ## 2. Vision, principles, non-goals
 
 * Vision: the place to find an MCP server you can trust enough to try, with an honest account of what is known about it and when.
-* Principles: free to submit and use; evidence over assertion (levels, dates, no bare scores); accurate before comprehensive; provenance and attribution preserved; small-team operable; no execution of third-party code outside an isolated, reviewed sandbox.
-* Non-goals this plan: payments or sponsored placement, hosting third-party servers, anonymous ratings, auto-publishing anything.
+* Principles: free to submit and use; **evidence over assertion** (levels, dates, no bare scores); accurate before comprehensive; provenance and attribution for every fact; small-team operable; no execution of third-party code outside an isolated, reviewed sandbox; independence from any other directory.
+* Non-goals: payments or sponsored placement; hosting third-party servers; anonymous ratings; scraping or republishing another directory's content; auto-publishing anything.
 
-## 3. Workstreams and phases (consolidates R01-R22)
+## 3. Independence and clean-room rules (new)
+
+1. **New repository**, created empty. Nothing is copied from the fork: no code, templates, copy, images, SQL, policies or config. Code is written fresh; ideas ("what a listing page needs") are fine, text and assets are not.
+2. **Own brand.** Name, logo, domain, legal entity and policies are new. The shortlist in `rebranding-proposal.md` was screened only for the earlier rebrand framing and must be re-screened for a wholly new product (availability and trademark checks still not done); drop any name that echoes mcp.so.
+3. **No upstream data.** The upstream issues, comments, the `data/upstream-import/` products and the importer's GitHub collector are not inputs to the new product. They stay in the audit repository as research evidence (and the local snapshot) and are never loaded into the new database.
+4. **No shared infrastructure or identifiers**: new cloud accounts, database project, keys, analytics (if any), and email domain.
+5. **Licence hygiene.** The new codebase gets its own licence chosen deliberately; dependencies are checked for licence compatibility; the audit tooling that is reused (eligibility rules, extraction, classification code) is my own and may move over, but its tests must pass without upstream fixtures.
+6. **Positioning.** Say plainly it is independent and not affiliated with the Model Context Protocol project, Anthropic, or any other directory.
+
+## 4. Content strategy without upstream data (the cold-start problem)
+
+An empty registry is useless, and a registry stuffed with unreviewed scraped entries repeats the old product's weakness. Proposed sources, in order of trust:
+
+| Source | How | Consent | Initial label |
+|---|---|---|---|
+| **Owner submission** (primary) | authenticated form with auto-prefill from the repo/manifest URL; eligibility and duplicate checks at submit time | explicit | `submitted` → review → `listed` |
+| **Reviewer-curated seed set** (≈50-200 high-signal servers) | reviewers add servers they have personally assessed from public primary sources (the project's own repo, docs and releases), recording who assessed what and when | owner notified, claimable, removable on request | `listed (unclaimed)` with the evidence actually gathered |
+| **Author outreach and a CI action** | `validate`/`submit` GitHub Action and CLI; invite maintainers of seed entries to claim | explicit | `claimed` |
+| **Official MCP Registry (optional, decision D3)** | read-only reference to its public API as a *separate* source of declared metadata and cross-links; terms of use read and honoured first | n/a | `declared (external)`, never presented as reviewed |
+
+Explicitly excluded: scraping mcp.so or any other directory; using its submissions, descriptions or ratings; bulk auto-listing from GitHub topic searches without a review step. Public facts about a repository (name, licence, last release) may be fetched per listing within GitHub's terms and rate limits, with attribution and a retrieval date.
+
+**Unclaimed vs claimed** listings are a core concept: unclaimed entries carry a banner, show only verifiable facts, and can be corrected or removed by the verified owner at any time (see S5/T3).
+
+## 5. Workstreams and phases
 
 | Phase | Goal | Contents | Exit criteria |
 |---|---|---|---|
-| **0 Stop the bleeding** (days) | Make the app safe to leave online | R01 remove public write/LLM routes; R02 upgrade `next`/`react`, drop `vercel`, one lockfile; R03 fix build + CI; R04 remove fake stars, inherited GA/AdSense, branding; R05 verify/enforce RLS (needs live access) | CI green; no public write path; `pnpm audit --prod` has no critical/high; RLS proven by test |
-| **1 Foundation** (weeks) | New data model and pipeline | R06 schema + migrations + RLS; R07 import dataset into review queue (removal-held projects excluded); R12 platform hardening (headers, rate limits, validation); R14 tests; R15 rebrand execution (name subject to clearance) | schema migrated from scratch in CI; importer loads 4,868 projects as `candidate`; test coverage target met on new code |
-| **2 Core product** | Useful, trustworthy read + submit experience | R09 rebuilt read experience (pagination, filters, install block, evidence panel); R13 search; R08 authenticated submission, duplicate detection, status page; R10 reviewer UI with audit log; R11 static inspection pipeline (evidence levels 1-2) | a user can find, understand and install a listed server; an owner can submit and track; a reviewer can clear the queue with an audit trail |
-| **3 Trust and ecosystem** | Make listings verifiably better than a plain directory | R16 SEO; R17 operations; R18 importer hardening + incremental sync; R19 API/export/badges; R20-lite corrections/removal flow; §4 features marked P2 | owner-verified listings exist; public API and export documented; corrections SLA defined |
-| **4 Differentiation** | Features that make users return | §4 features marked P3; R21 endpoint prober; R22 advanced discovery | measured retention/usage justify each item |
-| **5 Frontier** | Only after security design review | R20 sandbox runner for opt-in build/protocol tests; §5 items | separate threat model and budget approved |
+| **0 Decide and set up** | Remove the blocking decisions; stand up a clean base | decisions D1-D8 (§8); new repo, licence, brand shortlist cleared (domain/trademark checks); stack and hosting choice; threat model carried over and re-scoped; governance and moderation policy draft | decisions recorded; empty repo with CI (typecheck, lint, tests, audit, secret scan) green on its first commit; security baseline checklist in place |
+| **1 Foundation** | Secure core | data model (identity, provenance, evidence, status history, ownership, removal holds, content type) with migrations and RLS tested in CI; GitHub OAuth; server-side authorisation; rate limits; security headers; structured logging; backups | schema recreated from scratch in CI; authz tests prove no anonymous or cross-owner write; no critical/high advisories |
+| **2 Core product** | A small but trustworthy registry | owner submission with prefill and duplicate detection; status page; reviewer queue with audit log; catalogue (pagination, filters, content types); listing page with install block, transports, licence, evidence panel; search; correction/removal flow; seed set | an owner can submit and track; a reviewer can decide with a trail; a visitor can find, understand and install a listed server; accessibility pass |
+| **3 Trust and ecosystem** | Better than a plain directory | static inspection pipeline (evidence levels 1-2), freshness/liveness checks, ownership/domain proof, advisory signals, public read-only API and export, badges, feeds, SEO foundations, docs site, ops runbooks | owner-verified listings exist; re-check cadence running; API documented |
+| **4 Differentiation** | Features that bring users back | §6 items marked P3; compare view; collections; client-compatibility matrix; optional official-registry cross-links | each justified by measured use |
+| **5 Frontier** | Only after a security design review | sandboxed conformance runner, endpoint prober, tool-description scanning (§7) | separate threat model and budget approved |
 
-Sequencing rules (from the roadmap): Phase 0 before anything is advertised; no verification claim before the evidence model exists; no execution feature before the sandbox design is reviewed; the removal/correction path ships before the dataset goes public.
+Sequencing rules: no verification claim before the evidence model exists; no execution feature before the sandbox design is reviewed; the removal/correction path ships before anything is public; nothing is auto-published.
 
-## 4. Missing features not analysed in the audit
+## 6. Feature catalogue
 
-Priority: **P1** needed for a credible launch, **P2** within a quarter of launch, **P3** after usage data. Effort: S (≤1 week), M (≤1 month), L (>1 month), one engineer.
+Priority: **P1** needed for a credible launch, **P2** within a quarter of launch, **P3** after usage data. Effort: S (≤1 week), M (≤1 month), L (>1 month), one engineer. These are proposals (see evidence status).
 
-### 4.1 Discovery and comparison
-
-| # | Feature | Why (evidence / reasoning) | Pri | Effort |
-|---|---|---|---|---|
-| M1 | **Content-type taxonomy**: server, client, skill/plugin, CLI/library with MCP feature, framework, tool/scanner | the spot check found many eligible or review items that are CLIs/libraries with an MCP side feature, skills, scanners *about* MCP, and docs-only repos (`classifier-precision-spot-check.md`); mixing them in one "server" grid misleads | P1 | M |
-| M2 | **Client compatibility matrix** (Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, Zed, ChatGPT, others) with the date and basis of each claim | users ask "does it work in my client"; transports claimed in the data are streamable-http 2,307, stdio 1,273, sse 140 across projects (multi-valued), so transport/client fit is a real filter | P1 | M |
-| M3 | **Per-client install snippets and one-click deep links**, generated from manifests, never from submitter prose; copy buttons; stdio vs remote variants | detail page currently has no install block at all (U-06); 1,571 eligible projects claim remote hosting, 1,007 local | P1 | M |
-| M4 | **Capability facets** (tools/resources/prompts, auth type, data access scope, read-only vs write, runtime, licence) | needed for filtering and for honest risk labelling; 49.5% of candidates have incomplete metadata, so facets must show "unknown" explicitly | P2 | M |
-| M5 | **Tool-level search** (search by tool name/description once extracted from manifests or an opt-in protocol check) | users search for what a server *does*; needs extraction pipeline first | P3 | L |
-| M6 | **Compare view** (2-4 servers side by side: evidence level, maintenance, licence, transports, auth) | decision support; cheap once facets exist | P2 | S |
-| M7 | **Curated collections / stacks** ("for data analysis", "for browser automation") authored by reviewers, transparently attributed | solves the long-tail discovery problem without gaming; replaces fake "featured" | P2 | S |
-| M8 | **Alternatives / "similar servers"** from repo topics + facets, not behavioural data | reduces dead ends; avoids needing analytics | P3 | M |
-| M9 | **Duplicates and forks surfaced to users** ("same project as X", "fork of Y", renamed from Z) | 1,184 duplicate records, 197 renames merged, 6 forks in review; canonical identity is a differentiator | P1 | S |
-
-### 4.2 Maintenance and trust signals
+### 6.1 Discovery and comparison
 
 | # | Feature | Why | Pri | Effort |
 |---|---|---|---|---|
-| T1 | **Freshness and liveness**: last commit/release, archived/renamed/transferred flags, scheduled re-checks, "stale" and "unmaintained" states with dates | 48 archived, 174 renamed/transferred, 436 repos unresolved at snapshot time; registry data decays | P1 | M |
-| T2 | **Dependency and advisory signal** read from lockfiles/manifests (no install), shown as dated evidence | cheap static evidence consistent with the no-execution rule | P2 | M |
-| T3 | **Provenance and publisher identity**: GitHub-ownership proof, domain proof (`.well-known`/DNS) for remote endpoints, link to the official registry namespace | ownership proof underpins corrections, removal and "verified publisher"; 27.4% of candidates were not submitted by the repo owner | P1 | M |
-| T4 | **Security advisory feed per server** (coordinated disclosure contact, linked CVE/GHSA, listing banner when a known-bad version is reported) | the registry becomes useful in an incident, not only at discovery | P2 | M |
-| T5 | **Permission/risk labelling** derived from declared capabilities (filesystem, network, shell, secrets) with "declared by publisher" vs "observed by inspection" kept apart | 22 projects with pipe-to-shell installs and 5 with loopback/restricted endpoints show the need for visible warnings | P2 | M |
-| T6 | **Signed releases and SBOM display** when publishers provide them (sigstore, npm provenance) | recognises good practice without requiring it | P3 | M |
-| T7 | **Moderation transparency log**: public record of takedowns, merges and status changes with reasons | trust and defence against accusations of bias | P2 | S |
-| T8 | **Anti-spam and bulk-submitter controls**: per-author quotas, template-family detection, reviewer batching | 7 authors account for 655 of 4,868 projects (13.5%); template families like fleets of near-identical repos need batch review, not 655 separate decisions | P1 | M |
+| M1 | Content-type taxonomy: server, client, skill/plugin, CLI/library with MCP feature, framework, tool/scanner | the audit's spot check found many look-alikes mixed in with real servers; one "server" grid misleads | P1 | M |
+| M2 | Client compatibility matrix (Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, Zed, others) with the basis and date of each claim | "will it work in my client" is the first user question | P1 | M |
+| M3 | Per-client install snippets and deep links generated from manifests (never from submitter prose); copy buttons; stdio vs remote variants | the old detail page had no install block at all | P1 | M |
+| M4 | Capability facets (tools/resources/prompts, auth type, data scope, read-only vs write, runtime, licence), with "unknown" shown explicitly | filtering and honest risk labelling | P2 | M |
+| M5 | Tool-level search from manifests or opt-in protocol checks | users search for what a server does | P3 | L |
+| M6 | Compare view (2-4 servers) | decision support, cheap once facets exist | P2 | S |
+| M7 | Curated collections / stacks by reviewers, attributed | long-tail discovery without gameable "featured" | P2 | S |
+| M8 | Similar servers from topics and facets (no behavioural tracking) | fewer dead ends | P3 | M |
+| M9 | Canonical identity, with forks, renames and duplicates shown ("same project as X", "fork of Y") | duplicate and rename handling was a large share of the audit's work | P1 | S |
 
-### 4.3 Submission, ownership and operations
-
-| # | Feature | Why | Pri | Effort |
-|---|---|---|---|---|
-| S1 | **Accounts via GitHub OAuth** (minimal scopes), owner dashboard (my servers, status, reviewer comments), notifications | no identity exists today (F-01, F-03); required for ownership and corrections | P1 | M |
-| S2 | **Submit-by-URL with auto-prefill** from repo manifest/registry entry; schema validation; duplicate check before submit | removes the free-text extraction errors seen in the importer; 97 records had no extractable identity | P1 | M |
-| S3 | **GitHub Action / CLI to validate and submit** (`registry validate`, `registry submit`) | makes the registry part of publishers' CI; reduces issue-spam submissions | P2 | M |
-| S4 | **Official-registry sync** (read-only mirror of the 44,497 entries as a source, linking both ways) | reduces duplicate effort; lets entries enter as `declared` automatically | P2 | M |
-| S5 | **Corrections and removal workflow with ownership check and SLA** | 7 removal requests, 6 unmapped; must exist before public launch (R20-lite) | P1 | S |
-| S6 | **Versioning and changelog per server** (release history, breaking-change notes, deprecation notices) | users need to know what changed; avoids stale install snippets | P3 | M |
-| S7 | **Backups, restore drill, status page, runbooks, on-call minimum** | R17; absent in the app today | P1 | M |
-| S8 | **Admin tooling**: bulk actions, merge/split projects, rule-explainer showing which eligibility rule fired (rule IDs are already stored) | reviewer throughput at 925 submissions per 16 days | P1 | M |
-
-### 4.4 Developer and ecosystem surface
+### 6.2 Maintenance and trust
 
 | # | Feature | Why | Pri | Effort |
 |---|---|---|---|---|
-| E1 | **Public read-only API (OpenAPI) and bulk export** with licence/attribution fields; stable IDs | R19 mentions it; needs versioning policy and rate limits | P2 | M |
-| E2 | **MCP server for the registry itself** (search, details, install config) | lets agents discover tools; upstream issue #11 requested it; dogfoods the protocol | P2 | M |
-| E3 | **"Listed on" badges and evidence badges** for READMEs | free distribution loop; must show level and date, never a score | P2 | S |
-| E4 | **Feeds**: RSS/Atom for new, updated and deprecated servers; webhook for owners | retention without accounts | P2 | S |
-| E5 | **Webhook/notification subscriptions** (watch a server or category) | follows from E4 and S1 | P3 | M |
-| E6 | **MCP clients directory** (the other half of compatibility) | M2 needs it to stay current | P3 | M |
+| T1 | Freshness and liveness: last commit/release, archived/renamed/transferred, scheduled re-checks, "stale"/"unmaintained" states with dates | registry data decays | P1 | M |
+| T2 | Dependency and advisory signal read from manifests (no install), shown as dated evidence | cheap static evidence | P2 | M |
+| T3 | Publisher identity: GitHub ownership proof, domain proof for remote endpoints (`.well-known`/DNS) | underpins claims, corrections, removal, "verified publisher" | P1 | M |
+| T4 | Security advisory feed per server and coordinated-disclosure contact; listing banner on known-bad versions | useful in an incident | P2 | M |
+| T5 | Permission/risk labels (filesystem, network, shell, secrets), with "declared by publisher" and "observed by inspection" kept apart | visible warnings | P2 | M |
+| T6 | Signed releases and SBOM display when publishers provide them | recognises good practice without requiring it | P3 | M |
+| T7 | Public moderation log: takedowns, merges, status changes with reasons | trust, defence against bias claims | P2 | S |
+| T8 | Anti-spam and bulk-submission controls: per-account quotas, template-family detection, reviewer batching, hidden-Unicode and scope-impersonation checks | the audited ecosystem showed all of these patterns | P1 | M |
+| T9 | Eligibility rules engine at submit time (reuse my rule set E1-E4/N/I with rule IDs shown to the reviewer) | consistent, explainable triage | P1 | M |
 
-### 4.5 Experience, reach and compliance
+### 6.3 Submission, ownership, operations
 
 | # | Feature | Why | Pri | Effort |
 |---|---|---|---|---|
-| X1 | **Accessibility to WCAG 2.2 AA**, keyboard and screen-reader testing, no zoom lock | current: 201 of 205 home images `alt="star"`, zoom disabled, contrast failures (U-09..U-12) | P1 | M |
-| X2 | **Internationalisation**: UI strings and per-listing language tag; Chinese content is visibly present in submissions (e.g. listings titled in Chinese), but the share has not been measured | proposal; measure the language mix before investing | P3 | M |
-| X3 | **Privacy-first analytics** (self-hosted or cookieless, aggregate only) and a real privacy policy | inherited GA/AdSense IDs removed in R04; policy describes services that do not exist (F-12) | P1 | S |
-| X4 | **Legal operations**: terms, DMCA/takedown path, content licence for listing text, attribution rules for imported data | threat-model T20; republishing descriptions needs a defined policy | P1 | S |
-| X5 | **Documentation site**: contributor guide, eligibility criteria published, verification-level definitions, API docs | trust and onboarding; criteria already exist as a report | P1 | S |
-| X6 | **Performance budgets** in CI (first-load JS, LCP/INP targets measured in the field after launch) | current detail page 481 kB first-load JS | P2 | S |
-| X7 | **Observability**: structured logs without PII, error tracking, queue-age and importer dashboards | Q-07: DB errors currently become silent empty results | P1 | M |
+| S1 | GitHub OAuth (minimal scopes), owner dashboard (my servers, status, reviewer comments), notifications | no identity existed in the old app | P1 | M |
+| S2 | Submit-by-URL with prefill from repo manifest; schema validation; duplicate check before submit | removes free-text extraction errors | P1 | M |
+| S3 | GitHub Action / CLI to validate and submit | registry becomes part of publishers' CI | P2 | M |
+| S4 | Optional read-only cross-links to the official MCP Registry (decision D3) | avoids duplicate effort; never imports reviewed status | P3 | M |
+| S5 | Corrections and removal workflow with ownership check and published SLA | must exist before launch | P1 | S |
+| S6 | Per-server versions, changelog, deprecation notices | stale install snippets mislead | P3 | M |
+| S7 | Backups with a tested restore drill, status page, runbooks, minimal on-call | operations | P1 | M |
+| S8 | Admin tooling: bulk actions, merge/split, rule explainer, reviewer workload view | reviewer throughput | P1 | M |
 
-## 5. Future features (frontier; each needs its own design and threat model)
+### 6.4 Developer and ecosystem surface
+
+| # | Feature | Why | Pri | Effort |
+|---|---|---|---|---|
+| E1 | Public read-only API (OpenAPI) and bulk export with licence/attribution fields and stable IDs | ecosystem value; needs versioning and rate limits | P2 | M |
+| E2 | MCP server for the registry itself (search, details, install config) | lets agents discover tools; dogfoods the protocol | P2 | M |
+| E3 | "Listed on" and evidence badges for READMEs (level and date, never a score) | free distribution loop | P2 | S |
+| E4 | RSS/Atom feeds for new, updated and deprecated servers | retention without accounts | P2 | S |
+| E5 | Watch/webhook subscriptions | follows E4 and S1 | P3 | M |
+| E6 | MCP clients directory | keeps M2 current | P3 | M |
+
+### 6.5 Experience, reach, compliance
+
+| # | Feature | Why | Pri | Effort |
+|---|---|---|---|---|
+| X1 | WCAG 2.2 AA, keyboard and screen-reader testing, no zoom lock | accessibility failures were extensive in the old app | P1 | M |
+| X2 | Internationalisation (UI strings, per-listing language tag); measure the language mix after launch before investing | proposal | P3 | M |
+| X3 | Privacy-first analytics (cookieless/self-hosted, aggregate) and a real privacy policy | no inherited trackers | P1 | S |
+| X4 | Legal operations: terms, takedown/DMCA path, licence for listing text, attribution rules | republishing third-party text needs a policy | P1 | S |
+| X5 | Documentation site: contributor guide, published eligibility criteria, evidence-level definitions, API docs | trust and onboarding | P1 | S |
+| X6 | Performance budgets in CI; field metrics after launch | old detail page shipped 481 kB first-load JS | P2 | S |
+| X7 | Observability: structured logs without PII, error tracking, queue-age dashboards | failures must be visible | P1 | M |
+
+## 7. Future features (frontier; each needs its own design and threat model)
 
 | # | Feature | Prerequisite | Notes |
 |---|---|---|---|
-| F1 | **Sandboxed build and protocol conformance tests** (initialize, list tools, schema validity) run in an isolated, network-restricted runner; results as evidence level 3 | reviewed isolation design; separate cloud account; abuse and cost budget (R20) | highest risk item; never run in the app's own environment |
-| F2 | **Remote endpoint prober** with ownership proof, SSRF-hardened, rate-limited, opt-in by owner | T3 domain proof; R21 | do not probe unverified third-party endpoints |
-| F3 | **Behavioural tool-description scanning** (prompt-injection / tool-poisoning patterns in tool metadata) | tool extraction (M5), static inspection pipeline (R11) | signature-based only at first; no prompt-injection signature matched in the 6,362 submission records, which says nothing about tool metadata |
-| F4 | **Semantic search and related-server graph** | usage data showing keyword search fails (R22) | embeddings of public metadata only |
-| F5 | **Verified-publisher programme and signed attestations** | T3, T6 | clear criteria, revocation process |
-| F6 | **Transparent, abuse-resistant community signals** (verified-user usage reports, "works in client X" confirmations) | S1 accounts, anti-abuse (T8) | replaces the fake stars; do not ship ratings without this |
-| F7 | **Federation / interoperability** with the official registry and other directories (publish own feed in the official schema) | S4, E1 | positions the project as a curation layer |
-| F8 | **Trust-aware client integration** (clients query registry evidence before installing) | E2, F5 | long term |
-| F9 | **Agent-facing recommendations** (agents choose servers by declared capabilities and evidence level) | F3, F6 | requires clear liability and safety policy |
+| F1 | Sandboxed build and protocol conformance tests (initialize, list tools, schema validity) as evidence level 3 | reviewed isolation design, separate cloud account, abuse and cost budget | highest-risk item; never in the app's own environment |
+| F2 | Remote endpoint prober, opt-in, ownership-proven, SSRF-hardened, rate-limited | T3 | never probe unverified third-party endpoints |
+| F3 | Tool-description scanning for prompt-injection / tool-poisoning patterns | tool extraction (M5) | signature-based first; no signature matched in the audited submission text, which says nothing about tool metadata |
+| F4 | Semantic search and related-server graph | evidence that keyword search fails | embeddings of public metadata only |
+| F5 | Verified-publisher programme and signed attestations | T3, T6 | clear criteria and revocation |
+| F6 | Abuse-resistant community signals (verified-user usage reports, "works in client X") | S1, T8 | replaces the old fake stars; no ratings without this |
+| F7 | Publish the registry's own feed in an interoperable schema | E1 | positions it as a curation layer |
+| F8 | Trust-aware client integration (clients query evidence before install) | E2, F5 | long term |
+| F9 | Agent-facing recommendations by capability and evidence level | F3, F6 | needs a safety and liability policy |
 
-## 6. Decisions and open questions (need an owner)
+## 8. Decisions needed (owner required)
 
-1. **Name and domain**: choose from the finalists after trademark and availability checks (none confirmed; `rebranding-proposal.md`).
-2. **Hosting**: stay on a Cloudflare-style edge target or move to a standard Node host/managed Postgres; deprecated adapter forces a decision in Phase 0-1 (`target-architecture.md` §6).
-3. **Governance**: who reviews, how disputes are resolved, publication of moderation policy, handling of bulk-submitter families.
-4. **Data licensing**: terms for imported descriptions and READMEs; whether bulk export carries third-party text or facts only.
-5. **Sustainability**: the brief excludes monetisation; the plan assumes a small volunteer or grant-funded team. Operating cost (hosting, LLM calls if kept, runner) must be estimated before Phase 4-5; not estimated in this audit.
-6. **LLM use**: keep (with sanitised, reviewed output, cost caps) or drop; currently unauthenticated and unbounded (F-04). Default recommendation: no LLM-generated public text without reviewer approval.
-7. **Eligibility thresholds**: whether registry-only evidence (1,930 of 3,502 eligible) may publish as `declared`, or must wait for a manifest/code signal.
+* **D1 Name, domain, brand**: re-screen candidates for a wholly new product; availability and trademark checks still outstanding.
+* **D2 Stack and hosting**: choose a supported framework and a hosting target that is not a deprecated adapter; managed Postgres with RLS tested in CI. (The old stack choices are not binding.)
+* **D3 Official MCP Registry**: reference/cross-link only, ignore entirely, or later sync as `declared (external)`. Default recommendation: ignore at launch, revisit after Phase 2, and read its terms before any use.
+* **D4 Governance**: who reviews, dispute handling, moderation policy publication, bulk-submitter policy.
+* **D5 Data and content licensing**: terms for listing text, what bulk export carries (facts only vs text), attribution.
+* **D6 LLM use**: default no LLM-generated public text without reviewer approval; if used, authenticated, budget-capped, sanitised.
+* **D7 Evidence thresholds**: whether a registry-style listing alone may publish as `declared`, or a manifest/code signal is required.
+* **D8 Sustainability**: the plan assumes a small volunteer or grant-funded team; hosting, runner and storage costs are not estimated here and must be before Phase 4-5.
 
-## 7. Risks
+## 9. Risks
 
 | Risk | Mitigation |
 |---|---|
-| Prototype hardening absorbs time better spent on the new model | Phase 0 is strictly limited to R01-R05; new work happens behind the new schema |
-| Import creates a low-quality catalogue | publish only eligible + not held; `declared` label; review queue for the rest |
-| Reviewer capacity (growth to hundreds of submissions per month) | S8 tooling, T8 batching, auto-prefill (S2), submissions via CI (S3) |
-| Spam and impersonation (official-scope names, bulk fleets) | ownership proof (T3), quotas, hidden-Unicode and scope-impersonation flags already detected |
-| Legal exposure from republishing third-party text | X4 policy, facts over prose, takedown path before launch |
-| Supply-chain / malicious servers listed as "verified" | evidence levels with dates; never imply safety; sandbox only after review |
-| Dependence on GitHub API and the official registry | caching, incremental sync, graceful degradation |
-| Scope creep from §4-§5 | each item needs a measured need; P3 and §5 gated by usage data |
+| Cold start: empty registry feels pointless | curated seed set, author outreach, CI action, a few strong collections; avoid inflating counts |
+| Reviewer capacity | prefill and rules engine (T9), batching (T8), small scope in Phase 2 |
+| Spam, impersonation, fleets of look-alikes | ownership proof, quotas, hidden-Unicode and scope-impersonation checks |
+| Legal exposure from third-party text | facts over prose, takedown path, clean-room rules (§3) |
+| Accidental dependence on or resemblance to mcp.so | §3 rules, no copied assets or text, independent review of copy and design before launch |
+| Malicious servers listed as "verified" | dated evidence levels; never imply safety; sandbox only after review |
+| GitHub API limits and outages | caching, incremental refresh, graceful degradation |
+| Scope creep from §6-§7 | every P2/P3 item needs measured need |
 
-## 8. Success metrics (to be measured after launch; none exist today)
+## 10. Success metrics (to be measured after launch; none exist)
 
-Time-to-first-install from landing; share of listings with at least evidence level 2; median submission-to-decision time; correction/removal turnaround; duplicate rate at submission; share of listings re-checked in the last 30 days; accessibility audit pass rate; API adoption; reviewer backlog age. Targets are set after a baseline month.
+Time-to-first-install from landing; share of listings at evidence level 2 or higher; median submission-to-decision time; correction/removal turnaround; duplicate rate at submission; share of listings re-checked in the last 30 days; accessibility audit pass rate; API adoption; reviewer backlog age. Targets are set after a baseline month.
 
-## 9. Immediate next steps
+## 11. Immediate next steps
 
-1. Approve Phase 0 and run R01-R05 (needs live Supabase access for R05).
-2. Decide §6 items 1-3 (name, hosting, governance) so Phase 1 can start.
-3. Start the schema (R06) with `content_type` (M1), ownership (S1/T3) and removal-hold (S5) fields from day one, since retrofitting them is costly.
-4. Prototype the reviewer queue (S8, R10) against the classified CSVs to size the review workload before building public pages.
-5. Run a short user-research round (5-8 MCP users and 3-5 server authors) to confirm or drop §4 priorities before Phase 2.
+1. Record decisions D1-D4 and D8 (brand, stack/hosting, official-registry stance, governance, sustainability).
+2. Create the new empty repository with CI, licence and security baseline (Phase 0 exit).
+3. Define the schema with ownership, content type, evidence levels, status history and removal holds from day one.
+4. Prototype the submission flow and reviewer queue against hand-made test fixtures (no upstream data).
+5. Run a short research round (5-8 MCP users, 3-5 server authors) to confirm or drop §6 priorities before Phase 2.
+6. Decide what to do with the old fork and audit repository: keep as private/archived research, and do not deploy or continue it.
