@@ -1,0 +1,22 @@
+{
+  "seed": 20261016,
+  "requested": 300,
+  "drawn": 300,
+  "population": {
+    "bulk": 1216,
+    "individual": 1949,
+    "needs_review": 1353,
+    "not_eligible": 13,
+    "blocked": 35,
+    "family_sample": 302
+  },
+  "allocation": {
+    "bulk": 106,
+    "individual": 89,
+    "needs_review": 63,
+    "not_eligible": 10,
+    "blocked": 11,
+    "family_sample": 21
+  },
+  "denominator_projects": 4868
+}
