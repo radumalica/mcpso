@@ -3,7 +3,9 @@ import { getCategories } from "@/models/category";
 import { getFeaturedProjects } from "@/models/project";
 import pageJson from "@/pagejson/en.json";
 
-export const runtime = "edge";
+// Database-backed: rendered per request, never prerendered at build time.
+export const dynamic = "force-dynamic";
+
 
 export async function generateMetadata() {
   return {

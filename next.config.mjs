@@ -1,5 +1,3 @@
-import { setupDevPlatform } from "@cloudflare/next-on-pages/next-dev";
-
 // Baseline response headers (master plan v5, A6). A Content-Security-Policy needs per-request nonces for the
 // inline scripts Next.js emits and is added separately once the hosting target (D2) is fixed.
 export const securityHeaders = [
@@ -18,8 +16,5 @@ const nextConfig = {
   },
 };
 
-if (process.env.NODE_ENV === "development") {
-  // await setupDevPlatform();
-}
 
 export default nextConfig;

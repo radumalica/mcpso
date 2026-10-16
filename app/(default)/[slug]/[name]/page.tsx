@@ -1,10 +1,12 @@
 import { findProjectByName, getRandomProjects } from "@/models/project";
 
+// Database-backed: rendered per request, never prerendered at build time.
+export const dynamic = "force-dynamic";
+
 import Single from "@/templates/tailspark/landing/pages/single";
 import { findCategoryByName } from "@/models/category";
 import pagejson from "@/pagejson/en.json";
 
-export const runtime = "edge";
 
 export async function generateMetadata({
   params,

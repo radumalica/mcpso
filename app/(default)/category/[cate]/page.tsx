@@ -3,11 +3,13 @@ import {
   getProjectsCountByCategory,
 } from "@/models/project";
 
+// Database-backed: rendered per request, never prerendered at build time.
+export const dynamic = "force-dynamic";
+
 import Category from "@/templates/tailspark/landing/components/category";
 import { findCategoryByName } from "@/models/category";
 import pageJson from "@/pagejson/en.json";
 
-export const runtime = "edge";
 
 export async function generateMetadata({
   params,

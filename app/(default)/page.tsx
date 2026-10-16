@@ -4,11 +4,13 @@ import {
   getProjectsWithKeyword,
 } from "@/models/project";
 
+// Database-backed: rendered per request, never prerendered at build time.
+export const dynamic = "force-dynamic";
+
 import LandingPage from "@/templates/tailspark/landing/pages/index";
 import { Project } from "@/types/project";
 import pagejson from "@/pagejson/en.json";
 
-export const runtime = "edge";
 
 export default async function ({
   searchParams,
