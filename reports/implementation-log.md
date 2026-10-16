@@ -8,6 +8,7 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 | 1 | A5 (part): fix the build-breaking type error and the self-disabling search (audit Q-01, Q-02, U-02) | done | see `git log` |
 | 2 | A4 / R01: remove public write and LLM-trigger endpoints; regression guard; `test`/`typecheck` scripts (F-01, F-02, F-04, F-10) | done | see `git log` |
 | 3 | A3 (part): remove inherited analytics/ads, fake star rating, upstream star widget, zoom lock, upstream-host sitemaps and ads.txt | done | see `git log` |
+| 4 | A6 (part): search-term filter-injection fix and baseline security headers | done | see `git log` |
 
 ## Item 1: search component and clean build
 * **Changed:** `templates/tailspark/landing/components/search/index.tsx` rewritten as a real search form (`role="search"`, native submit so Enter and IME composition work, labelled input, submit button with accessible name, `maxLength` 200, never disabled, pending state via `useTransition`). Removed the invalid global `KeyboardEvent<...>` usage and the `inputDisabled` state that disabled the box after the first search.
@@ -26,3 +27,9 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 * **Added:** `tests/security/no-third-party-trackers.test.mjs` (4 tests: no analytics/ad identifiers, no zoom lock, no `ads.txt`/public file naming the upstream host, no star rating or upstream-repository polling).
 * **Verified (run here):** `npm test` 62 pass, 0 fail; `tsc --noEmit` clean; clean `next build` succeeds (`/` first-load JS 173 kB, was 175 kB).
 * **Not done, needs owner decisions:** product name and domain (D1) so policy pages (`app/(policy)/*` still name the upstream site and contact address and describe analytics/ads that no longer exist), a generated sitemap/robots with the real host, NOTICE/modification notices (A1), and the separate repository/accounts (D2). No brand was invented.
+
+## Item 4: search filter injection fixed, baseline security headers (A6, part)
+* **Changed:** `utils/search-term.ts` (`sanitizeSearchTerm`: NFKC, control characters and PostgREST/LIKE syntax characters removed, whitespace collapsed, 200-character cap). `models/project.ts#getProjectsWithKeyword` now sanitises the `?q=` value before building the `or(...ilike...)` filter and returns no rows for an empty term (previously the raw value was interpolated, allowing extra filter clauses). `next.config.mjs`: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security` on all paths, `poweredByHeader: false`.
+* **Tests added:** `tests/security/search-term.test.mjs` (5), `tests/security/headers.test.mjs` (2).
+* **Verified (run here):** `npm test` 69 pass, 0 fail; `tsc --noEmit` clean; clean `next build` compiles; `next start` on a local port returns the five headers for `/privacy-policy` (curl).
+* **Not done:** Content-Security-Policy (needs nonces; deferred until hosting target D2), rate limiting and request-size limits (depend on the hosting layer, D2; no write endpoints exist now), the search is still an unindexed `ilike` scan (replaced by full-text search in migration 0003).

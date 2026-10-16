@@ -1,5 +1,6 @@
 import { Project } from "@/types/project";
 import { getSupabaseClient } from "./db";
+import { sanitizeSearchTerm } from "@/utils/search-term";
 
 export enum ProjectStatus {
   Created = "created",
@@ -156,13 +157,16 @@ export async function getProjectsWithKeyword(
   page: number,
   limit: number
 ): Promise<Project[]> {
+  const term = sanitizeSearchTerm(keyword);
+  if (!term) return [];
+
   const supabase = getSupabaseClient();
 
   const { data, error } = await supabase
     .from("projects")
     .select("*")
     .or(
-      `name.ilike.%${keyword}%,title.ilike.%${keyword}%,description.ilike.%${keyword}%`
+      `name.ilike.%${term}%,title.ilike.%${term}%,description.ilike.%${term}%`
     )
     .eq("status", ProjectStatus.Created)
     .order("sort", { ascending: false })
