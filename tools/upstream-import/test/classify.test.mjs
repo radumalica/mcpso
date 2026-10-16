@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { classifyProject, registryMatches, buildRegistryIndex, applyRemovalHold } from "../classify.mjs";
+import { classifyProject, registryMatches, buildRegistryIndex, applyHolds, parseSuppressionList } from "../classify.mjs";
 
 const NOREG = { viaPackageOrEndpoint: [], viaRepoOwnerNamespace: [], repoClaimOnly: [] };
 const ctx = { collectedAt: "2026-10-16T00:00:00Z", bulkAuthors: new Set() };
@@ -85,14 +85,35 @@ test("ineligible only for infrastructure, empty/template, or no MCP signal at al
 
 test("security concern is independent of category", () => {
   const r = cls(proj("github.com/o/r", { top: { security_flags: [{ code: "pipe_to_shell_install", detail: "curl | sh" }] } }), repo({ sdk_evidence: [{ scope: "root", signal: "server.json:registry-manifest" }] }));
-  assert.equal(r.category, "eligible"); assert.equal(r.security_concern, true); assert.equal(r.import_ready, false);
+  assert.equal(r.category, "eligible"); assert.equal(r.security_concern, true); assert.equal(r.eligible_unblocked, false);
 });
 
-test("projects with a pending removal request are never import-ready, and inputs are not mutated", () => {
-  const rows = [{ project_id: "a", import_ready: true, category: "eligible", quality_indicators: [] }, { project_id: "b", import_ready: true, category: "eligible", quality_indicators: [] }];
-  const out = applyRemovalHold(rows, new Set(["a"]));
-  assert.equal(out[0].import_ready, false); assert.equal(out[0].category, "eligible");
+const row = (id, key) => ({ project_id: id, canonical_key: key, importable: true, eligible_unblocked: true, approved_for_publication: false, category: "eligible", quality_indicators: [] });
+
+test("removal hold: not eligible_unblocked, still importable, category unchanged, inputs not mutated", () => {
+  const rows = [row("a", "k/a"), row("b", "k/b")];
+  const out = applyHolds(rows, { removalHold: new Set(["a"]) });
+  assert.equal(out[0].eligible_unblocked, false); assert.equal(out[0].importable, true); assert.equal(out[0].category, "eligible");
   assert.deepEqual(out[0].quality_indicators, ["removal_request_pending"]);
-  assert.equal(out[1].import_ready, true);
-  assert.equal(rows[0].import_ready, true); assert.deepEqual(rows[0].quality_indicators, []);
+  assert.equal(out[1].eligible_unblocked, true);
+  assert.equal(rows[0].eligible_unblocked, true); assert.deepEqual(rows[0].quality_indicators, []);
+});
+
+test("suppression list prevents re-import from resurrecting a removed project", () => {
+  const keys = parseSuppressionList('canonical_key,reason\n"k/a",owner request\n\nk/z,x\n');
+  assert.deepEqual([...keys].sort(), ["k/a", "k/z"]);
+  const out = applyHolds([row("a", "k/a"), row("b", "k/b")], { suppressedKeys: keys });
+  assert.equal(out[0].importable, false); assert.equal(out[0].eligible_unblocked, false);
+  assert.ok(out[0].quality_indicators.includes("suppressed"));
+  assert.equal(out[1].importable, true);
+});
+
+test("the pipeline never marks anything approved or published", () => {
+  const eligible = cls(proj("github.com/o/r"), repo({ sdk_evidence: [{ scope: "root", signal: "server.json:registry-manifest" }] }));
+  assert.equal(eligible.category, "eligible");
+  assert.equal(eligible.approved_for_publication, false);
+  assert.ok(!["published", "approved"].includes(eligible.category));
+  // holds cannot turn an approval on either
+  const held = applyHolds([{ ...row("a", "k/a"), approved_for_publication: true }], { removalHold: new Set(["a"]) });
+  assert.equal(held[0].approved_for_publication, false);
 });

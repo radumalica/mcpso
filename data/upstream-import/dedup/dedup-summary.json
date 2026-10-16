@@ -1,11 +1,9 @@
 {
-  "generated_at": "2026-10-16T11:35:52.370Z",
+  "generated_at": "2026-10-16T12:14:04.826Z",
   "enrichment_applied": true,
-  "renames_applied": 197,
   "submission_records_with_identity": 6052,
   "submission_records_without_identity": 97,
   "projects": 4868,
-  "duplicate_records": 1184,
   "projects_with_multiple_sources": 661,
   "projects_by_source_count": {
     "1": 4207,
@@ -25,7 +23,22 @@
     "81": 1,
     "94": 1
   },
-  "merge_rule_counts": {
+  "duplicate_records": 1184,
+  "multi_record_projects": 661,
+  "records_in_multi_record_projects": 1845,
+  "multi_record_projects_by_identity": {
+    "github_repo": 624,
+    "endpoint": 18,
+    "package": 19
+  },
+  "duplicate_records_by_basis": {
+    "same_key_as_group": 1083,
+    "linked_by_R6": 42,
+    "linked_by_R2": 11,
+    "linked_by_R3": 26,
+    "linked_by_R5": 22
+  },
+  "merge_annotation_entries_by_rule": {
     "R1": 624,
     "R6": 235,
     "R2": 16,
@@ -33,7 +46,23 @@
     "R3": 42,
     "R5": 22
   },
+  "merge_annotation_distinct_records_by_rule": {
+    "R6": 235,
+    "R2": 16,
+    "R3": 42,
+    "R5": 22
+  },
+  "rename_mappings_applied": 197,
+  "records_rekeyed_by_rename": 235,
+  "projects_containing_renamed_records": 194,
+  "projects_joined_by_rename": 21,
   "ambiguous_projects": 228,
+  "ambiguous_projects_with_multiple_flags": 11,
+  "ambiguous_projects_by_flag": {
+    "same_repo_incompatible_names": 28,
+    "shared_package_across_repos": 139,
+    "shared_endpoint_across_repos": 73
+  },
   "by_identity_type": {
     "github_repo": 3966,
     "package": 94,

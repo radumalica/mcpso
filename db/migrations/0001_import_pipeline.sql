@@ -12,10 +12,17 @@ begin;
 create extension if not exists pgcrypto;
 
 -- ---------------------------------------------------------------- helpers
+-- candidate_status is the LIFECYCLE of a candidate. It deliberately keeps three concepts apart:
+--   importable   (boolean column candidate.importable)  : stored with provenance and not suppressed
+--   eligible     (eligibility_evaluation.category)      : machine verdict against the inclusion criteria; 'eligible' here is a status
+--                                                          only until a human acts; it is NOT approval
+--   approved     (status 'approved')                    : a human decision recorded AND all publication gates P1-P8 passed
+-- 'published' means a listing row exists. Only the transition functions in 0002 may set approved/published.
 create type candidate_status as enum
-  ('candidate','needs_review','eligible','ineligible','duplicate','published','rejected','unavailable');
+  ('candidate','needs_review','eligible','ineligible','duplicate','approved','published','withdrawn','rejected','unavailable');
 create type review_action as enum
-  ('approve','reject','merge','split','mark_unavailable','request_info','reopen','publish','unpublish','correct_metadata','suppress');
+  ('approve','reject','merge','split','mark_unavailable','request_info','reopen','publish','unpublish','correct_metadata','suppress',
+   'clear_security_flag','clear_removal_hold','override_eligibility');
 create type source_kind as enum ('issue','pull_request','issue_comment');
 create type batch_status as enum ('running','completed','failed','interrupted','dry_run');
 
@@ -105,11 +112,16 @@ create table candidate (
   name text,
   facts jsonb not null default '{}'::jsonb,        -- tier 1/2 facts only (see policy section 6): repo, packages, endpoints, licence, transports
   merged_into uuid references candidate(id),       -- set when status = 'duplicate'
+  importable boolean not null default true,        -- false when the canonical key is suppressed or provenance is incomplete
   security_flags text[] not null default '{}',
-  removal_hold boolean not null default false,
+  security_cleared_at timestamptz,                 -- set only by an individual reviewer decision (never by a bulk action)
+  security_cleared_by uuid references auth.users(id),
+  removal_hold boolean not null default false,     -- cleared only by an individual reviewer decision
+  override_reason text,                            -- written reviewer override of a non-eligible evaluation (individual only)
   created_batch_id uuid references import_batch(id),
   updated_at timestamptz not null default now(),
-  check ((status = 'duplicate') = (merged_into is not null))
+  check ((status = 'duplicate') = (merged_into is not null)),
+  check (status not in ('approved','published') or importable)
 );
 create index on candidate (status);
 
@@ -244,7 +256,10 @@ create table audit_log (
 );
 
 -- ---------------------------------------------------------------- 6. row-level security
--- Default deny everywhere; no policy is granted to the anon role on any table except the published view.
+-- Default deny for client roles: RLS enabled and every privilege revoked from anon/authenticated. FORCE is deliberately NOT used:
+-- the table owner (the migration role, which owns the security-definer functions in 0002 and bypasses RLS) must be able to
+-- perform the audited transitions; client roles never own tables. OPEN CHECK: confirm the owner role has BYPASSRLS in the target
+-- Postgres/Supabase project and that no application connection uses the owner role (RLS test suite, db/tests).
 do $$
 declare t text;
 begin
@@ -254,7 +269,6 @@ begin
     'review_decision','listing','takedown_request','suppression','audit_log'])
   loop
     execute format('alter table %I enable row level security', t);
-    execute format('alter table %I force row level security', t);
     execute format('revoke all on %I from anon, authenticated', t);
   end loop;
 end $$;
@@ -267,10 +281,9 @@ create policy reviewer_read_decisions on review_decision for select to authentic
 grant select on candidate, eligibility_evaluation, review_decision to authenticated;
 
 -- Public read model: only published, not unpublished, and only the tier-1/2 columns.
--- OPEN CHECK (cannot be verified without a running Postgres): `listing` has FORCE ROW LEVEL SECURITY and no select
--- policy, and this definer view returns rows only if its owner bypasses RLS. Before use, either add an explicit
--- select policy on listing limited to unpublished_at is null and make the view security_invoker = true, or prove the
--- owner/bypass behaviour with the RLS test suite.
+-- OPEN CHECK (cannot be verified without a running Postgres): `listing` has RLS enabled and no select policy for client roles;
+-- this definer view returns rows because its owner bypasses RLS. Alternative if that is not acceptable: add an explicit select
+-- policy on listing limited to unpublished_at is null and make the view security_invoker = true. Prove with the RLS test suite.
 create view public_listing with (security_invoker = false) as
   select slug, title, summary, facts, evidence_level, evidence_checked_at, source_links, published_at
   from listing where unpublished_at is null;

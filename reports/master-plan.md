@@ -1,5 +1,7 @@
 # Master Plan: a new, independent MCP registry
 
+> **Superseded by `master-plan-v5.md`** (revision 5). Kept as history; several statements here were corrected there (see `master-plan-v5-changelog.md` and `import-count-reconciliation.md` section 4).
+
 **Revision 4 (current; supersedes revisions 1-3).** The product is an **independently operated registry** built by **enhancing the current Apache-2.0 codebase incrementally**, with its own brand, domain, repository, infrastructure, database, analytics, policies and data model. **Importing, deduplicating, evaluating and selectively publishing the historical MCP server addition requests from the upstream `chatmcp/mcpso` issue tracker is a core, first-class workstream and the initial data-acquisition strategy.** It is not replaced by a manually curated launch. The settled decision history is in `master-plan-changelog.md`.
 
 What "independent" means here: no runtime dependence on the upstream project's API, site or infrastructure; no upstream branding, name, tracking identifiers or implied affiliation; no assumption that the code licence grants rights to third-party submissions, descriptions, logos or screenshots (see `import-eligibility-policy.md` §6). The *code* is kept: Apache-2.0 (`LICENSE`) permits modification and redistribution with notices preserved (§3). The audit's remediation items R01-R05 apply first, and the architecture is reached by incremental migration of this code (`target-architecture.md` §7).
@@ -53,8 +55,8 @@ The registry bootstraps from the historical MCP server addition requests in `cha
 | Normalised records | 6,362 = 4,869 issues + 43 PRs + 1,450 thread comments |
 | Relevant addition requests (submission-type) | 6,149 (6,052 with a usable identity; 97 without) |
 | Not submissions | 213 (questions/feedback 48, no identity 110, code contributions 43, removal requests 7, link corrections 5) |
-| Canonical candidates after deduplication | 4,868 (1,184 duplicate records merged; 197 renames/transfers merged; 228 flagged ambiguous) |
-| Machine evaluation | eligible 3,502; needs_review 1,353; ineligible 13; import-ready 3,467 (excludes 26 security-flagged and 9 removal-held eligible) |
+| Canonical candidates after deduplication | 4,868 (1,184 duplicate records merged; 197 renamed repositories mapped, 21 candidates joined by a rename; 228 flagged ambiguous) |
+| Machine evaluation | eligible 3,502; needs_review 1,353; ineligible 13; eligible_unblocked 3,467 (not approved) (excludes 26 security-flagged and 9 removal-held eligible) |
 | Unretrievable | 595 issue numbers in 1..5,507 (deleted, transferred or inaccessible); 436 repositories not found or private |
 | Approved / published | 0 / 0: no review has taken place and nothing is published |
 

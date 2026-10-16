@@ -1,24 +1,121 @@
 {
-  "generated_at": "2026-10-16T11:36:59.474Z",
+  "generated_at": "2026-10-16T12:28:51.453Z",
   "source": {
     "repository": "chatmcp/mcpso (renamed chatmcp/mcp-directory)",
     "collected_at": "2026-10-16T09:58:33.644Z"
   },
+  "definitions": [
+    {
+      "name": "raw source records",
+      "unit": "records",
+      "meaning": "issues + pull requests + ALL comments, as retrieved (stored internally with provenance)"
+    },
+    {
+      "name": "context-only comments",
+      "unit": "records",
+      "meaning": "comments on issues other than the submission thread (#1); stored, never treated as submissions"
+    },
+    {
+      "name": "normalised records",
+      "unit": "records",
+      "meaning": "issues + pull requests + submission-thread comments; one per source record that the normaliser processed"
+    },
+    {
+      "name": "submission-type records",
+      "unit": "records",
+      "meaning": "normalised records whose intent is submission or submission_unclear (the 'relevant addition requests')"
+    },
+    {
+      "name": "placed records",
+      "unit": "records",
+      "meaning": "submission-type records with a usable identity (repository, package or endpoint); each is in exactly one project"
+    },
+    {
+      "name": "unplaced records",
+      "unit": "records",
+      "meaning": "submission-type records with no extractable identity; listed for manual review, not candidates"
+    },
+    {
+      "name": "projects / canonical candidates",
+      "unit": "projects",
+      "meaning": "groups of placed records sharing one canonical identity; the unit that is evaluated, reviewed and may be published"
+    },
+    {
+      "name": "duplicate records",
+      "unit": "records",
+      "meaning": "placed records that are not the first record of their project (= placed records - projects)"
+    },
+    {
+      "name": "multi-record projects",
+      "unit": "projects",
+      "meaning": "projects with more than one record; the R1 (GitHub identity) and R4 (endpoint/package identity) merge entries are one per such project"
+    },
+    {
+      "name": "R2/R3/R5/R6 merge entries",
+      "unit": "records",
+      "meaning": "one entry per record that was linked (R2 package, R3 endpoint, R5 package) or re-keyed by a rename (R6); NOT merge operations"
+    },
+    {
+      "name": "rename mappings",
+      "unit": "repositories",
+      "meaning": "repositories whose GitHub-resolved owner/name differs from the submitted one (197); NOT the number of merges"
+    },
+    {
+      "name": "records re-keyed by rename",
+      "unit": "records",
+      "meaning": "records whose repository key was replaced because of a rename (R6 entries)"
+    },
+    {
+      "name": "projects joined by rename",
+      "unit": "projects",
+      "meaning": "multi-record projects whose records carried different original repo keys that a rename made equal (the only places a rename caused a merge)"
+    },
+    {
+      "name": "ambiguous projects",
+      "unit": "projects",
+      "meaning": "distinct projects with a review-relevant ambiguity flag (monorepo_subpath_project excluded); a project can carry several flags"
+    },
+    {
+      "name": "N6 reason entries vs projects",
+      "unit": "entries / projects",
+      "meaning": "N6 is recorded once per ambiguity flag, so entries (246) exceed distinct projects (196)"
+    },
+    {
+      "name": "eligible / needs_review / ineligible",
+      "unit": "projects",
+      "meaning": "machine category; exactly one per project; a partition of all projects"
+    },
+    {
+      "name": "importable",
+      "unit": "projects",
+      "meaning": "candidate can be stored with provenance and is not on the suppression list"
+    },
+    {
+      "name": "eligible_unblocked",
+      "unit": "projects",
+      "meaning": "eligible and no security flag and no removal hold; may enter the approval queue (bulk-capable lane); NOT approved"
+    },
+    {
+      "name": "approved_for_publication",
+      "unit": "projects",
+      "meaning": "human decision recorded and all publication gates passed; the pipeline never sets this (always 0 here)"
+    }
+  ],
   "stages": {
-    "1_retrieved_raw": {
+    "1_retrieved": {
       "issues": 4869,
       "pull_requests": 43,
-      "raw_source_records": 7324,
       "comments_total": 2412,
-      "context_only_comments": 962,
-      "submission_thread_comments": 1450,
+      "raw_source_records": 7324,
       "api_errors": 0,
       "retry_events_logged": 0,
       "rate_limit_waits_logged": 0,
       "source_number_gaps_unretrievable": 595
     },
-    "2_normalized_records": {
-      "total": 6362,
+    "2_normalised": {
+      "normalised_records": 6362,
+      "submission_thread_comments": 1450,
+      "context_only_comments": 962,
       "by_intent": {
         "no_identity": 110,
         "submission": 6098,
@@ -29,17 +126,31 @@
         "link_correction": 5
       }
     },
-    "3_relevant_addition_requests": {
+    "3_relevant_requests": {
       "submission_type_records": 6149,
-      "with_identity": 6052,
-      "without_identity": 97
+      "placed": 6052,
+      "unplaced": 97,
+      "non_submission_records": 213
     },
     "4_dedup": {
       "canonical_candidates": 4868,
-      "duplicate_source_records_merged": 1184,
-      "merge_decisions_exact_identifier": 683,
-      "merge_decisions_probable": 293,
-      "merge_decisions_by_rule": {
+      "duplicate_records": 1184,
+      "single_record_projects": 4207,
+      "multi_record_projects": 661,
+      "records_in_multi_record_projects": 1845,
+      "multi_record_projects_by_identity": {
+        "github_repo": 624,
+        "endpoint": 18,
+        "package": 19
+      },
+      "duplicate_records_by_basis": {
+        "same_key_as_group": 1083,
+        "linked_by_R6": 42,
+        "linked_by_R2": 11,
+        "linked_by_R3": 26,
+        "linked_by_R5": 22
+      },
+      "merge_entries_by_rule": {
         "R1": 624,
         "R6": 235,
         "R2": 16,
@@ -47,17 +158,46 @@
         "R3": 42,
         "R5": 22
       },
-      "projects_with_multiple_sources": 661,
-      "ambiguous_for_manual_review": 228
+      "renames": {
+        "repositories_mapped": 197,
+        "records_rekeyed": 235,
+        "projects_containing_renamed_records": 194,
+        "projects_joined_by_rename": 21
+      },
+      "ambiguous_projects": 228,
+      "ambiguous_projects_with_multiple_flags": 11,
+      "ambiguous_projects_by_flag": {
+        "same_repo_incompatible_names": 28,
+        "shared_package_across_repos": 139,
+        "shared_endpoint_across_repos": 73
+      }
     },
-    "5_eligibility": {
+    "5_evaluation": {
       "eligible": 3502,
       "needs_review": 1353,
       "ineligible": 13,
-      "ineligible_reasons": {
-        "I1_registry_infrastructure": 1,
-        "I2_empty_or_template": 1,
-        "I3_no_mcp_signal": 11
+      "needs_review_by_first_rule": {
+        "N1": 357,
+        "N3": 279,
+        "N7": 194,
+        "N9": 73,
+        "N2": 221,
+        "N6": 196,
+        "N4": 6,
+        "N8": 24,
+        "N5": 3
+      },
+      "ineligible_by_rule": {
+        "I2": 1,
+        "I1": 1,
+        "I3": 11
+      },
+      "N6_projects": 196,
+      "N6_reason_entries": 246,
+      "ambiguous_projects_by_category": {
+        "eligible": 0,
+        "needs_review": 227,
+        "ineligible": 1
       },
       "unavailable_or_under_documented": {
         "repositories_not_found_or_private": 436,
@@ -66,13 +206,34 @@
         "N5_subpath_missing": 3
       },
       "security_flagged": 36,
-      "held_for_removal_review": 19,
-      "import_ready": 3467
+      "eligible_blocked": {
+        "security_flag_only": 26,
+        "removal_hold_only": 9,
+        "both": 0
+      }
     },
-    "6_review_and_publication": {
-      "approved": 0,
-      "published": 0,
-      "note": "No reviewer decision has been recorded and nothing is published; these counts stay 0 until the review stage runs."
+    "approval_lanes": {
+      "by_lane": {
+        "bulk": 2024,
+        "individual": 1061,
+        "needs_review": 1353,
+        "not_eligible": 13,
+        "blocked": 35,
+        "family_sample": 382
+      },
+      "eligible_by_evidence_level": {
+        "0": 644,
+        "1": 385,
+        "2": 2473
+      }
+    },
+    "6_importable_eligible_approved": {
+      "importable": 4868,
+      "suppressed": 0,
+      "eligible": 3502,
+      "eligible_unblocked": 3467,
+      "approved_for_publication": 0,
+      "published": 0
     },
     "content_rights": {
       "source_records_with_unresolved_rights_status": 6362,
@@ -81,75 +242,242 @@
   },
   "checks": [
     {
-      "name": "raw source records = normalized records + context-only comments",
-      "left": 7324,
-      "right": 7324,
+      "name": "T0a raw issues file lines = collected issues",
+      "left": 4869,
+      "right": 4869,
       "ok": true
     },
     {
-      "name": "submission-thread comment count agrees between normalize and classification",
+      "name": "T0b raw pull-request file lines = collected pull requests",
+      "left": 43,
+      "right": 43,
+      "ok": true
+    },
+    {
+      "name": "T0c raw comment file lines = collected comments",
+      "left": 2412,
+      "right": 2412,
+      "ok": true
+    },
+    {
+      "name": "T0d comments on the submission thread in the raw file = thread comments normalised",
       "left": 1450,
       "right": 1450,
       "ok": true
     },
     {
-      "name": "normalized records = issues + PRs + submission-thread comments",
+      "name": "T1 raw source records = normalised records + context-only comments",
+      "left": 7324,
+      "right": 7324,
+      "ok": true
+    },
+    {
+      "name": "T2 normalised records = issues + PRs + submission-thread comments",
       "left": 6362,
       "right": 6362,
       "ok": true
     },
     {
-      "name": "normalized records = sum of intents",
+      "name": "T2b thread-comment count agrees between normalise and classify",
+      "left": 1450,
+      "right": 1450,
+      "ok": true
+    },
+    {
+      "name": "T3 normalised records = sum of intents",
       "left": 6362,
       "right": 6362,
       "ok": true
     },
     {
-      "name": "submission-type records = grouped + without identity",
+      "name": "T4 normalised records = submission-type + non-submission",
+      "left": 6362,
+      "right": 6362,
+      "ok": true
+    },
+    {
+      "name": "T4b non-submission records agree between normalise and classify",
+      "left": 213,
+      "right": 213,
+      "ok": true
+    },
+    {
+      "name": "T5 submission-type records = placed + unplaced",
       "left": 6149,
       "right": 6149,
       "ok": true
     },
     {
-      "name": "submission-type records = submission + submission_unclear",
+      "name": "T5b submission-type = submission + submission_unclear",
       "left": 6149,
       "right": 6149,
       "ok": true
     },
     {
-      "name": "normalized records = submission-type + non-submission",
-      "left": 6362,
-      "right": 6362,
-      "ok": true
-    },
-    {
-      "name": "grouped records = projects + duplicate records",
+      "name": "T6 placed records = projects + duplicate records",
       "left": 6052,
       "right": 6052,
       "ok": true
     },
     {
-      "name": "projects = eligible + needs_review + ineligible",
+      "name": "T6b placed records = single-record projects + records inside multi-record projects",
+      "left": 6052,
+      "right": 6052,
+      "ok": true
+    },
+    {
+      "name": "T6c records inside multi-record projects = multi-record projects + duplicate records",
+      "left": 1845,
+      "right": 1845,
+      "ok": true
+    },
+    {
+      "name": "T7 duplicate records = sum of duplicate records by basis",
+      "left": 1184,
+      "right": 1184,
+      "ok": true
+    },
+    {
+      "name": "T8 multi-record projects = R1 + R4 entries (project-level labels)",
+      "left": 661,
+      "right": 661,
+      "ok": true
+    },
+    {
+      "name": "T8b multi-record projects = sum by identity type",
+      "left": 661,
+      "right": 661,
+      "ok": true
+    },
+    {
+      "name": "T8c dedup projects = classification projects",
       "left": 4868,
       "right": 4868,
       "ok": true
     },
     {
-      "name": "every merge decision is classified exact or probable",
-      "left": 976,
-      "right": 976,
+      "name": "T9 projects joined by rename <= projects containing renamed records",
+      "left": 21,
+      "right": 194,
+      "ok": true,
+      "relation": "<="
+    },
+    {
+      "name": "T9b projects joined by rename <= multi-record projects",
+      "left": 21,
+      "right": 661,
+      "ok": true,
+      "relation": "<="
+    },
+    {
+      "name": "T9c R6 entries (records re-keyed) agree between summaries",
+      "left": 235,
+      "right": 235,
       "ok": true
     },
     {
-      "name": "dedup projects = classification projects",
+      "name": "T10 projects = eligible + needs_review + ineligible",
       "left": 4868,
       "right": 4868,
       "ok": true
     },
     {
-      "name": "import_ready + security-flagged eligible + removal-held eligible <= eligible",
-      "left": true,
-      "right": true,
+      "name": "T10b needs_review = sum by first rule",
+      "left": 1353,
+      "right": 1353,
+      "ok": true
+    },
+    {
+      "name": "T10c ineligible = sum by rule",
+      "left": 13,
+      "right": 13,
+      "ok": true
+    },
+    {
+      "name": "T11 ambiguous projects agree between dedup and classify",
+      "left": 228,
+      "right": 228,
+      "ok": true
+    },
+    {
+      "name": "T11b ambiguous projects = sum of ambiguous projects by category",
+      "left": 228,
+      "right": 228,
+      "ok": true
+    },
+    {
+      "name": "T11c no ambiguous project is eligible",
+      "left": 0,
+      "right": 0,
+      "ok": true
+    },
+    {
+      "name": "T12 eligible = eligible_unblocked + security-only + hold-only + both",
+      "left": 3502,
+      "right": 3502,
+      "ok": true
+    },
+    {
+      "name": "T13 eligible_unblocked <= importable",
+      "left": 3467,
+      "right": 4868,
+      "ok": true,
+      "relation": "<="
+    },
+    {
+      "name": "T13b importable <= projects",
+      "left": 4868,
+      "right": 4868,
+      "ok": true,
+      "relation": "<="
+    },
+    {
+      "name": "T13c importable + suppressed = projects",
+      "left": 4868,
+      "right": 4868,
+      "ok": true
+    },
+    {
+      "name": "T14 approved_for_publication <= eligible_unblocked",
+      "left": 0,
+      "right": 3467,
+      "ok": true,
+      "relation": "<="
+    },
+    {
+      "name": "T15 approval lanes cover every project",
+      "left": 4868,
+      "right": 4868,
+      "ok": true
+    },
+    {
+      "name": "T15b bulk + individual + family_sample = eligible_unblocked",
+      "left": 3467,
+      "right": 3467,
+      "ok": true
+    },
+    {
+      "name": "T15c blocked lane = eligible - eligible_unblocked",
+      "left": 35,
+      "right": 35,
+      "ok": true
+    },
+    {
+      "name": "T15d needs_review lane = needs_review category",
+      "left": 1353,
+      "right": 1353,
+      "ok": true
+    },
+    {
+      "name": "T15e not_eligible lane = ineligible category",
+      "left": 13,
+      "right": 13,
+      "ok": true
+    },
+    {
+      "name": "T15f eligible by evidence level = eligible",
+      "left": 3502,
+      "right": 3502,
       "ok": true
     }
   ],

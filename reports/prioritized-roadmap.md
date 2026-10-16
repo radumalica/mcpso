@@ -1,6 +1,6 @@
 # Prioritised Implementation Roadmap
 
-> **Scope update (master plan rev 4):** the product is an independently operated registry built by enhancing this codebase; importing and evaluating the upstream addition requests (R07) is a core workstream, but with its own brand, infrastructure and data model and without upstream branding or runtime dependence. Statements here that treat the product as a rebrand of mcp.so are superseded; see `master-plan.md` and `master-plan-changelog.md`.
+> **Scope update (master plan v5):** the product is an independently operated registry built by enhancing this codebase; the historical upstream addition requests are imported, deduplicated, evaluated and selectively published (R07), with its own brand, infrastructure and data model, and without upstream branding or runtime dependence. Importing, eligibility and approval are separate concepts; the MVP scope is reduced. See `master-plan-v5.md`, `mvp-feature-matrix.md` and `publication-gate-checklist.md`.
 
 Effort units (relative, for one engineer familiar with the stack; deliberately coarse, not hour estimates): **S** ≈ up to 2 days · **M** ≈ 3-8 days · **L** ≈ 2-4 weeks · **XL** > 1 month. Risk = risk of the *change* breaking things or stalling. IDs reference findings in the other reports (A=architecture, Q=code quality, F=security, D=dependency, U=UI/UX, T=threat model).
 
@@ -94,7 +94,7 @@ gantt
 * **Problem:** thousands of unreviewed submissions exist upstream; nothing is imported or de-duplicated.
 * **Evidence:** `submission-dataset-analysis.md` (counts), importer in `tools/upstream-import/`.
 * **Blocker:** removal requests whose target could not be mapped to a project (see `classified/removal-candidates.csv`, `removal-like-comments.csv` and the *unmapped* count in `classification-summary.json`) **block publication of the affected entries** until a human confirms or dismisses each one; suppression is never inferred automatically.
-* **Solution:** load `classified/*` into `source_submission/server/repository`; apply `removal-requests.jsonl` as suppressions *before* publication; publish only `import_ready` entries at evidence level L2, queue `needs_review`, keep `ineligible` unpublished with reasons; schedule incremental sync; preserve attribution/provenance links.
+* **Solution:** load `classified/*` into `source_submission/server/repository`; apply `removal-requests.jsonl` as suppressions *before* publication; the import itself publishes nothing: reviewers approve `eligible_unblocked` entries individually or through guarded bulk lanes (publication gates P1-P8, `publication-gate-checklist.md`), queue `needs_review`, keep `ineligible` unpublished with reasons; schedule incremental sync; preserve attribution/provenance links.
 * **Dependencies:** R06. **Risk:** medium (data quality; legal/attribution).
 * **Acceptance:** counts reconcile with `classification-summary.json`; no suppressed item is published; every published listing links to its source issue(s).
 * **Tests:** idempotent reload test; reconciliation script; sample-based precision check (manual, ≥ 100 items).

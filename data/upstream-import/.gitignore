@@ -10,4 +10,4 @@ normalized/normalized.jsonl
 dedup/projects.jsonl
 dedup/projects.pre-enrichment.jsonl
 classified/projects-classified.jsonl
-classified/import-ready.jsonl
+classified/eligible-unblocked.jsonl

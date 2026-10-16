@@ -21,7 +21,8 @@ node tools/upstream-import/enrich.mjs            --out $OUT --use-gh-token   # 4
 node tools/upstream-import/registry-snapshot.mjs --out $OUT                  # 4b. official MCP registry snapshot
 node tools/upstream-import/dedup.mjs             --out $OUT --enrichment $OUT/enrichment/repos.jsonl   # 3b. merge renames
 node tools/upstream-import/classify.mjs          --out $OUT                  # 5. classification + CSV/JSONL outputs
-node tools/upstream-import/reconcile.mjs         --out $OUT                  # 6. reconciliation report (exits non-zero if counts do not add up)
+node tools/upstream-import/approval_lanes.mjs     --out $OUT                  # 6. approval lanes (who may be approved how; approves nothing)
+node tools/upstream-import/reconcile.mjs         --out $OUT                  # 7. reconciliation report (exits non-zero if counts do not add up)
 ```
 
 Tests: `node --test tools/upstream-import/test/*.test.mjs`

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T11:36:48.393Z",
+  "generated_at": "2026-10-16T12:15:09.043Z",
   "collected_at": "2026-10-16T09:58:33.644Z",
   "official_registry": {
     "entries_loaded": 44497,
@@ -56,7 +56,10 @@
     "projects_with_multiple_sources": 661,
     "security_concern_projects": 36,
     "eligible_but_security_flagged": 26,
-    "import_ready": 3467,
+    "importable": 4868,
+    "suppressed": 0,
+    "eligible_unblocked": 3467,
+    "approved_for_publication": 0,
     "held_for_removal_review": 19,
     "eligible_held_for_removal_review": 9,
     "reason_rule_counts": {
@@ -77,6 +80,46 @@
       "N8": 24,
       "N5": 3,
       "I3": 11
+    },
+    "reason_rule_projects": {
+      "E1": 2858,
+      "E2": 3502,
+      "E3": 3502,
+      "E4": 3502,
+      "N1": 357,
+      "N3": 279,
+      "N7": 194,
+      "N9": 73,
+      "I2": 1,
+      "N2": 221,
+      "N6": 196,
+      "I1": 1,
+      "E1b": 644,
+      "N4": 6,
+      "N8": 24,
+      "N5": 3,
+      "I3": 11
+    },
+    "needs_review_by_first_rule": {
+      "N1": 357,
+      "N3": 279,
+      "N7": 194,
+      "N9": 73,
+      "N2": 221,
+      "N6": 196,
+      "N4": 6,
+      "N8": 24,
+      "N5": 3
+    },
+    "ineligible_by_rule": {
+      "I2": 1,
+      "I1": 1,
+      "I3": 11
+    },
+    "eligible_blocked": {
+      "security_flag_only": 26,
+      "removal_hold_only": 9,
+      "both": 0
     },
     "eligible_by_evidence_kind": {
       "sdk-dependency+wording": 302,
@@ -121,7 +164,13 @@
     "listed_in_official_registry": 3460
   },
   "ambiguity": {
-    "ambiguous_projects": 228
+    "ambiguous_projects": 228,
+    "ambiguous_projects_by_category": {
+      "eligible": 0,
+      "needs_review": 227,
+      "ineligible": 1
+    },
+    "projects_with_N6_reason": 196
   },
   "removals": {
     "requests": 7,

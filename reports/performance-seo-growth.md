@@ -1,6 +1,6 @@
 # Performance, SEO and Growth
 
-> **Scope update (master plan rev 4):** the product is an independently operated registry built by enhancing this codebase; importing and evaluating the upstream addition requests (R07) is a core workstream, but with its own brand, infrastructure and data model and without upstream branding or runtime dependence. Statements here that treat the product as a rebrand of mcp.so are superseded; see `master-plan.md` and `master-plan-changelog.md`.
+> **Scope update (master plan v5):** the product is an independently operated registry built by enhancing this codebase; the historical upstream addition requests are imported, deduplicated, evaluated and selectively published (R07), with its own brand, infrastructure and data model, and without upstream branding or runtime dependence. Importing, eligibility and approval are separate concepts; the MVP scope is reduced. See `master-plan-v5.md`, `mvp-feature-matrix.md` and `publication-gate-checklist.md`.
 
 Measured items come from the audit runs (`reports/evidence/`); everything about *future* traffic is a recommendation or hypothesis. **No production metrics exist or were fabricated**: no public deployment was measured, no field data (CrUX/RUM) or Search Console access was available.
 

@@ -57,6 +57,8 @@ GitHub API --1 collect--> source_record (raw, internal)
 
 ## 3. Reconciliation (measured, audit run)
 
+Units, relationships and all 39 stage identities: `import-count-reconciliation.md`. In the flow above, "importable", "eligible" and "approved" are three separate states; the gate between review and publication (P1-P8) is enforced in the database (`db/migrations/0002_publication_boundary.sql`), not in the UI.
+
 | Stage | Figure |
 |---|---|
 | Retrieved | 4,869 issues (4,403 open / 466 closed); 43 PRs (separate from issues; the issues endpoint also returned them and they were split out); 2,412 comments of which 1,450 are on the submission thread; 0 API errors; 595 numbers in 1..5,507 unretrievable |
@@ -66,7 +68,7 @@ GitHub API --1 collect--> source_record (raw, internal)
 | Duplicate records merged | 1,184 (6,052 − 1,184 = 4,868) |
 | Canonical candidates | 4,868 |
 | Evaluation | eligible 3,502; needs_review 1,353; ineligible 13 |
-| Import-ready (eligible, no security flag, no removal hold) | 3,467 |
+| eligible_unblocked (eligible, no security flag, no removal hold; not approval) | 3,467 |
 | Approved / published | 0 / 0 (review not started) |
 
 The difference between "about 2,900 requests" and these figures is not established by the data. The origin of that estimate is unknown. The only figure near it anywhere in this repository is an earlier, superseded dry-run count of about 2,950 *eligible projects* produced on partial data (recorded only in the revision note of `submission-eligibility-criteria.md`); it counted projects, not requests, and is not a result. Other reasons a count can differ: upstream grew by hundreds of issues per month through 2026 (925 in the first 16 days of October), and one canonical candidate can carry several records. The importer reports its own counts and does not target the estimate.

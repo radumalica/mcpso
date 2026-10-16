@@ -41,12 +41,12 @@ Submissions over time (issues only, by creation month): ≤2025-12 total 72 (a f
 | Candidate projects after dedup | **4,868** |
 | Duplicate source records merged into other records | 1,184 (19.6% of 6,052) |
 | Projects with more than one source record | 661 (13.6% of 4,868); 618 single-author, 43 multi-author |
-| Repository renames/transfers merged via GitHub redirect | 197 |
+| Renamed repositories mapped via GitHub redirect (unit: repositories; 235 records re-keyed; 21 candidates joined by a rename) | 197 |
 | Identity type | GitHub repo 3,966; endpoint 808; package 94 |
 | Ambiguous projects (manual review) | 228 (4.7%) |
 | Claim conflicts across merged records | name 364, repo_url 23, license 14 |
 
-Merge rules used (count of merge decisions): R1 624, R6 235, R3 42, R4 37, R5 22, R2 16. Ambiguity flags: shared package across repos 157, monorepo subpath 100, shared endpoint across repos 93, same repo with incompatible names 28.
+Merge annotation entries (mixed units: R1 and R4 are one per multi-record project, 624 + 37 = 661; R2/R3/R5/R6 are one per record, 16/42/22/235; not a count of merge operations; see `import-count-reconciliation.md`). Ambiguous candidates (distinct projects; 228 in all, 11 with more than one flag): shared package across repos 139, shared endpoint across repos 73, same repo with incompatible names 28; informational monorepo-subpath flag 100.
 
 Largest groups: `donniertf-hub/uk-mcp-fleet` 94 source records, `g-digital-by-garrigues/mcp_market_distribution` 81, `theluckystrike/mcp-servers` 46, `work90210/apifold` 17. These are monorepos/fleets submitted once per sub-server and are the main source of ambiguity.
 
@@ -75,17 +75,17 @@ Official MCP Registry snapshot (read-only, public API, paged): **44,497 unique s
 | needs_review | 1,353 | 27.8% |
 | ineligible | 13 | 0.3% |
 
-`import_ready` (eligible, no security concern, not held for removal review): **3,467** (3,502 eligible − 26 security-flagged − 9 held). 19 projects in total (9 eligible) are held because a removal request may refer to them (3 candidate mappings in `removal-candidates.csv`: 1 strong, 2 weak same-author) or their own issue carries removal-like wording (`removal-like-comments.csv`, which is deliberately broad and includes false positives such as a tool named "withdraw"); held projects are reviewed by a human, never suppressed or published automatically.
+`eligible_unblocked` (eligible, no security concern, not held for removal review; formerly called import-ready; NOT importability and NOT approval): **3,467** (3,502 eligible − 26 security-flagged − 9 held). 19 projects in total (9 eligible) are held because a removal request may refer to them (3 candidate mappings in `removal-candidates.csv`: 1 strong, 2 weak same-author) or their own issue carries removal-like wording (`removal-like-comments.csv`, which is deliberately broad and includes false positives such as a tool named "withdraw"); held projects are reviewed by a human, never suppressed or published automatically.
 
 **Why so few are ineligible.** Ineligible requires positive evidence that a project is out of scope: upstream infrastructure (I1: 1), empty/template repo (I2: 1), or a repository with a README of reasonable size and *no MCP signal at all* (I3: 11). Everything uncertain goes to review instead. This is by design (the criteria never reject on a heuristic) and it means the *ineligible* share is not an estimate of how many submissions are not real servers.
 
-Needs-review reasons (first applicable rule, sums to 1,353): N1 weak signals only 357; N3 endpoint/package only, not in registry 279; N6 blocking ambiguity 196 (246 including secondary reasons); N2 repo unresolved 221; N7 thin metadata 194; N9 owner transfer 73; N8 insufficient README 24; N4 fork 6; N5 subpath missing 3.
+Needs-review reasons (first applicable rule, sums to 1,353): N1 weak signals only 357; N3 endpoint/package only, not in registry 279; N6 blocking ambiguity 196 projects (246 N6 reason entries, one per ambiguity flag); N2 repo unresolved 221; N7 thin metadata 194; N9 owner transfer 73; N8 insufficient README 24; N4 fork 6; N5 subpath missing 3.
 
 Eligible by evidence kind (sums to 3,502): registry only 1,029; manifest+registry 837; manifest only 64; SDK dependency + wording only 302; registry+SDK+wording 88; manifest+SDK+wording 103; manifest+registry+SDK+wording 1,079. **1,930 (55.1% of eligible) rest on cheap evidence only** (a registry match and/or a manifest file, without code-level SDK evidence). Registry listing is self-published, so this is weaker than it looks.
 
 Cross-tab with upstream state shows eligibility is independent of the issue state: 3,282 eligible projects have only open issues; 53 eligible projects have all issues closed; 47 needs_review projects have all issues closed.
 
-Security flags (project level, 36 projects, 26 of them eligible): pipe-to-shell install 22, hidden Unicode 7, restricted/loopback endpoint target 5, possible official-scope impersonation 2. **No prompt-injection pattern matches** were found in the submitted text (0 of 6,362 records matched the signature set; signatures detect only known phrasing). Flagged projects are excluded from `import_ready` regardless of category.
+Security flags (project level, 36 projects, 26 of them eligible): pipe-to-shell install 22, hidden Unicode 7, restricted/loopback endpoint target 5, possible official-scope impersonation 2. **No prompt-injection pattern matches** were found in the submitted text (0 of 6,362 records matched the signature set; signatures detect only known phrasing). Flagged projects are excluded from `eligible_unblocked` (and cannot be bulk-approved) regardless of category.
 
 Bulk/template submitters (authors with ≥25 projects, 7 authors): 655 projects (354 eligible, 301 needs_review, 0 ineligible). `tools_not_listed` indicator (claim of tools without a list): 236 projects (190 eligible, 46 needs_review).
 
@@ -107,4 +107,4 @@ Hosting claimed (eligible, n=3,502): remote 1,571; local 1,007; both 319; unspec
 * **Eligibility is not verification.** No server was run, no endpoint contacted, no package installed, no code security-reviewed. An eligible project is one that shows enough public evidence to be worth *listing candidates for review*; trust labels must come from separate verification.
 * Not measured: server quality, tool counts, whether remote endpoints are alive, license correctness beyond the GitHub API field, true precision/recall of the classifier, domain or trademark status of any name.
 * Figures are a snapshot of 2026-10-16; the upstream issue stream grows by several hundred per week, so counts will be stale quickly (re-run `collect → normalize → dedup → enrich → classify`; incremental watermarks are implemented).
-* Free-text JSONL products (normalized, dedup, classified, import-ready) are git-ignored in this repository because they embed third-party text; the CSV/summary views are committed. Regenerate them from the raw snapshot as described in `tools/upstream-import/README.md` (raw upstream text was deliberately not committed to this public repository).
+* Free-text JSONL products (normalized, dedup, classified, eligible-unblocked) are git-ignored in this repository because they embed third-party text; the CSV/summary views are committed. Regenerate them from the raw snapshot as described in `tools/upstream-import/README.md` (raw upstream text was deliberately not committed to this public repository).

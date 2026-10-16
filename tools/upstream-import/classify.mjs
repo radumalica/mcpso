@@ -159,13 +159,39 @@ export function classifyProject(p, repoInfo, reg, { collectedAt, bulkAuthors }) 
     evidence_kinds: [...evidenceKinds].sort(),
     official_registry_matches: regVerified, official_registry_unverified_repo_claims: reg.repoClaimOnly,
     quality_indicators: q,
-    import_ready: category === "eligible" && !security_concern,
+    // Three separate concepts: importable (stored with provenance, not suppressed), eligible (category), approved_for_publication (human + gates; never set by the pipeline).
+    importable: true,
+    eligible_unblocked: category === "eligible" && !security_concern,
+    approved_for_publication: false,
     repo: resolved ? { name_with_owner: info.name_with_owner, archived: info.archived, fork: info.fork, stars: info.stars, pushed_at: info.pushed_at, license: lic, language: info.primary_language, evaluated_subpath: info.evaluated_subpath ?? null } : (isRepo ? { unresolved_reason: info?.reason || "not_looked_up" } : null),
   };
 }
 
-export const applyRemovalHold = (rows, holdIds) =>
-  rows.map((r) => (holdIds.has(r.project_id) ? { ...r, import_ready: false, quality_indicators: [...r.quality_indicators, "removal_request_pending"] } : r));
+/**
+ * Holds never delete or publish anything:
+ *  - removal hold: the project may still be stored (importable) but is not eligible_unblocked until a human decides;
+ *  - suppression (re-import prevention): the canonical key is on the suppression list, so it is neither importable nor eligible_unblocked.
+ * Neither can be bypassed by a later step: bulk approval only ever selects eligible_unblocked rows.
+ */
+export function applyHolds(rows, { removalHold = new Set(), suppressedKeys = new Set() } = {}) {
+  return rows.map((r) => {
+    const suppressed = suppressedKeys.has(r.canonical_key);
+    const held = removalHold.has(r.project_id);
+    if (!suppressed && !held) return r;
+    return {
+      ...r,
+      importable: r.importable && !suppressed,
+      eligible_unblocked: false,
+      approved_for_publication: false,
+      quality_indicators: [...r.quality_indicators, ...(held ? ["removal_request_pending"] : []), ...(suppressed ? ["suppressed"] : [])],
+    };
+  });
+}
+
+/** Parse a suppression list: first CSV column is the canonical key; header row and blank lines ignored. */
+export function parseSuppressionList(text) {
+  return new Set(text.split("\n").map((l) => l.split(",")[0].trim().replace(/^"|"$/g, "")).filter((k) => k && k !== "canonical_key"));
+}
 
 const pct = (n, d) => (d ? `${((100 * n) / d).toFixed(1)}%` : "n/a");
 
@@ -182,7 +208,7 @@ function latestRegistryRun(out) {
 }
 
 export function main(argv = process.argv.slice(2)) {
-  const { values: a } = parseArgs({ args: argv, options: { out: { type: "string", default: "data/upstream-import" } } });
+  const { values: a } = parseArgs({ args: argv, options: { out: { type: "string", default: "data/upstream-import" }, suppression: { type: "string" } } });
   const out = path.resolve(a.out);
   const dir = path.join(out, "classified");
   ensureDir(dir);
@@ -251,11 +277,12 @@ export function main(argv = process.argv.slice(2)) {
   writeCsv(path.join(dir, "removal-like-comments.csv"), ["comment_url", "parent_issue", "author", "project_ids"], removalLike);
 
   // Hold: any project a removal request may refer to (even weakly) or whose own issue carries removal-like wording
-  // is NOT import-ready until a human decides. Never auto-suppressed, never auto-published.
+  // is NOT eligible_unblocked until a human decides. Never auto-suppressed, never auto-published.
   const removalHold = new Set([...cand.map((c) => c.project_id), ...removalLike.flatMap((c) => c.project_ids)]);
-  const rows = applyRemovalHold(rowsBase, removalHold);
+  const suppressedKeys = a.suppression && fs.existsSync(a.suppression) ? parseSuppressionList(fs.readFileSync(a.suppression, "utf8")) : new Set();
+  const rows = applyHolds(rowsBase, { removalHold, suppressedKeys });
   writeJsonlAtomic(path.join(dir, "projects-classified.jsonl"), rows);
-  const csvCols = ["project_id", "category", "import_ready", "security_concern", "name", "canonical_key", "repo_url", "source_count", "first_seen", "hosting", "package_ids", "endpoints", "evidence_strong", "evidence_weak", "official_registry_matches", "quality_indicators", "security_flags", "ambiguity_flags"];
+  const csvCols = ["project_id", "category", "importable", "eligible_unblocked", "approved_for_publication", "security_concern", "name", "canonical_key", "repo_url", "source_count", "first_seen", "hosting", "package_ids", "endpoints", "evidence_strong", "evidence_weak", "official_registry_matches", "quality_indicators", "security_flags", "ambiguity_flags"];
   writeCsv(path.join(dir, "projects-classified.csv"), csvCols, rows);
   const reasonRows = (r) => ({ ...r, reason_rules: r.reasons.map((x) => `${x.rule}: ${x.detail}`).join(" | ") });
   writeCsv(path.join(dir, "needs-review.csv"), ["project_id", "name", "canonical_key", "reason_rules", "source_issue_numbers", "ambiguity_flags", "evidence_weak"], rows.filter((r) => r.category === "needs_review").map(reasonRows));
@@ -264,7 +291,7 @@ export function main(argv = process.argv.slice(2)) {
   writeCsv(path.join(dir, "security-concerns.csv"), ["project_id", "name", "canonical_key", "category", "flags", "source_issue_numbers"], secRows);
   const unret = rows.filter((r) => r.repo?.unresolved_reason);
   writeCsv(path.join(dir, "unretrievable-repositories.csv"), ["project_id", "name", "canonical_key", "repo_url", "unresolved", "source_issue_numbers"], unret.map((r) => ({ ...r, unresolved: r.repo.unresolved_reason })));
-  writeJsonlAtomic(path.join(dir, "import-ready.jsonl"), rows.filter((r) => r.import_ready));
+  writeJsonlAtomic(path.join(dir, "eligible-unblocked.jsonl"), rows.filter((r) => r.eligible_unblocked));
 
   // ---- Record-level outputs ----
   const projOf = new Map();
@@ -319,10 +346,23 @@ export function main(argv = process.argv.slice(2)) {
       projects_with_multiple_sources: cnt((r) => r.source_count > 1),
       security_concern_projects: cnt((r) => r.security_concern),
       eligible_but_security_flagged: eligible.filter((r) => r.security_concern).length,
-      import_ready: cnt((r) => r.import_ready),
+      importable: cnt((r) => r.importable),
+      suppressed: cnt((r) => r.quality_indicators.includes("suppressed")),
+      eligible_unblocked: cnt((r) => r.eligible_unblocked),
+      approved_for_publication: cnt((r) => r.approved_for_publication),
       held_for_removal_review: cnt((r) => r.quality_indicators.includes("removal_request_pending")),
       eligible_held_for_removal_review: eligible.filter((r) => r.quality_indicators.includes("removal_request_pending")).length,
+      // unit: reason ENTRIES (a project can carry several entries of one rule, e.g. N6 once per ambiguity flag)
       reason_rule_counts: rows.reduce((m, r) => { for (const x of r.reasons) m[x.rule] = (m[x.rule] || 0) + 1; return m; }, {}),
+      // unit: distinct PROJECTS carrying the rule
+      reason_rule_projects: rows.reduce((m, r) => { for (const x of new Set(r.reasons.map((y) => y.rule))) m[x] = (m[x] || 0) + 1; return m; }, {}),
+      needs_review_by_first_rule: rows.filter((r) => r.category === "needs_review").reduce((m, r) => ((m[r.reasons[0].rule] = (m[r.reasons[0].rule] || 0) + 1), m), {}),
+      ineligible_by_rule: rows.filter((r) => r.category === "ineligible").reduce((m, r) => ((m[r.reasons[0].rule] = (m[r.reasons[0].rule] || 0) + 1), m), {}),
+      eligible_blocked: {
+        security_flag_only: eligible.filter((r) => r.security_concern && !r.quality_indicators.includes("removal_request_pending")).length,
+        removal_hold_only: eligible.filter((r) => !r.security_concern && r.quality_indicators.includes("removal_request_pending")).length,
+        both: eligible.filter((r) => r.security_concern && r.quality_indicators.includes("removal_request_pending")).length,
+      },
       eligible_by_evidence_kind: eligible.reduce((m, r) => { const k = r.evidence_kinds.join("+") || "none"; m[k] = (m[k] || 0) + 1; return m; }, {}),
       eligible_with_only_cheap_evidence: eligible.filter((r) => !r.evidence_kinds.includes("sdk-dependency")).length,
       bulk_submitter_authors: bulkAuthors.size,
@@ -340,7 +380,11 @@ export function main(argv = process.argv.slice(2)) {
       incomplete_metadata: cnt((r) => r.quality_indicators.includes("incomplete_metadata")),
       listed_in_official_registry: cnt((r) => r.quality_indicators.includes("listed_in_official_registry")),
     },
-    ambiguity: { ambiguous_projects: cnt((r) => r.ambiguity_flags.some((f) => f !== "monorepo_subpath_project")) },
+    ambiguity: {
+      ambiguous_projects: cnt((r) => r.ambiguity_flags.some((f) => f !== "monorepo_subpath_project")),
+      ambiguous_projects_by_category: catOf(rows.filter((r) => r.ambiguity_flags.some((f) => f !== "monorepo_subpath_project"))),
+      projects_with_N6_reason: cnt((r) => r.reasons.some((x) => x.rule === "N6")),
+    },
     removals: { requests: removals.length, mapped_to_a_project_with_strong_basis: removalsMapped.size, unmapped: removals.length - removalsMapped.size, removal_like_comments_outside_thread: removalLike.length },
   };
   writeJsonAtomic(path.join(dir, "classification-summary.json"), summary);

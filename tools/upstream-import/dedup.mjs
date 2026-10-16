@@ -201,6 +201,67 @@ function dedupFlags(flags) {
   return out;
 }
 
+const BLOCKING_EXCLUDED = "monorepo_subpath_project";
+
+/**
+ * Counting definitions (every figure states its unit):
+ *  - duplicate_records: RECORDS that are not the first record of their project (= placed records - projects).
+ *  - multi_record_projects: PROJECTS with >1 record. The R1 (GitHub identity) / R4 (endpoint or package identity) merge_reasons
+ *    entries are one per such project, NOT one per merged record.
+ *  - R2/R3/R5/R6 merge_reasons entries are one per RECORD that was linked or re-keyed by that rule.
+ *  - rename_mappings_applied: REPOSITORIES (old key -> new key) found by the enrichment; records_rekeyed_by_rename: RECORDS re-keyed;
+ *    projects_joined_by_rename: PROJECTS whose records carried more than one original repo key because a rename made them equal.
+ *  - ambiguous_projects: distinct PROJECTS with a review-relevant ambiguity flag (monorepo_subpath_project excluded).
+ */
+export function dedupStats(projects, recordsById, renameCount) {
+  const entries = {}, perRecord = {}, basisCount = {}, flagProjects = {};
+  let multi = 0, recordsInMulti = 0, rekeyedRecords = new Set(), projWithRenamed = 0, joinedByRename = 0, ambiguous = 0, ambiguousMulti = 0;
+  const multiByIdentity = {};
+  for (const p of projects) {
+    for (const m of p.merge_reasons) {
+      entries[m.rule] = (entries[m.rule] || 0) + 1;
+      if (m.record_id) (perRecord[m.rule] ||= new Set()).add(m.record_id);
+    }
+    const renamed = p.merge_reasons.some((m) => m.rule === "R6");
+    if (renamed) projWithRenamed++;
+    for (const m of p.merge_reasons) if (m.rule === "R6") rekeyedRecords.add(m.record_id);
+    if (p.source_count > 1) {
+      multi++; recordsInMulti += p.source_count;
+      multiByIdentity[p.identity_type] = (multiByIdentity[p.identity_type] || 0) + 1;
+      for (const rid of p.source_record_ids.slice(1)) {
+        const rules = [...new Set(p.merge_reasons.filter((m) => m.record_id === rid).map((m) => m.rule))].sort();
+        const k = rules.length ? `linked_by_${rules.join("+")}` : "same_key_as_group";
+        basisCount[k] = (basisCount[k] || 0) + 1;
+      }
+      if (renamed) {
+        const keys = new Set(p.source_record_ids.map((i) => recordsById.get(i)?.claims?.repo_key).filter(Boolean));
+        if (keys.size > 1) joinedByRename++;
+      }
+    }
+    const codes = new Set(p.ambiguity_flags.map((f) => f.code));
+    codes.delete(BLOCKING_EXCLUDED);
+    if (codes.size) ambiguous++;
+    if (codes.size > 1) ambiguousMulti++;
+    for (const c of codes) flagProjects[c] = (flagProjects[c] || 0) + 1;
+  }
+  return {
+    duplicate_records: projects.reduce((n, p) => n + p.source_count - 1, 0),
+    multi_record_projects: multi,
+    records_in_multi_record_projects: recordsInMulti,
+    multi_record_projects_by_identity: multiByIdentity,
+    duplicate_records_by_basis: basisCount,
+    merge_annotation_entries_by_rule: entries,
+    merge_annotation_distinct_records_by_rule: Object.fromEntries(Object.entries(perRecord).map(([k, v]) => [k, v.size])),
+    rename_mappings_applied: renameCount,
+    records_rekeyed_by_rename: rekeyedRecords.size,
+    projects_containing_renamed_records: projWithRenamed,
+    projects_joined_by_rename: joinedByRename,
+    ambiguous_projects: ambiguous,
+    ambiguous_projects_with_multiple_flags: ambiguousMulti,
+    ambiguous_projects_by_flag: flagProjects,
+  };
+}
+
 export function main(argv = process.argv.slice(2)) {
   const { values: a } = parseArgs({ args: argv, options: { out: { type: "string", default: "data/upstream-import" }, enrichment: { type: "string" } } });
   const out = path.resolve(a.out);
@@ -223,15 +284,13 @@ export function main(argv = process.argv.slice(2)) {
   const bySize = {};
   for (const p of projects) bySize[p.source_count] = (bySize[p.source_count] || 0) + 1;
   const summary = {
-    generated_at: new Date().toISOString(), enrichment_applied: !!a.enrichment, renames_applied: renames.size,
+    generated_at: new Date().toISOString(), enrichment_applied: !!a.enrichment,
     submission_records_with_identity: projects.reduce((n, p) => n + p.source_count, 0),
     submission_records_without_identity: unresolved.length,
     projects: projects.length,
-    duplicate_records: projects.reduce((n, p) => n + p.source_count - 1, 0),
     projects_with_multiple_sources: projects.filter((p) => p.source_count > 1).length,
     projects_by_source_count: bySize,
-    merge_rule_counts: projects.reduce((m, p) => { for (const r of p.merge_reasons) m[r.rule] = (m[r.rule] || 0) + 1; return m; }, {}),
-    ambiguous_projects: projects.filter((p) => p.ambiguity_flags.some((f) => f.code !== "monorepo_subpath_project")).length,
+    ...dedupStats(projects, new Map(records.map((r) => [r.record_id, r])), renames.size),
     by_identity_type: projects.reduce((m, p) => ((m[p.identity_type] = (m[p.identity_type] || 0) + 1), m), {}),
   };
   writeJsonAtomic(path.join(out, "dedup", a.enrichment ? "dedup-summary.json" : "dedup-summary.pre-enrichment.json"), summary);
