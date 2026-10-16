@@ -50,6 +50,31 @@ test("loading sets machine statuses, flags and holds but never approves or publi
   assert.equal(await num(db, "select count(*) n from public_listing"), 0);
 });
 
+test("a removal request holds its target even when the classifier output carries no hold (fail closed)", async () => {
+  const db = await freshDatabase();
+  const ds = miniDataset();
+  ds.classified[0].quality_indicators = []; // classifier "forgot" removal_request_pending for alpha
+  const dir = writeMiniDataset(tmp(), ds);
+  const r = await loadDataset({ db, dataDir: dir, sourceRepo: "example/source" });
+  assert.equal((await one(db, "select removal_hold h from candidate where canonical_key = $1", [KEYS.A])).h, true);
+  assert.equal(r.counts.removal_holds_added, 1);
+  assert.deepEqual((await reconcileDatabase(db, r.dataset)).checks.filter((c) => !c.ok), []);
+});
+
+test("reconciliation flags a removal target without a hold", async () => {
+  const { db, result } = await loaded();
+  await db.query("update candidate set removal_hold = false where canonical_key = $1", [KEYS.A]);
+  const rec = await reconcileDatabase(db, result.dataset);
+  assert.ok(rec.checks.some((c) => !c.ok && /removal request without a hold/.test(c.name)));
+});
+
+test("a reload never clears a hold that a reviewer-side process set", async () => {
+  const { db, dir } = await loaded();
+  await db.query("update candidate set removal_hold = true where canonical_key = $1", [KEYS.C]);
+  await loadDataset({ db, dataDir: dir, sourceRepo: "example/source" });
+  assert.equal((await one(db, "select removal_hold h from candidate where canonical_key = $1", [KEYS.C])).h, true);
+});
+
 test("candidate facts contain no submitter handles", async () => {
   const { db } = await loaded();
   const facts = (await db.query("select facts from candidate")).rows.map((r) => JSON.stringify(r.facts)).join("\n");

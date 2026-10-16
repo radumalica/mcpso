@@ -15,6 +15,7 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 | 8 | B7 (part): run migrations and SQL tests on PGlite; role/RLS behaviour suite; two SQL defects fixed | done | see `git log` |
 | 9 | B8 (+ B6 partial): database loader, synthetic mini dataset, DB reconciliation; full snapshot load verified on PGlite | done | see `git log` |
 | 10 | B9 (part): stratified hand-check sample, reviewer sheet and Wilson-bound summariser | done | see `git log` |
+| 11 | Loader fix: removal hold fails closed from stored dispositions (security review finding) | done | see `git log` |
 
 ## Item 1: search component and clean build
 * **Changed:** `templates/tailspark/landing/components/search/index.tsx` rewritten as a real search form (`role="search"`, native submit so Enter and IME composition work, labelled input, submit button with accessible name, `maxLength` 200, never disabled, pending state via `useTransition`). Removed the invalid global `KeyboardEvent<...>` usage and the `inputDisabled` state that disabled the box after the first search.
@@ -81,3 +82,10 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 * **Decision rule implemented (C4):** a stratum FAILS only if the lower 95% Wilson bound of its incorrect-or-unclear share exceeds 5%; PASS only if the upper bound is at most 5%; otherwise INCONCLUSIVE; unchecked = NOT CHECKED.
 * **Statistical limit to plan around:** showing "under 5%" needs about 73 clean checks in a stratum (0 incorrect of n gives an upper bound of roughly 3.84 / (n + 3.84)). The 106 in the bulk lane suffice if almost all are clean; the 21 in family_sample and 10–11 in the small strata can only come out INCONCLUSIVE or FAIL, so those lanes must be reviewed individually or the sample enlarged before any bulk approval relies on it.
 * **Verified (run here):** `npm test` 102 pass, 0 fail. No reviewer verdicts exist yet; nothing about precision is claimed.
+
+## Item 11: removal hold fails closed in the loader (review finding)
+* **Finding (automated background review of the pushed commits, details not provided; assessed on the code):** `load.mjs` derived `candidate.removal_hold` only from the classifier field `quality_indicators ∋ removal_request_pending`. A removal request that the loader itself resolved to a candidate did not hold it, and the reconcile check compared against the same field, so a classifier gap would have passed unnoticed (fail-open).
+* **Fixed:** after dispositions are written, every candidate that is the target of a `removal_request` disposition gets `removal_hold = true` (raise-only; a reload never clears a hold; clearing remains the individual reviewer function `clear_removal_hold`). Reconciliation now has an independent check (a removal target without a hold) and "classifier-held candidates without a database hold = 0" in place of an exact-equality check, since the database may hold more than the classifier.
+* **Tests added (3):** hold added when the classifier output has none; reconcile flags a removal target without a hold; a reload keeps a hold set elsewhere.
+* **Verified (run here):** `npm run test:db` 16 loader tests + both SQL suites pass; full snapshot reload: 0 holds added (the classifier already covered all resolved removal targets), reconciliation OK, second load inserts nothing.
+* **Residual gap:** removal requests whose target cannot be resolved to exactly one candidate key have no hold from the loader (only the classifier's weak-match and removal-like-comment holds apply); those need the manual removal-request workflow (C3).

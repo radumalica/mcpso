@@ -190,7 +190,11 @@ async function loadDispositions(db, ds, batchId) {
         where (source_candidate_map.disposition, source_candidate_map.candidate_id, source_candidate_map.intent, source_candidate_map.method, source_candidate_map.confidence)
           is distinct from (excluded.disposition, excluded.candidate_id, excluded.intent, excluded.method, excluded.confidence)`, [JSON.stringify(part), batchId]);
   }
-  return { dispositions: rows.length };
+  // Fail closed: a candidate that a removal request resolves to is held no matter what the classifier output says (the hold
+  // is only ever raised here, never cleared; clearing is an individual reviewer action, clear_removal_hold).
+  const held = await db.query(`update candidate set removal_hold = true, updated_at = now()
+    where not removal_hold and id in (select candidate_id from source_candidate_map where disposition = 'removal_request' and candidate_id is not null)`);
+  return { dispositions: rows.length, removal_holds_added: held.affectedRows ?? held.rowCount ?? 0 };
 }
 
 export async function loadDataset({ db, dataDir, sourceRepo = "chatmcp/mcpso", note = null }) {
@@ -236,7 +240,12 @@ export async function reconcileDatabase(db, ds) {
   check("approved or published", 0, await n("select count(*) n from candidate where status in ('approved','published')"));
   check("listings", 0, await n("select count(*) n from listing"));
   check("security-flagged candidates", count(ds.classified, (c) => (c.security_flags ?? []).length > 0), await n("select count(*) n from candidate where cardinality(security_flags) > 0"));
-  check("removal-held candidates", count(ds.classified, (c) => (c.quality_indicators ?? []).includes("removal_request_pending")), await n("select count(*) n from candidate where removal_hold"));
+  // The database may hold MORE than the classifier (fail-closed additions from removal dispositions), never fewer.
+  const fileHeld = ds.classified.filter((c) => (c.quality_indicators ?? []).includes("removal_request_pending")).map((c) => c.canonical_key);
+  check("classifier-held candidates without a database hold", 0, await n("select count(*) n from candidate where canonical_key = any($1::text[]) and not removal_hold", [fileHeld]));
+  // Independent of the classifier field above: derived from the stored dispositions only.
+  check("candidates targeted by a removal request without a hold", 0, await n(`select count(*) n from candidate c where not c.removal_hold
+    and exists (select 1 from source_candidate_map m where m.candidate_id = c.id and m.disposition = 'removal_request')`));
   check("candidate facts without handles", 0, await n("select count(*) n from candidate where facts ? 'authors' or facts ? 'author_login'"));
   return { ok: checks.every((c) => c.ok), checks };
 }
