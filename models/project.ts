@@ -7,14 +7,6 @@ export enum ProjectStatus {
   Deleted = "deleted",
 }
 
-export async function insertProject(project: Project) {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase.from("projects").insert(project);
-
-  if (error) throw error;
-  return data;
-}
-
 export async function findProjectByUuid(
   uuid: string
 ): Promise<Project | undefined> {
@@ -174,43 +166,6 @@ export async function getProjectsWithKeyword(
     .range((page - 1) * limit, page * limit - 1);
 
   if (error) return [];
-
-  return data;
-}
-
-export async function getProjectsWithoutSummary(
-  page: number,
-  limit: number
-): Promise<Project[]> {
-  if (!page) {
-    page = 1;
-  }
-
-  if (!limit) {
-    limit = 20;
-  }
-
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("projects")
-    .select("*")
-    .is("summary", null)
-    .eq("status", ProjectStatus.Created)
-    .range((page - 1) * limit, page * limit - 1);
-
-  if (error) return [];
-
-  return data;
-}
-
-export async function updateProject(uuid: string, project: Partial<Project>) {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("projects")
-    .update(project)
-    .eq("uuid", uuid);
-
-  if (error) throw error;
 
   return data;
 }

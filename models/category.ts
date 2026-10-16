@@ -2,14 +2,6 @@ import { Category } from "@/types/category";
 import { getProjectsCountByCategory } from "./project";
 import { getSupabaseClient } from "./db";
 
-export async function insertCategory(category: Category) {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase.from("categories").insert(category);
-
-  if (error) throw error;
-  return data;
-}
-
 export async function findCategoryByName(
   name: string
 ): Promise<Category | undefined> {

@@ -17,6 +17,7 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 | 10 | B9 (part): stratified hand-check sample, reviewer sheet and Wilson-bound summariser | done | see `git log` |
 | 11 | Loader fix: removal hold fails closed from stored dispositions (security review finding) | done | see `git log` |
 | 12 | C2: interim review workflow (queues, decision applier); fixes gate-failure array bug in 0002 and a loose SQL test helper | done | see `git log` |
+| 13 | Dead code removed: services/ (LLM, prompts, page reader), write functions in models; read-only guard test | done | see `git log` |
 
 ## Item 1: search component and clean build
 * **Changed:** `templates/tailspark/landing/components/search/index.tsx` rewritten as a real search form (`role="search"`, native submit so Enter and IME composition work, labelled input, submit button with accessible name, `maxLength` 200, never disabled, pending state via `useTransition`). Removed the invalid global `KeyboardEvent<...>` usage and the `inputDisabled` state that disabled the box after the first search.
@@ -105,3 +106,9 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 * **Phase C:** C2 library done; C1 (cut-off date D9, fresh incremental collection), C3-C6 are human review work, and approvals cannot pass the gates until listing drafts exist.
 * **Phase D/E:** not started in code. The public site must read `public_listing` only; the inherited template, data model (`projects`, `author_name`, scraped markdown `content`) and policy pages are still the old ones, and `services/project.ts` / `models/project.ts` write functions are dead code to delete when the new data layer replaces them. Blocked by D1 (name), D2 (hosting/stack), D5 (rights/privacy, counsel).
 * **Nothing is deployed, published or loaded into a production database. No PR has been opened (instruction from the user).**
+
+## Item 13: dead write and LLM code removed
+* **Deleted:** `services/` (OpenAI client, extraction/summary prompts, Jina page reader, `saveProject`), `models/user.ts` (unused old users table), and `insertProject`, `updateProject`, `getProjectsWithoutSummary`, `insertCategory`. The application is now read-only against the database and contains no request-time LLM or page-scraping code.
+* **Added:** `tests/security/no-write-or-llm-code.test.mjs` (3 tests: no `services/`, no OpenAI/Jina references in application code, no `.insert/.update/.upsert/.delete` in `models/`). The guard immediately found `models/user.ts` and `insertCategory`, which a manual grep for the project functions had missed.
+* **Verified (run here):** `npm test` 105 pass; `tsc --noEmit` clean; clean `next build` compiles.
+* **Left for R02:** the `openai` package stays in `package.json` until the dependency/lockfile cleanup (changing it needs an install against the conflicting tree).
