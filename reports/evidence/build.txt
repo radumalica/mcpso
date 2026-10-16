@@ -1,0 +1,21 @@
+$ env SUPABASE_URL=http://localhost:54321 SUPABASE_ANON_KEY=dummy NEXT_PUBLIC_WEB_URL=http://localhost:3000 OPENAI_API_KEY=dummy OPENAI_MODEL=dummy npx --no-install next build
+# started: 2026-10-16T09:57:57Z
+⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+   ▲ Next.js 15.0.4
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./templates/tailspark/landing/components/search/index.tsx:25:34
+Type error: Type 'KeyboardEvent' is not generic.
+
+[0m [90m 23 |[39m   }[33m;[39m[0m
+[0m [90m 24 |[39m[0m
+[0m[31m[1m>[22m[39m[90m 25 |[39m   [36mconst[39m handleInputKeydown [33m=[39m (e[33m:[39m [33mKeyboardEvent[39m[33m<[39m[33mHTMLInputElement[39m[33m>[39m) [33m=>[39m {[0m
+[0m [90m    |[39m                                  [31m[1m^[22m[39m[0m
+[0m [90m 26 |[39m     [36mif[39m (e[33m.[39mcode [33m===[39m [32m"Enter"[39m [33m&&[39m [33m![39me[33m.[39mshiftKey) {[0m
+[0m [90m 27 |[39m       [36mif[39m (e[33m.[39mkeyCode [33m!==[39m [35m229[39m) {[0m
+[0m [90m 28 |[39m         e[33m.[39mpreventDefault()[33m;[39m[0m
+# exit code: 1

@@ -1,0 +1,8 @@
+$ npx --no-install tsc --noEmit -p tsconfig.json
+# started: 2026-10-16T09:57:43Z
+templates/tailspark/landing/components/hero/github.tsx(7,22): error TS2307: Cannot find module '../../assets/imgs/star.svg' or its corresponding type declarations.
+templates/tailspark/landing/components/hero/index.tsx(1,20): error TS2307: Cannot find module '../../assets/imgs/bgstar.svg' or its corresponding type declarations.
+templates/tailspark/landing/components/projects/item.tsx(4,22): error TS2307: Cannot find module '../../assets/imgs/star.svg' or its corresponding type declarations.
+templates/tailspark/landing/components/search/index.tsx(25,34): error TS2315: Type 'KeyboardEvent' is not generic.
+templates/tailspark/landing/components/stars/index.tsx(1,22): error TS2307: Cannot find module '../../assets/imgs/star.svg' or its corresponding type declarations.
+# exit code: 2

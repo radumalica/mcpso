@@ -1,0 +1,65 @@
+# For each declared dependency: number of source files importing it (app/ components/ models/ providers/ services/ templates/ types/ utils/)
+0  @types/markdown-it
+0  @types/node
+0  @types/react
+0  @types/react-dom
+0  @types/react-lazy-load-image-component
+0  @types/uuid
+0  next-dev
+0  next-themes
+0  postcss
+0  react-dom
+0  typescript
+0  vercel
+0  xmlbuilder
+1  @cloudflare/next-on-pages
+1  @headlessui/react
+1  @heroicons/react
+1  @supabase/supabase-js
+1  framer-motion
+1  highlight.js
+1  markdown-it
+1  react-lazy-load-image-component
+1  tailwindcss
+1  uuid
+2  moment
+2  openai
+8  react-icons
+10  next
+10  react
+
+# sitemap entry counts
+public/sitemap_projects_1.xml:308
+public/sitemap_categories_1.xml:20
+public/sitemap.xml:3
+public/sitemap_index_1.xml:3
+# sitemap host(s)
+      4 http://www.sitemaps.org
+    334 https://mcp.so
+# line counts of source files
+ 2734 total
+# runtime=edge routes
+app/(default)/[slug]/[name]/page.tsx
+app/(default)/categories/page.tsx
+app/(default)/category/[cate]/page.tsx
+app/(default)/page.tsx
+app/api/submit-project/route.ts
+app/api/submit-projects/route.ts
+app/api/summarize-project/route.ts
+app/api/summarize-projects/route.ts
+# files using 'use client'
+components/markdown/index.tsx
+templates/tailspark/landing/components/faq/index.tsx
+templates/tailspark/landing/components/footer/index.tsx
+templates/tailspark/landing/components/header/index.tsx
+templates/tailspark/landing/components/hero/buttons.tsx
+templates/tailspark/landing/components/hero/github.tsx
+templates/tailspark/landing/components/projects/index.tsx
+templates/tailspark/landing/components/search/index.tsx
+# TS 'any' occurrences
+3
+# console.log occurrences in server code
+15
+# dead code candidates
+templates/tailspark/landing/components/header/index.tsx:6:import DropDown from "./dropdown";
+templates/tailspark/landing/components/header/index.tsx:77:          <DropDown />

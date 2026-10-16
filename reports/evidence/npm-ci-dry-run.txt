@@ -1,0 +1,24 @@
+npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error
+npm error While resolving: navfast@0.1.0
+npm error Found: @cloudflare/workers-types@4.20260702.1
+npm error node_modules/@cloudflare/workers-types
+npm error   peerOptional @cloudflare/workers-types@"^4.20240208.0" from @cloudflare/next-on-pages@1.13.16
+npm error   node_modules/@cloudflare/next-on-pages
+npm error     dev @cloudflare/next-on-pages@"^1.13.6" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peerOptional @cloudflare/workers-types@"^5.20261006.1" from wrangler@4.151.1
+npm error node_modules/wrangler
+npm error   peer wrangler@"^3.28.2 || ^4.0.0" from @cloudflare/next-on-pages@1.13.16
+npm error   node_modules/@cloudflare/next-on-pages
+npm error     dev @cloudflare/next-on-pages@"^1.13.6" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry this command with --force or --legacy-peer-deps to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /home/ubuntu/.npm/_logs/2026-10-16T10_18_21_994Z-eresolve-report.txt
+npm error A complete log of this run can be found in: /home/ubuntu/.npm/_logs/2026-10-16T10_18_21_994Z-debug-0.log
+# exit code: 1

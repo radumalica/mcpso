@@ -1,0 +1,38 @@
+package                          top       adv  counts                         min-fixed-version  direct  via
+form-data                        critical    2  {'critical': 1, 'high': 1}     4.0.6              False   openai
+next                             critical   37  {'moderate': 18, 'low': 4, 'high': 11, 'critical': 4} 15.5.27            True    next
+tar                              critical   13  {'moderate': 4, 'high': 8, 'critical': 1} 7.5.21             False   vercel
+@fastify/busboy                  high        2  {'high': 1, 'moderate': 1}     3.2.2              False   @cloudflare/next-on-pages
+brace-expansion                  high       16  {'low': 2, 'moderate': 4, 'high': 10} 2.1.7              False   tailwindcss,vercel
+braces                           high        1  {'high': 1}                    ?                  False   @cloudflare/next-on-pages
+defu                             high        1  {'high': 1}                    6.1.5              False   @cloudflare/next-on-pages
+glob                             high        1  {'high': 1}                    10.5.0             False   tailwindcss
+js-yaml                          high        5  {'moderate': 2, 'high': 3}     4.3.2              False   @cloudflare/next-on-pages
+linkify-it                       high        2  {'high': 2}                    5.0.2              False   markdown-it
+minimatch                        high        6  {'high': 6}                    9.0.7              False   tailwindcss,vercel
+nanoid                           high        3  {'high': 3}                    3.3.18             False   @cloudflare/next-on-pages
+node-forge                       high        8  {'high': 7, 'moderate': 1}     1.4.0              False   @cloudflare/next-on-pages
+path-to-regexp                   high        1  {'high': 1}                    6.3.0              False   vercel
+picomatch                        high        2  {'moderate': 1, 'high': 1}     2.3.2              False   @cloudflare/next-on-pages
+postcss                          high        4  {'moderate': 2, 'high': 2}     8.5.23             True    next,postcss
+semver                           high        1  {'high': 1}                    7.5.2              False   vercel
+sharp                            high        3  {'high': 3}                    0.35.5             False   next
+source-map-js                    high        1  {'high': 1}                    1.2.2              False   postcss
+undici                           high       15  {'moderate': 8, 'low': 4, 'high': 3} 6.28.1             False   @cloudflare/next-on-pages
+wrangler                         high        1  {'high': 1}                    3.114.17           False   @cloudflare/next-on-pages
+ws                               high        2  {'moderate': 1, 'high': 1}     8.21.0             False   @cloudflare/next-on-pages
+ajv                              moderate    2  {'moderate': 2}                8.18.0             False   vercel
+esbuild                          moderate    1  {'moderate': 1}                0.25.0             False   @cloudflare/next-on-pages,vercel
+markdown-it                      moderate    3  {'moderate': 3}                14.3.1             True    markdown-it
+moment                           moderate    1  {'moderate': 1}                2.31.0             True    moment
+postcss-selector-parser          moderate    2  {'low': 1, 'moderate': 1}      7.1.6              False   tailwindcss
+uuid                             moderate    1  {'moderate': 1}                11.1.1             True    uuid,vercel
+yaml                             moderate    1  {'moderate': 1}                2.8.3              False   tailwindcss
+@supabase/auth-js                low         1  {'low': 1}                     2.70.0             False   @supabase/supabase-js
+@tootallnate/once                low         1  {'low': 1}                     2.0.1              False   vercel
+cookie                           low         1  {'low': 1}                     0.7.0              False   @cloudflare/next-on-pages
+debug                            low         1  {'low': 1}                     4.3.1              False   vercel
+diff                             low         1  {'low': 1}                     4.0.4              False   vercel
+
+metadata: {'vulnerabilities': {'info': 0, 'low': 16, 'moderate': 60, 'high': 80, 'critical': 7}, 'dependencies': 554, 'devDependencies': 0, 'optionalDependencies': 0, 'totalDependencies': 554}
+packages whose ONLY path is via the 'vercel' dev dependency: ['tar', 'path-to-regexp', 'semver', 'ajv', '@tootallnate/once', 'debug', 'diff']

@@ -1,0 +1,10 @@
+$ bash -c ls -la .github 2>&1; ls .gitlab-ci.yml .circleci Dockerfile docker-compose.yml wrangler.toml vercel.json 2>&1
+# started: 2026-10-16T09:59:12Z
+ls: cannot access '.github': No such file or directory
+ls: cannot access '.gitlab-ci.yml': No such file or directory
+ls: cannot access '.circleci': No such file or directory
+ls: cannot access 'Dockerfile': No such file or directory
+ls: cannot access 'docker-compose.yml': No such file or directory
+ls: cannot access 'wrangler.toml': No such file or directory
+ls: cannot access 'vercel.json': No such file or directory
+# exit code: 2

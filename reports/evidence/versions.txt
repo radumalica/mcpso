@@ -1,0 +1,8 @@
+$ bash -c node -v; npm -v; pnpm -v; npx --no-install tsc -v; python3 --version
+# started: 2026-10-16T09:57:41Z
+v24.20.0
+11.19.0
+10.26.0
+Version 5.7.2
+Python 3.10.12
+# exit code: 0

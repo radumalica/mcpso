@@ -1,0 +1,4 @@
+# Regenerable bulky captures (scripts in tools/audit/ recreate them)
+ui/*.html
+ui/next-dev.out
+api-probe/next.out

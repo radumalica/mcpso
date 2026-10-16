@@ -1,0 +1,8 @@
+$ bash -c grep -n "\"\\(pre\\|post\\)\\?install\"" package.json || echo "no install lifecycle scripts in root package.json"; pnpm -s ls --depth 0 --json >/dev/null 2>&1; echo; echo "-- pnpm onlyBuiltDependencies / ignored builds:"; pnpm ignored-builds 2>&1 | head -30
+# started: 2026-10-16T09:59:12Z
+no install lifecycle scripts in root package.json
+
+-- pnpm onlyBuiltDependencies / ignored builds:
+Automatically ignored builds during installation:
+  Cannot identify as no node_modules found
+# exit code: 0

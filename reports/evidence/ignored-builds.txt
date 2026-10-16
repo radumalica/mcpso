@@ -1,0 +1,3 @@
+$ pnpm ignored-builds   # re-run after install
+Automatically ignored builds during installation:
+  Cannot identify as no node_modules found

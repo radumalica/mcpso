@@ -1,0 +1,7 @@
+# Large or re-derivable artefacts: regenerate with tools/upstream-import (see its README).
+raw/
+logs/
+state/
+*.tmp-*
+enrichment/repos.jsonl
+enrichment/official-registry.jsonl

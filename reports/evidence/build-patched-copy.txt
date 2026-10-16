@@ -1,0 +1,38 @@
+# patched copy build (diff vs repo = add 'import type { KeyboardEvent } from "react"' in search/index.tsx)
+   ▲ Next.js 15.0.4
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+ ⚠ Using edge runtime on a page currently disables static generation for that page
+   Generating static pages (0/5) ...
+   Generating static pages (1/5) 
+   Generating static pages (2/5) 
+   Generating static pages (3/5) 
+ ✓ Generating static pages (5/5)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ƒ /                                    41 kB           175 kB
+├ ○ /_not-found                          900 B           101 kB
+├ ƒ /[slug]/[name]                       1.28 kB         481 kB
+├ ƒ /api/submit-project                  146 B           100 kB
+├ ƒ /api/submit-projects                 146 B           100 kB
+├ ƒ /api/summarize-project               146 B           100 kB
+├ ƒ /api/summarize-projects              146 B           100 kB
+├ ƒ /categories                          1.02 kB         135 kB
+├ ƒ /category/[cate]                     1.01 kB         135 kB
+├ ○ /privacy-policy                      517 B           446 kB
+└ ○ /terms-of-service                    517 B           446 kB
++ First Load JS shared by all            100 kB
+  ├ chunks/935-26c7e35634891a04.js       45.8 kB
+  ├ chunks/b53f6718-b8708de3d287f446.js  52.5 kB
+  └ other shared chunks (total)          2.01 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+# exit code: 0

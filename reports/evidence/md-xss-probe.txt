@@ -1,0 +1,9 @@
+markdown-it version: 14.1.0 | options.html = false
+raw_script       "<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>"
+raw_img_onerror  "<p>&lt;img src=x onerror=alert(1)&gt;</p>"
+js_link          "<p>[click](javascript:alert(1))</p>"
+data_link        "<p>[click](data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==)</p>"
+vbscript_link    "<p>[x](vbscript:msgbox(1))</p>"
+image_js         "<p>![x](javascript:alert(1))</p>"
+https_link       "<p><a href=\"https://example.com\">ok</a></p>"
+autolink         "<p><a href=\"https://example.com\">https://example.com</a></p>"

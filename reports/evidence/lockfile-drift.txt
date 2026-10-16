@@ -1,0 +1,4 @@
+$ pnpm install --frozen-lockfile --ignore-scripts --lockfile-only
+# started: 2026-10-16T09:59:11Z
+Done in 604ms using pnpm v10.26.0
+# exit code: 0

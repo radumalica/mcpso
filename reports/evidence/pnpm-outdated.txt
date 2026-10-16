@@ -1,0 +1,180 @@
+$ pnpm outdated --format json
+# started: 2026-10-16T09:59:07Z
+{
+  "@cloudflare/next-on-pages": {
+    "current": "1.13.6",
+    "latest": "1.13.16",
+    "wanted": "1.13.6",
+    "isDeprecated": true,
+    "dependencyType": "devDependencies"
+  },
+  "@headlessui/react": {
+    "current": "2.2.0",
+    "latest": "2.2.10",
+    "wanted": "2.2.0",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "@types/react-lazy-load-image-component": {
+    "current": "1.6.4",
+    "latest": "1.6.5",
+    "wanted": "1.6.4",
+    "isDeprecated": false,
+    "dependencyType": "devDependencies"
+  },
+  "react-lazy-load-image-component": {
+    "current": "1.6.2",
+    "latest": "1.6.3",
+    "wanted": "1.6.2",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "@supabase/supabase-js": {
+    "current": "2.46.2",
+    "latest": "2.118.0",
+    "wanted": "2.46.2",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "@types/markdown-it": {
+    "current": "14.1.2",
+    "latest": "14.2.0",
+    "wanted": "14.1.2",
+    "isDeprecated": false,
+    "dependencyType": "devDependencies"
+  },
+  "highlight.js": {
+    "current": "11.10.0",
+    "latest": "11.12.0",
+    "wanted": "11.10.0",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "moment": {
+    "current": "2.30.1",
+    "latest": "2.31.0",
+    "wanted": "2.30.1",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "postcss": {
+    "current": "8.4.49",
+    "latest": "8.5.30",
+    "wanted": "8.4.49",
+    "isDeprecated": false,
+    "dependencyType": "devDependencies"
+  },
+  "react": {
+    "current": "19.0.0",
+    "latest": "19.3.1",
+    "wanted": "19.0.0",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "react-dom": {
+    "current": "19.0.0",
+    "latest": "19.3.1",
+    "wanted": "19.0.0",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "react-icons": {
+    "current": "5.4.0",
+    "latest": "5.7.0",
+    "wanted": "5.4.0",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "@types/node": {
+    "current": "20.17.9",
+    "latest": "26.6.5",
+    "wanted": "20.17.9",
+    "isDeprecated": false,
+    "dependencyType": "devDependencies"
+  },
+  "@types/react": {
+    "current": "18.3.13",
+    "latest": "19.3.0",
+    "wanted": "18.3.13",
+    "isDeprecated": false,
+    "dependencyType": "devDependencies"
+  },
+  "@types/react-dom": {
+    "current": "18.3.1",
+    "latest": "19.3.0",
+    "wanted": "18.3.1",
+    "isDeprecated": false,
+    "dependencyType": "devDependencies"
+  },
+  "@types/uuid": {
+    "current": "10.0.0",
+    "latest": "11.0.0",
+    "wanted": "10.0.0",
+    "isDeprecated": true,
+    "dependencyType": "devDependencies"
+  },
+  "framer-motion": {
+    "current": "11.13.1",
+    "latest": "14.3.0",
+    "wanted": "11.13.1",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "markdown-it": {
+    "current": "14.1.0",
+    "latest": "15.0.3",
+    "wanted": "14.1.0",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "next": {
+    "current": "15.0.4",
+    "latest": "16.4.2",
+    "wanted": "15.0.4",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "openai": {
+    "current": "4.76.0",
+    "latest": "7.34.0",
+    "wanted": "4.76.0",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "tailwindcss": {
+    "current": "3.4.16",
+    "latest": "4.3.3",
+    "wanted": "3.4.16",
+    "isDeprecated": false,
+    "dependencyType": "devDependencies"
+  },
+  "typescript": {
+    "current": "5.7.2",
+    "latest": "7.0.2",
+    "wanted": "5.7.2",
+    "isDeprecated": false,
+    "dependencyType": "devDependencies"
+  },
+  "uuid": {
+    "current": "11.0.3",
+    "latest": "14.0.3",
+    "wanted": "11.0.3",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  },
+  "vercel": {
+    "current": "39.1.1",
+    "latest": "64.3.1",
+    "wanted": "39.1.1",
+    "isDeprecated": false,
+    "dependencyType": "devDependencies"
+  },
+  "next-themes": {
+    "current": "0.4.4",
+    "latest": "0.4.6",
+    "wanted": "0.4.4",
+    "isDeprecated": false,
+    "dependencyType": "dependencies"
+  }
+}
+# exit code: 1

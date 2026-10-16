@@ -1,0 +1,7 @@
+$ npx --no-install next lint
+# started: 2026-10-16T09:57:48Z
+? How would you like to configure ESLint? https://nextjs.org/docs/app/building-your-application/configuring/eslint
+[?25l❯  Strict (recommended)
+   Base
+   Cancel ⚠ If you set up ESLint yourself, we recommend adding the Next.js ESLint plugin. See https://nextjs.org/docs/app/building-your-application/configuring/eslint#migrating-existing-config
+# exit code: 1

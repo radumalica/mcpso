@@ -1,0 +1,5 @@
+$ bash -c grep -n "\"test\"" package.json || echo "no test script in package.json"; find . -path ./node_modules -prune -o \( -name "*.test.*" -o -name "*.spec.*" -o -name "__tests__" \) -print | grep -v tools/ || echo "no test files outside tools/"
+# started: 2026-10-16T09:59:12Z
+no test script in package.json
+no test files outside tools/
+# exit code: 0

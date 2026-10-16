@@ -1,0 +1,15 @@
+cairnbase.com NS: ns-cloud-b1.googledomains.com. ns-cloud-b2.googledomains.com. 
+cairnbase.dev NS: <none>
+cairnbase.org NS: <none>
+cairnbase.io NS: <none>
+lodehaven.com NS: ns-cloud-d2.googledomains.com. ns-cloud-d3.googledomains.com. 
+lodehaven.dev NS: <none>
+lodehaven.org NS: <none>
+lodehaven.io NS: <none>
+cairnindex.com NS: <none>
+cairnindex.dev NS: <none>
+cairnindex.org NS: <none>
+cairnindex.io NS: <none>
+cairnbase github-login: {"message":"Not Found","documentation_url":"https://docs.github.com/rest","status":"404"}gh: Not Found (HTTP 404) | npm:404 pypi:404
+lodehaven github-login: {"message":"Not Found","documentation_url":"https://docs.github.com/rest","status":"404"}gh: Not Found (HTTP 404) | npm:404 pypi:404
+cairnindex github-login: {"message":"Not Found","documentation_url":"https://docs.github.com/rest","status":"404"}gh: Not Found (HTTP 404) | npm:404 pypi:404

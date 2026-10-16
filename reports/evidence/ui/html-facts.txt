@@ -1,0 +1,36 @@
+[home] title='MCP Servers'
+   description: The largest collection of MCP Servers, including Awesome MCP Servers and Claude MCP integr | canonical: http://localhost:8051/
+   h1: 1 h2: 2 | og: 0 twitter: 0 | json-ld: 0 | robots meta: None
+   imgs: 205 alt=star: 201 | imgs w/o alt: 0 | inputs: 1 aria-label: 0 <label: 0 | buttons: 8 | lang: en
+[search] title='MCP Servers'
+   description: The largest collection of MCP Servers, including Awesome MCP Servers and Claude MCP integr | canonical: http://localhost:8051/
+   h1: 1 h2: 2 | og: 0 twitter: 0 | json-ld: 0 | robots meta: None
+   imgs: 205 alt=star: 201 | imgs w/o alt: 0 | inputs: 1 aria-label: 0 <label: 0 | buttons: 8 | lang: en
+[categories] title='MCP Server Categories | MCP Servers'
+   description: Find Awesome MCP Server categories for your needs | canonical: http://localhost:8051/categories
+   h1: 1 h2: 2 | og: 0 twitter: 0 | json-ld: 0 | robots meta: None
+   imgs: 202 alt=star: 200 | imgs w/o alt: 0 | inputs: 0 aria-label: 2 <label: 0 | buttons: 0 | lang: en
+[category] title='Awesome MCP Servers for Developer Tools | MCP Servers'
+   description: Find Awesome MCP Servers for category: Developer Tools | canonical: http://localhost:8051/category/developer-tools
+   h1: 1 h2: 0 | og: 0 twitter: 0 | json-ld: 0 | robots meta: None
+   imgs: 37 alt=star: 35 | imgs w/o alt: 0 | inputs: 0 aria-label: 2 <label: 0 | buttons: 0 | lang: en
+[server] title='Fixture Server 1 | MCP Servers'
+   description: Find Awesome MCP Server Fixture Server 1: Synthetic MCP server number 1. Lorem ipsum dolor | canonical: http://localhost:8051/server/fixture-1
+   h1: 1 h2: 2 | og: 0 twitter: 0 | json-ld: 0 | robots meta: None
+   imgs: 207 alt=star: 205 | imgs w/o alt: 0 | inputs: 3 aria-label: 2 <label: 0 | buttons: 0 | lang: en
+[server-missing] title='- | MCP Servers'
+   description: Find Awesome MCP Server -: - | canonical: http://localhost:8051/server/does-not-exist
+   h1: 0 h2: 0 | og: 0 twitter: 0 | json-ld: 0 | robots meta: None
+   imgs: 2 alt=star: 0 | imgs w/o alt: 0 | inputs: 0 aria-label: 0 <label: 0 | buttons: 0 | lang: en
+[category-missing] title='Awesome MCP Servers for - | MCP Servers'
+   description: Find Awesome MCP Servers for category: - | canonical: http://localhost:8051/category/does-not-exist
+   h1: 0 h2: 0 | og: 0 twitter: 0 | json-ld: 0 | robots meta: None
+   imgs: 2 alt=star: 0 | imgs w/o alt: 0 | inputs: 0 aria-label: 0 <label: 0 | buttons: 0 | lang: en
+[privacy] title='Privacy Policy | MCP Servers'
+   description: The largest collection of MCP Servers, including Awesome MCP Servers and Claude MCP integr | canonical: http://localhost:8051/privacy-policy
+   h1: 1 h2: 7 | og: 0 twitter: 0 | json-ld: 0 | robots meta: None
+   imgs: 0 alt=star: 0 | imgs w/o alt: 0 | inputs: 0 aria-label: 0 <label: 0 | buttons: 0 | lang: en
+contrast server page description text-[#808080] on white: 3.95:1 -> FAILS AA (<4.5)
+contrast card description text-[#636262] on white: 6.08:1 -> AA ok
+contrast nav hover blue on white: 5.83:1 -> AA ok
+contrast placeholder-ish slate-400 on white: 2.56:1 -> FAILS AA (<4.5)

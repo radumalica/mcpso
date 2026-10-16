@@ -1,0 +1,13 @@
+home / -> HTTP 200, 65535 bytes, 60.004158s
+search /?q=filesystem -> HTTP 200, 148547 bytes, 1.855238s
+search-inject /?q=x%2Cstatus.eq.deleted -> HTTP 200, 148567 bytes, 0.136370s
+categories /categories -> HTTP 200, 145925 bytes, 8.773628s
+category /category/developer-tools -> HTTP 200, 80883 bytes, 1.799327s
+category-missing /category/does-not-exist -> HTTP 200, 55466 bytes, 0.048761s
+server /server/fixture-1 -> HTTP 200, 167145 bytes, 6.600899s
+server-missing /server/does-not-exist -> HTTP 200, 56216 bytes, 0.057366s
+server-wrong-slug /whatever/fixture-1 -> HTTP 200, 167344 bytes, 0.122192s
+privacy /privacy-policy -> HTTP 200, 49333 bytes, 6.667376s
+robots /robots.txt -> HTTP 200, 87 bytes, 0.009440s
+sitemap /sitemap.xml -> HTTP 200, 355 bytes, 0.008519s
+chrome: /home/ubuntu/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome
