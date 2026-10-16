@@ -94,7 +94,7 @@ export function toCommentRecord(repo, c, collectedAt) {
 
 const keyOf = (r) => `${r.source_type}:${r.source_id}`;
 
-async function runListStage({ name, client, log, state, saveState, file, urlFor, extract, incremental, force, maxPages, runStartedAt }) {
+async function runListStage({ name, client, log, state, saveState, file, urlFor, extract, incremental, force, maxPages, runStartedAt, batchId, dryRun }) {
   const st = (state.stages[name] ||= { complete: false, next_url: null, watermark: null, pages: 0, fetched: 0 });
   let url;
   if (st.complete && !incremental && !force) {
@@ -114,14 +114,18 @@ async function runListStage({ name, client, log, state, saveState, file, urlFor,
   let pagesThisRun = 0;
   for await (const page of client.pages(null, { startUrl: url })) {
     const collectedAt = new Date().toISOString();
-    const rows = page.items.map((it) => extract(it, collectedAt)).filter(Boolean);
-    appendJsonl(file, rows);
+    const rows = page.items.map((it) => extract(it, collectedAt)).filter(Boolean).map((r) => ({ ...r, batch_id: batchId }));
+    if (!dryRun) appendJsonl(file, rows);
     st.pages += 1;
     st.fetched += rows.length;
     st.next_url = page.next;
     pagesThisRun += 1;
     saveState();
     log({ event: "page", stage: name, page: st.pages, items: page.items.length, kept: rows.length, total_kept: st.fetched, rate_remaining: client.rate.remaining });
+    if (dryRun) {
+      log({ event: "dry_run_stage_sampled", stage: name, items: page.items.length, has_more: !!page.next });
+      return;
+    }
     if (maxPages && pagesThisRun >= maxPages && page.next) {
       log({ event: "stage_paused", stage: name, reason: "--max-pages" });
       return;
@@ -187,6 +191,7 @@ export async function main(argv = process.argv.slice(2), { clientOptions = {} } 
       "use-gh-token": { type: "boolean", default: false },
       "max-pages": { type: "string" },
       quiet: { type: "boolean", default: false },
+      "dry-run": { type: "boolean", default: false },
     },
   });
   const out = path.resolve(a.out);
@@ -196,19 +201,22 @@ export async function main(argv = process.argv.slice(2), { clientOptions = {} } 
   const log = makeLogger(path.join(out, "logs", `collect-${runStartedAt.replace(/[:.]/g, "-")}.log`), { quiet: a.quiet });
   const token = resolveToken({ useGh: a["use-gh-token"] });
   const client = new GitHubClient({ token, log, ...clientOptions });
-  log({ event: "start", repo: a.repo, authenticated: !!token, stages: a.stages, incremental: a.incremental });
+  log({ event: "start", dry_run: a["dry-run"], repo: a.repo, authenticated: !!token, stages: a.stages, incremental: a.incremental });
 
   const stateFile = path.join(out, "state", "collect.json");
   const state = readJson(stateFile, { version: 1, repo: a.repo, stages: {}, runs: [] });
   if (state.repo !== a.repo) throw new Error(`state belongs to ${state.repo}, not ${a.repo}; use a different --out`);
-  const saveState = () => writeJsonAtomic(stateFile, state);
-  const run = { started_at: runStartedAt, incremental: a.incremental, authenticated: !!token };
+  const dryRun = a["dry-run"];
+  // A dry run requests at most one page per list stage and writes no records, state or manifest (only the run log).
+  const saveState = () => { if (!dryRun) writeJsonAtomic(stateFile, state); };
+  const batchId = `batch-${runStartedAt.replace(/[-:.]/g, "").replace("T", "-").slice(0, 15)}${dryRun ? "-dry" : ""}`;
+  const run = { batch_id: batchId, started_at: runStartedAt, incremental: a.incremental, authenticated: !!token };
   state.runs.push(run);
 
   const maxPages = a["max-pages"] ? Number(a["max-pages"]) : 0;
   const want = new Set(a.stages.split(","));
   const errFile = path.join(raw, "errors.jsonl");
-  const common = { client, log, state, saveState, incremental: a.incremental, force: a.force, maxPages, runStartedAt };
+  const common = { client, log, state, saveState, incremental: a.incremental, force: a.force, maxPages, runStartedAt, batchId, dryRun };
   const q = (since) => (since ? `&since=${encodeURIComponent(since)}` : "");
 
   let prFromIssuesEndpoint = 0;
@@ -239,7 +247,7 @@ export async function main(argv = process.argv.slice(2), { clientOptions = {} } 
       extract: (c, at) => toCommentRecord(a.repo, c, at),
     });
   }
-  if (want.has("pull_files")) {
+  if (want.has("pull_files") && !dryRun) {
     const pulls = readJsonl(path.join(raw, "pull_requests.jsonl"));
     await runPullFiles({ client, log, state, saveState, file: path.join(raw, "pull_files.jsonl"), errFile, repo: a.repo, pulls, maxPages });
   }
@@ -248,6 +256,11 @@ export async function main(argv = process.argv.slice(2), { clientOptions = {} } 
   run.api_requests = client.requests;
   run.rate_limit_remaining_at_end = client.rate.remaining ?? null;
   saveState();
+
+  if (dryRun) {
+    log({ event: "dry_run_done", batch_id: batchId, api_requests: client.requests });
+    return;
+  }
 
   const count = (f) => readJsonl(path.join(raw, f)).length;
   const manifest = {

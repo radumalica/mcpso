@@ -126,3 +126,23 @@ test("a state file belonging to another repository is refused", async () => {
     /state belongs to/,
   );
 });
+
+test("every record carries the batch id of the run that fetched it, recorded in the run state", async () => {
+  const api = makeApi(); const out = tmpOut();
+  await run(out, api);
+  const batch = readJson(path.join(out, "state", "collect.json")).runs.at(-1).batch_id;
+  assert.match(batch, /^batch-\d{8}-\d{6}$/);
+  const rows = [...readJsonl(path.join(out, "raw", "issues.jsonl")), ...readJsonl(path.join(out, "raw", "issue_comments.jsonl"))];
+  assert.ok(rows.length > 0 && rows.every((r) => r.batch_id === batch));
+});
+
+test("--dry-run requests one page per stage and writes no records, state or manifest", async () => {
+  const api = makeApi(); const out = tmpOut();
+  await run(out, api, ["--dry-run"]);
+  assert.equal(api.requests.length, 3); // issues, pulls, comments: first page only
+  assert.equal(fs.existsSync(path.join(out, "raw", "issues.jsonl")), false);
+  assert.equal(fs.existsSync(path.join(out, "state", "collect.json")), false);
+  assert.equal(fs.existsSync(path.join(out, "collect-manifest.json")), false);
+  await run(out, api); // a real run afterwards is unaffected
+  assert.deepEqual(ids(out, "issues.jsonl"), [1001, 1002, 1004, 1005]);
+});

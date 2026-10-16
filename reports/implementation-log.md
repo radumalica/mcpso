@@ -11,6 +11,7 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 | 4 | A6 (part): search-term filter-injection fix and baseline security headers | done | see `git log` |
 | 5 | B5 (part): GitHub client tests with a scripted fake fetch; malformed-JSON defect fixed | done | see `git log` |
 | 6 | B5 (rest): collector resume, idempotence, incremental and provenance tests (fake in-memory API) | done | see `git log` |
+| 7 | B4 (part): import batch id on every collected record; collector --dry-run | done | see `git log` |
 
 ## Item 1: search component and clean build
 * **Changed:** `templates/tailspark/landing/components/search/index.tsx` rewritten as a real search form (`role="search"`, native submit so Enter and IME composition work, labelled input, submit button with accessible name, `maxLength` 200, never disabled, pending state via `useTransition`). Removed the invalid global `KeyboardEvent<...>` usage and the `inputDisabled` state that disabled the box after the first search.
@@ -47,3 +48,9 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 * **Added:** `tools/upstream-import/test/collect.test.mjs` (6 tests, fake in-memory API with 2-item pages, temp output directories, no network, `GITHUB_TOKEN` unset): pagination across Link hops, PR items excluded from issues (and counted in the manifest), provenance fields and `collected_at` on every record, a completed run re-run makes zero list requests and leaves the file byte-identical, an interrupted run (`--max-pages 1`) resumes without duplicates or gaps, an incremental run sends `since`, replaces an edited record and adds a new one, a state file from another repository is refused.
 * **Verified (run here):** `npm test` 91 pass, 0 fail.
 * **Not done:** `--dry-run`, per-record `import_batch_id`, content-hash revisions and error retry counts (B4), still to come.
+
+## Item 7: batch id and dry run (B4, part)
+* **Changed:** `collect.mjs` stamps every record it fetches with `batch_id` (`batch-YYYYMMDD-HHMMSS`, second resolution, `-dry` suffix for dry runs) and records the id in the run entry of `state/collect.json`. `--dry-run` requests at most one page per list stage, skips pull-file retrieval, and writes no records, no state and no manifest (only the run log under `<out>/logs`).
+* **Tests added (2, in `collect.test.mjs`):** batch id on every record and in the run state; dry run makes exactly 3 requests, creates no raw/state/manifest file, and a real run afterwards is unaffected.
+* **Verified (run here):** `npm test` 93 pass, 0 fail.
+* **Note:** the committed raw snapshot predates this field, so its records have no `batch_id`; the loader (B8) must treat it as optional and assign one batch to the snapshot. Content-hash revisions and per-error retry counts (rest of B4) remain.
