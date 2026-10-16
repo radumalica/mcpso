@@ -14,6 +14,7 @@
 import crypto from "node:crypto";
 import path from "node:path";
 import { readJsonl } from "./lib/store.mjs";
+import { approvalLane, evidenceLevel } from "./lib/gates.mjs";
 
 export const LOADER_VERSION = "load-v1";
 const KIND = { issue: "issue", pull_request: "pull_request", issue_comment: "issue_comment" };
@@ -135,7 +136,7 @@ async function loadCandidates(db, ds, batchId) {
     key: p.canonical_key, status: p.category, name: p.name ?? null, security_flags: p.security_flags ?? [],
     removal_hold: (p.quality_indicators ?? []).includes("removal_request_pending"), importable: p.importable !== false,
     category: p.category, reasons: p.reasons ?? [],
-    evidence: { strong: p.evidence_strong ?? [], weak: p.evidence_weak ?? [], kinds: p.evidence_kinds ?? [], registry_matches: p.official_registry_matches ?? [], unverified_repo_claims: p.official_registry_unverified_repo_claims ?? [] },
+    evidence: { lane: approvalLane(p), evidence_level: evidenceLevel(p), ambiguity_flags: p.ambiguity_flags ?? [], strong: p.evidence_strong ?? [], weak: p.evidence_weak ?? [], kinds: p.evidence_kinds ?? [], registry_matches: p.official_registry_matches ?? [], unverified_repo_claims: p.official_registry_unverified_repo_claims ?? [] },
     quality_indicators: p.quality_indicators ?? [], security_concern: !!p.security_concern,
   }));
   for (const part of chunks(rows)) {

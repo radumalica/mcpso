@@ -53,7 +53,7 @@ export function miniDataset() {
       quality_indicators: [], importable: true, name: "beta", authors: ["user3"], endpoints: [], package_ids: [], transports: [] },
     { project_id: "p_c", canonical_key: KEY_C, category: "ineligible", reasons: [{ rule: "I1", detail: "synthetic" }], security_concern: false, security_flags: [],
       evidence_strong: [], evidence_weak: [], evidence_kinds: [], official_registry_matches: [], official_registry_unverified_repo_claims: [],
-      quality_indicators: [], importable: true, name: "gamma", authors: [], endpoints: ["https://example.test/mcp"], package_ids: [], transports: ["http"] },
+      quality_indicators: [], ambiguity_flags: ["shared_endpoint"], importable: true, name: "gamma", authors: [], endpoints: ["https://example.test/mcp"], package_ids: [], transports: ["http"] },
   ];
   const removals = [{ record_id: "issue:106", url: "https://example.test/issues/6", state: "open", repo_keys: [KEY_A], mcp_so_slugs: [] }];
   const linkCorrections = [{ record_id: "issue:108", url: "https://example.test/issues/8", repo_keys: [KEY_B, KEY_A], mcp_so_slugs: [] }]; // two keys: no single target

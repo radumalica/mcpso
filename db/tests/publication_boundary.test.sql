@@ -13,6 +13,11 @@ insert into import_batch (id, source_repo, mode, tool_version) values ('11111111
 create or replace function _expect_error(sql text, needle text) returns void language plpgsql as $$
 begin
   begin execute sql; exception when others then
+    -- an accidental internal error must never satisfy an expected-error check (a gate once "failed" with
+    -- "malformed array literal: P3 ..." and the loose needle matched it)
+    if sqlerrm ~* '(malformed|syntax error|does not exist|invalid input syntax|cannot be cast|operator does not|function .* does not)' then
+      raise exception 'internal error instead of the expected one for [%]: %', sql, sqlerrm;
+    end if;
     if position(lower(needle) in lower(sqlerrm)) = 0 then raise exception 'wrong error for [%]: %', sql, sqlerrm; end if;
     return;
   end;

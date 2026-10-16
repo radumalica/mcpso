@@ -44,7 +44,7 @@ Legend for each phase: **Changes** (code/schema), **Deps** (prerequisites), **Te
 ## Phase C: Full ingestion and review (≈ 4-6 weeks incl. review time) , blocking for publication, not for staging
 
 - [ ] C1 Decide the dataset cut-off date (D9); run the collector (incremental on top of the snapshot) and the full pipeline; produce `reconciliation.md`; list unretrievable records.
-- [ ] C2 Interim review workflow before the UI exists: exported queues (CSV of ids, lane, reason rules) + scripts that call the transition functions; every decision recorded with a reason.
+- [~] C2 Interim review workflow: queue export in the C3 order, sheet validation and decision applier through the audited functions (`review.mjs`, 10 tests on PGlite; no publish, no bulk). **Not done:** a CLI with a real database connection (needs D2), the first real review rounds.
 - [ ] C3 Review order: ambiguous groups and duplicate pairs → security-flagged → removal-held → needs_review by volume (N1 357, N2 221, N3 279, N7 194, N6 196, N9 73 ...) → individual lane (1,949) → family-sample audits (302) → bulk lane (1,216).
 - [ ] C4 Hand-check strata for the bulk lane (stratified, fixed seed); proceed only if no stratum shows a clear false-positive rate above 5%.
 - [ ] C5 Templates for facts-only summaries approved; reviewer-written summaries where needed; rights flags set.

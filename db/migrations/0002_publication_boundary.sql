@@ -47,25 +47,25 @@ begin
   select * into d from listing_draft where candidate_id = p_candidate;
   select * into ev from eligibility_evaluation where candidate_id = p_candidate and is_current;
 
-  if coalesce(ev.category, '') <> 'eligible' and coalesce(btrim(c.override_reason), '') = '' then f := f || 'P1 not eligible and no written reviewer override'; end if;
-  if cardinality(c.security_flags) > 0 and c.security_cleared_at is null then f := f || 'P2 unresolved security flag'; end if;
-  if c.removal_hold then f := f || 'P3 removal hold'; end if;
-  if is_suppressed(c.canonical_key) or not c.importable then f := f || 'P3 suppressed or not importable'; end if;
+  if coalesce(ev.category, '') <> 'eligible' and coalesce(btrim(c.override_reason), '') = '' then f := array_append(f, 'P1 not eligible and no written reviewer override'::text); end if;
+  if cardinality(c.security_flags) > 0 and c.security_cleared_at is null then f := array_append(f, 'P2 unresolved security flag'::text); end if;
+  if c.removal_hold then f := array_append(f, 'P3 removal hold'::text); end if;
+  if is_suppressed(c.canonical_key) or not c.importable then f := array_append(f, 'P3 suppressed or not importable'::text); end if;
   -- an open OR accepted takedown/rights request blocks, whether it references the candidate or only its listing
   if exists (select 1 from takedown_request t
              where t.status in ('open','accepted')
-               and (t.candidate_id = c.id or t.listing_id in (select l.id from listing l where l.candidate_id = c.id))) then f := f || 'P3 open or accepted takedown or rights complaint'; end if;
+               and (t.candidate_id = c.id or t.listing_id in (select l.id from listing l where l.candidate_id = c.id))) then f := array_append(f, 'P3 open or accepted takedown or rights complaint'::text); end if;
   if exists (select 1 from duplicate_group_member m join duplicate_group g on g.id = m.group_id
-             where m.candidate_id = c.id and g.needs_manual_review) then f := f || 'P4 unresolved duplicate group'; end if;
+             where m.candidate_id = c.id and g.needs_manual_review) then f := array_append(f, 'P4 unresolved duplicate group'::text); end if;
   if d.candidate_id is null or coalesce(d.title,'') = '' or coalesce(d.install_text,'') = '' or coalesce(d.licence,'') = ''
-     or coalesce(d.content_type,'') = '' or d.last_checked_at is null or jsonb_array_length(d.source_links) = 0 then f := f || 'P5 missing minimum listing data'; end if;
-  if d.summary_approved_by is null or coalesce(d.summary,'') = '' then f := f || 'P6 summary not approved'; end if;
+     or coalesce(d.content_type,'') = '' or d.last_checked_at is null or jsonb_array_length(d.source_links) = 0 then f := array_append(f, 'P5 missing minimum listing data'::text); end if;
+  if d.summary_approved_by is null or coalesce(d.summary,'') = '' then f := array_append(f, 'P6 summary not approved'::text); end if;
   if exists (select 1 from source_candidate_map m join source_record r on r.id = m.source_record_id
              where m.candidate_id = c.id and r.rights_status in ('restricted','removed'))
      or coalesce((d.rights_flags->>'third_party_media')::boolean, false)
-     or coalesce((d.rights_flags->>'personal_data')::boolean, false) then f := f || 'P7 rights or privacy restriction'; end if;
+     or coalesce((d.rights_flags->>'personal_data')::boolean, false) then f := array_append(f, 'P7 rights or privacy restriction'::text); end if;
   if d.evidence_level = 0 and not exists (select 1 from review_decision r where r.candidate_id = c.id and r.action = 'approve' and r.bulk_action_id is null)
-     then f := f || 'P8 declared-only evidence needs an individual approval'; end if;
+     then f := array_append(f, 'P8 declared-only evidence needs an individual approval'::text); end if;
   return f;
 end $$;
 

@@ -9,6 +9,7 @@ import { parseArgs } from "node:util";
 import { readJsonl, writeCsv, writeJsonAtomic } from "./lib/store.mjs";
 import { approvalLane, evidenceLevel } from "./lib/gates.mjs";
 import { stratifiedSample, summarizeHandCheck } from "./lib/sample.mjs";
+import { parseCsv } from "./lib/csv.mjs";
 
 export function sampleRows(classified, projects) {
   const identity = new Map(projects.map((p) => [p.project_id, p.identity_type]));
@@ -22,21 +23,6 @@ export function sampleRows(classified, projects) {
     evidence_level: evidenceLevel(r),
     flagged: (r.security_flags ?? []).length > 0 || (r.quality_indicators ?? []).includes("removal_request_pending"),
   }));
-}
-
-function parseCsv(text) {
-  const rows = []; let row = [], cell = "", q = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (q) { if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; } else if (c === '"') q = false; else cell += c; }
-    else if (c === '"') q = true;
-    else if (c === ",") { row.push(cell); cell = ""; }
-    else if (c === "\n") { row.push(cell); rows.push(row); row = []; cell = ""; }
-    else if (c !== "\r") cell += c;
-  }
-  if (cell || row.length) { row.push(cell); rows.push(row); }
-  const [head, ...body] = rows;
-  return body.filter((r) => r.length > 1).map((r) => Object.fromEntries(head.map((h, i) => [h, r[i] ?? ""])));
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
