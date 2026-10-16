@@ -195,4 +195,19 @@ drop trigger if exists listing_draft_wording_guard on listing_draft;
 create trigger listing_draft_wording_guard before insert or update of summary on listing_draft for each row execute function guard_summary_wording();
 
 
+-- is_suppressed() would tell any client whether a key was taken down. Function privileges are checked for the caller even inside a view,
+-- so the public view carries the same test inline (table access inside the view uses the owner's rights) and the function is not callable by clients.
+create or replace view public_listing with (security_invoker = false) as
+  select l.slug, l.title, l.summary, l.facts, l.evidence_level, l.evidence_checked_at, l.source_links, l.published_at
+  from listing l
+  join candidate c on c.id = l.candidate_id
+  where l.unpublished_at is null
+    and c.status = 'published'
+    and c.importable
+    and not c.removal_hold
+    and not exists (select 1 from suppression s
+                    where lower(c.canonical_key) = lower(s.canonical_key) or lower(c.canonical_key) like lower(s.canonical_key) || '/%');
+grant select on public_listing to anon, authenticated;
+revoke execute on function is_suppressed(text) from public, anon, authenticated;
+
 commit;

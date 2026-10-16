@@ -147,3 +147,13 @@ test("a draft summary containing a forbidden trust word is rejected, whichever w
   assert.equal(await num(db, "select count(*) n from listing_draft where candidate_id = $1", [b]), 1);
   await assert.rejects(db.query("update listing_draft set summary = $2 where candidate_id = $1", [id, "now verified"]), /wording policy/);
 });
+
+test("clients cannot call is_suppressed directly (it would reveal takedown subjects) but the public view still works", async () => {
+  const { db } = await publishedDb();
+  for (const role of ["anon", "authenticated"]) {
+    await asRole(db, role, null, async () => {
+      await assert.rejects(db.query("select is_suppressed($1)", [KEYS.A]), /permission denied/);
+      assert.equal((await db.query("select slug from public_listing")).rows.length, 1);
+    });
+  }
+});

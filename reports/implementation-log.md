@@ -207,3 +207,5 @@ Two read-only review agents re-ran on the pushed branch and reported. Their outp
 
 **Verified (run here):** `npm run test:db` 58 pass (migrations 0001-0007, both SQL suites); real snapshot loaded twice with RECONCILIATION OK (7,324 records, 4,868 candidates); `npm test` 131 + 3 new; `npm run test:e2e` 16 pass; `tsc`, lint, secret scan clean.
 **Still not verified:** nothing has run on a real Supabase/PostgreSQL server.
+
+**Follow-up (automated commit review, assessed on the merits):** the notification named an information disclosure in 0007 without detail. The credible instance: `is_suppressed()` stayed executable by `anon`, an oracle for takedown subjects. Confirmed that Postgres checks function privileges for the caller even inside a view, so revoking alone broke the view (caught by `roles_rls.test.sql`). Fixed by inlining the suppression test in `public_listing` (0007) and revoking execute from clients; test added. `npm run test:db`: 59 pass. No other disclosure was identified; the review gave no further detail.
