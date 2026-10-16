@@ -99,6 +99,33 @@ test("a draft goes from template to a visible public entry only through approval
   await assert.rejects(db.query("select save_listing_draft(id, '{}'::jsonb) from candidate where canonical_key = $1", [KEYS.A]), /reviewer role required|cannot be edited/);
 });
 
+test("editing a draft after approval withdraws the approval; an identical re-save does not", async () => {
+  const db = await setup();
+  await prepareDrafts(db, REVIEWER, { keys: [KEYS.A] });
+  await approveSummaries(db, REVIEWER, [KEYS.A], "sample read");
+  await applyDecisions(db, [
+    { canonical_key: KEYS.A, action: "clear_removal_hold", reason: "unrelated hold" },
+    { canonical_key: KEYS.A, action: "approve", reason: "ok" },
+  ], { reviewerId: REVIEWER });
+  const status = async () => (await one(db, "select status::text s from candidate where canonical_key = $1", [KEYS.A])).s;
+  assert.equal(await status(), "approved");
+  const id = (await one(db, "select id from candidate where canonical_key = $1", [KEYS.A])).id;
+  const save = async (patch) => {
+    const d = (await one(db, "select to_jsonb(d) j from listing_draft d where candidate_id = $1", [id])).j;
+    await db.query("begin");
+    await db.query("select set_config('request.jwt.claim.sub', $1, true)", [REVIEWER]);
+    await db.query("select save_listing_draft($1::uuid, $2::jsonb)", [id, JSON.stringify({ ...d, ...patch })]);
+    await db.query("commit");
+  };
+  await save({});                                   // identical content
+  assert.equal(await status(), "approved");
+  await save({ evidence_level: 1 });                // something the public would see changes
+  assert.equal(await status(), "needs_review");
+  assert.equal(await num(db, "select count(*) n from review_decision where candidate_id = $1 and reason like '%edited after approval%'", [id]), 1);
+  await assert.rejects(publishApproved(db, REVIEWER, KEYS.A, { launchGatesPassed: true }), /illegal transition|approved/);
+  assert.equal(await num(db, "select count(*) n from public_listing"), 0);
+});
+
 test("a slug collision falls back to a suffixed slug", async () => {
   const db = await setup();
   const batch = (await one(db, "select id from import_batch limit 1")).id;

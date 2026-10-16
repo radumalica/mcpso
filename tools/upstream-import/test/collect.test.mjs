@@ -146,3 +146,31 @@ test("--dry-run requests one page per stage and writes no records, state or mani
   await run(out, api); // a real run afterwards is unaffected
   assert.deepEqual(ids(out, "issues.jsonl"), [1001, 1002, 1004, 1005]);
 });
+
+test("an edited record keeps its previous version in revisions.jsonl; a forced re-collection without edits adds none", async () => {
+  const api = makeApi(); const out = tmpOut();
+  await run(out, api);
+  await run(out, api, ["--force", "--stages", "issues"]);
+  assert.equal(readJsonl(path.join(out, "raw", "revisions.jsonl")).length, 0, "collected_at and batch_id changes are not edits");
+  api.state.issues[0].body = "edited body"; api.state.issues[0].updated_at = "2099-01-01T00:00:00Z";
+  await run(out, api, ["--incremental"]);
+  const revs = readJsonl(path.join(out, "raw", "revisions.jsonl"));
+  assert.equal(revs.length, 1);
+  assert.equal(revs[0].key, "issue:1001");
+  assert.equal(revs[0].superseded.body, "https://example.org/repo1", "the previous version is what was stored before the edit");
+  assert.equal(readJsonl(path.join(out, "raw", "issues.jsonl")).find((r) => r.source_id === 1001).body, "edited body");
+});
+
+test("the run record reports how many retries the client needed", async () => {
+  const api = makeApi(); const out = tmpOut();
+  let failedOnce = false;
+  const flaky = async (url, init) => {
+    if (!failedOnce) { failedOnce = true; return new Response("boom", { status: 502 }); }
+    return api.fetchImpl(url, init);
+  };
+  const saved = process.env.GITHUB_TOKEN; delete process.env.GITHUB_TOKEN;
+  try {
+    await main(["--out", out, "--repo", REPO, "--quiet", "--stages", "issues"], { clientOptions: { fetchImpl: flaky, sleep: async () => {}, maxRetries: 2 } });
+  } finally { if (saved !== undefined) process.env.GITHUB_TOKEN = saved; }
+  assert.equal(readJson(path.join(out, "state", "collect.json")).runs.at(-1).retries, 1);
+});

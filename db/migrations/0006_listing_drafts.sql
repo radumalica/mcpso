@@ -8,7 +8,7 @@ begin;
 
 create or replace function save_listing_draft(p_candidate uuid, p_draft jsonb) returns void
 language plpgsql security definer set search_path = public as $$
-declare st candidate_status; old listing_draft%rowtype; new_summary text;
+declare st candidate_status; old listing_draft%rowtype; cur listing_draft%rowtype; new_summary text;
 begin
   if not is_reviewer() then raise exception 'reviewer role required' using errcode = '42501'; end if;
   select status into st from candidate where id = p_candidate;
@@ -31,6 +31,20 @@ begin
     -- changed text must be approved again
     summary_approved_by = case when listing_draft.summary is not distinct from excluded.summary then listing_draft.summary_approved_by end,
     summary_approved_at = case when listing_draft.summary is not distinct from excluded.summary then listing_draft.summary_approved_at end;
+
+  -- Fail closed: an approval was decided on the draft as it was. If anything the public would see changes after approval, the
+  -- candidate goes back to review and must be approved again (otherwise facts, evidence level or rights flags could change between
+  -- approval and publication without anyone looking).
+  if st = 'approved' and old.candidate_id is not null then
+    select * into cur from listing_draft where candidate_id = p_candidate;
+    if (old.title, old.summary, old.summary_kind, old.content_type, old.install_text, old.licence, old.last_checked_at, old.evidence_level, old.facts, old.source_links, old.rights_flags)
+       is distinct from
+       (cur.title, cur.summary, cur.summary_kind, cur.content_type, cur.install_text, cur.licence, cur.last_checked_at, cur.evidence_level, cur.facts, cur.source_links, cur.rights_flags) then
+      update candidate set status = 'needs_review', updated_at = now() where id = p_candidate;
+      insert into review_decision (candidate_id, action, from_status, to_status, reason, reviewer_id)
+        values (p_candidate, 'reopen', 'approved', 'needs_review', 'listing draft edited after approval; approval withdrawn', auth.uid());
+    end if;
+  end if;
 
   insert into audit_log (actor, action, entity, entity_id, after)
     values (auth.uid(), 'save_listing_draft', 'candidate', p_candidate::text,

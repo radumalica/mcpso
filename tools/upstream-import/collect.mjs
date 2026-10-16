@@ -19,6 +19,7 @@
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { GitHubClient, resolveToken } from "./lib/github.mjs";
+import { contentHash } from "./load.mjs";
 import {
   appendJsonl, compactJsonl, ensureDir, makeLogger, readJson, readJsonl, writeJsonAtomic,
 } from "./lib/store.mjs";
@@ -111,11 +112,20 @@ async function runListStage({ name, client, log, state, saveState, file, urlFor,
   }
   log({ event: "stage_start", stage: name, resume_from: url });
 
+  // Previous versions: when a re-collected record differs from the stored one, the old version is kept in revisions.jsonl.
+  const known = new Map(dryRun ? [] : readJsonl(file).map((r) => [keyOf(r), r]));
+  const revisionsFile = path.join(path.dirname(file), "revisions.jsonl");
   let pagesThisRun = 0;
   for await (const page of client.pages(null, { startUrl: url })) {
     const collectedAt = new Date().toISOString();
     const rows = page.items.map((it) => extract(it, collectedAt)).filter(Boolean).map((r) => ({ ...r, batch_id: batchId }));
-    if (!dryRun) appendJsonl(file, rows);
+    if (!dryRun) {
+      const changed = rows.filter((r) => known.has(keyOf(r)) && contentHash(known.get(keyOf(r))) !== contentHash(r))
+        .map((r) => ({ key: keyOf(r), superseded: known.get(keyOf(r)), superseded_at: collectedAt, batch_id: batchId }));
+      appendJsonl(revisionsFile, changed);
+      for (const r of rows) known.set(keyOf(r), r);
+      appendJsonl(file, rows);
+    }
     st.pages += 1;
     st.fetched += rows.length;
     st.next_url = page.next;
@@ -254,6 +264,7 @@ export async function main(argv = process.argv.slice(2), { clientOptions = {} } 
 
   run.finished_at = new Date().toISOString();
   run.api_requests = client.requests;
+  run.retries = client.retries;
   run.rate_limit_remaining_at_end = client.rate.remaining ?? null;
   saveState();
 

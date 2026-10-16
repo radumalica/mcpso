@@ -97,6 +97,7 @@ export class GitHubClient {
     this.now = now;
     this.rate = { remaining: undefined, reset: undefined, limit: undefined };
     this.requests = 0;
+    this.retries = 0; // attempts beyond the first, over the client lifetime
   }
 
   absolute(pathOrUrl) {
@@ -148,6 +149,7 @@ export class GitHubClient {
     const url = this.absolute(pathOrUrl);
     let lastErr;
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      if (attempt > 0) this.retries++;
       await this.waitForRateLimitIfLow();
       let res;
       try {
