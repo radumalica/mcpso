@@ -163,7 +163,13 @@ export class GitHubClient {
       this.recordRate(res);
 
       if (res.status === 200) {
-        return { status: 200, ok: true, json: await res.json(), headers: res.headers, url };
+        let body;
+        try {
+          body = await res.json();
+        } catch (e) {
+          throw new GitHubError(`malformed JSON in 200 response: ${redact(e.message || e)}`, { status: 200, url });
+        }
+        return { status: 200, ok: true, json: body, headers: res.headers, url };
       }
       if ([404, 410, 451].includes(res.status)) {
         return { status: res.status, ok: false, json: null, headers: res.headers, url };

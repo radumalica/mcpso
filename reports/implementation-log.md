@@ -9,6 +9,7 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 | 2 | A4 / R01: remove public write and LLM-trigger endpoints; regression guard; `test`/`typecheck` scripts (F-01, F-02, F-04, F-10) | done | see `git log` |
 | 3 | A3 (part): remove inherited analytics/ads, fake star rating, upstream star widget, zoom lock, upstream-host sitemaps and ads.txt | done | see `git log` |
 | 4 | A6 (part): search-term filter-injection fix and baseline security headers | done | see `git log` |
+| 5 | B5 (part): GitHub client tests with a scripted fake fetch; malformed-JSON defect fixed | done | see `git log` |
 
 ## Item 1: search component and clean build
 * **Changed:** `templates/tailspark/landing/components/search/index.tsx` rewritten as a real search form (`role="search"`, native submit so Enter and IME composition work, labelled input, submit button with accessible name, `maxLength` 200, never disabled, pending state via `useTransition`). Removed the invalid global `KeyboardEvent<...>` usage and the `inputDisabled` state that disabled the box after the first search.
@@ -33,3 +34,9 @@ Tracks coding done against `master-plan-v5.md` / `implementation-checklist.md`. 
 * **Tests added:** `tests/security/search-term.test.mjs` (5), `tests/security/headers.test.mjs` (2).
 * **Verified (run here):** `npm test` 69 pass, 0 fail; `tsc --noEmit` clean; clean `next build` compiles; `next start` on a local port returns the five headers for `/privacy-policy` (curl).
 * **Not done:** Content-Security-Policy (needs nonces; deferred until hosting target D2), rate limiting and request-size limits (depend on the hosting layer, D2; no write endpoints exist now), the search is still an unindexed `ilike` scan (replaced by full-text search in migration 0003).
+
+## Item 5: GitHub client tests (B5, part)
+* **Added:** `tools/upstream-import/test/github-client.test.mjs` (16 tests) using the client's injectable `fetchImpl`/`sleep`/`now` with scripted `Response` objects (no network, no token): Link-header pagination, 404/410/451 returned, list-endpoint 404 is an error, `Retry-After` honoured, exhausted-quota 403 waits for the reset, low-remaining pause, over-long reset aborts, 5xx retry then success, give-up after `maxRetries + 1`, network-error retry, other 4xx not retried, only `https://api.github.com` requested (http, foreign and look-alike hosts refused), token only in the `Authorization` header and absent from logs, errors and URLs, no header without a token, `redact` patterns.
+* **Defect found by the tests and fixed:** a 200 response with an unparseable body threw a raw `SyntaxError` out of `get()`; it now throws `GitHubError("malformed JSON in 200 response")` (`lib/github.mjs`).
+* **Verified (run here):** `npm test` 85 pass, 0 fail (55 importer + 16 client + 14 app/security).
+* **Not done in B5:** collector resume/idempotence/incremental-run tests (next item).
