@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  ChangeEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, FormEvent, useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -14,80 +9,68 @@ interface Props {
 
 export default ({ query }: Props) => {
   const router = useRouter();
-  const [inputDisabled, setInputDisabled] = useState(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const [content, setContent] = useState("");
+  const [isPending, startTransition] = useTransition();
+  const [content, setContent] = useState(query ?? "");
+
+  useEffect(() => {
+    setContent(query ?? "");
+  }, [query]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setContent(e.target.value);
   };
 
-  const handleInputKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.code === "Enter" && !e.shiftKey) {
-      if (e.keyCode !== 229) {
-        e.preventDefault();
-        handleSubmit("", content);
-      }
-    }
+  // A native form submit handles Enter (including IME composition) and the button; the input is never disabled.
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const term = content.trim();
+    const url = term ? `?q=${encodeURIComponent(term)}` : "?";
+    startTransition(() => {
+      router.push(url);
+    });
   };
-
-  const handleSubmit = async (keyword: string, question: string) => {
-    try {
-      const url = `?q=${encodeURIComponent(question)}`;
-      console.log("query url", url);
-      await router.push(url);
-      setInputDisabled(true); // Disable input after navigation
-    } catch (e) {
-      console.log("search failed: ", e);
-      setInputDisabled(false);
-    }
-  };
-
-  useEffect(() => {
-    if (query) {
-      setContent(query);
-      setInputDisabled(false);
-    }
-  }, [query]);
 
   return (
     <section className="relative mt-4 md:mt-8">
       <div className="mx-auto w-full max-w-2xl px-6 text-center">
         <form
-          method="POST"
-          action="/gpts/search"
+          role="search"
+          aria-label="Search servers"
+          onSubmit={handleSubmit}
           className="flex items-center relative"
         >
           <input
-            type="text"
-            className="text-sm md:text-md flex-1 px-4 py-3 border-2 border-primary bg-white rounded-lg disabled:border-gray-300 disabled:text-gray-300"
+            type="search"
+            name="q"
+            aria-label="Search servers by keyword"
+            className="text-sm md:text-md flex-1 px-4 py-3 pr-12 border-2 border-primary bg-white rounded-lg"
             placeholder="keyword to search"
-            ref={inputRef}
             value={content}
-            disabled={inputDisabled}
+            maxLength={200}
             onChange={handleInputChange}
-            onKeyDown={handleInputKeydown}
           />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="absolute right-4 cursor-pointer"
-            onClick={() => {
-              if (content) {
-                handleSubmit("", content);
-              }
-            }}
+          <button
+            type="submit"
+            aria-label="Search"
+            aria-busy={isPending}
+            className="absolute right-3 p-2 cursor-pointer"
           >
-            <polyline points="9 10 4 15 9 20"></polyline>
-            <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
-          </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
         </form>
       </div>
     </section>
