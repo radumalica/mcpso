@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "description": "Runs db/migrations and db/tests/*.test.sql on an in-process Postgres (PGlite). Separate from the app so it does not touch the app lockfile.",
-  "scripts": { "test": "node run.mjs && node --test load.test.mjs review.test.mjs takedown.test.mjs" },
+  "scripts": { "test": "node run.mjs && node --test load.test.mjs review.test.mjs takedown.test.mjs search.test.mjs" },
   "devDependencies": { "@electric-sql/pglite": "^0.3.0" }
 }
