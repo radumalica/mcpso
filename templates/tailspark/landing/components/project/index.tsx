@@ -6,7 +6,6 @@ import Markdown from "@/components/markdown";
 import Preview from "./preview";
 import { Project } from "@/types/project";
 import Projects from "../projects";
-import Stars from "../stars";
 import moment from "moment";
 
 export default ({
@@ -39,9 +38,6 @@ export default ({
               <p className="text-md sm:text-md">
                 by <span className="text-primary">{project.author_name}</span>
               </p>
-            </div>
-            <div className="mt-4">
-              <Stars />
             </div>
             <p className="text-sm text-[#808080] sm:text-xl mt-4">
               {project.description}

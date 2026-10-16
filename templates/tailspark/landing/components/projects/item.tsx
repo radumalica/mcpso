@@ -1,8 +1,6 @@
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Link from "next/link";
 import { Project } from "@/types/project";
-import StarIcon from "../../assets/imgs/star.svg";
-import Stars from "../stars";
 import moment from "moment";
 
 export default ({ project }: { project: Project }) => {
@@ -35,7 +33,6 @@ export default ({ project }: { project: Project }) => {
         </p>
 
         <div className="flex items-center">
-          {true && <Stars />}
           <div className="flex-1"></div>
 
           <p className="text-slate-500 text-sm">
