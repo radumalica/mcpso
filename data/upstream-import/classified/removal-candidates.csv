@@ -1,4 +1,4 @@
-removal_record,removal_url,requester,project_id,canonical_key,name,match_basis
-issue:4656835290,https://github.com/chatmcp/mcpso/issues/2803,ulisesguras,p_3d1d3961ca07,github.com/ulisesguras/agent-memory,Agent Memory,same-author(weak)
-issue:4698995978,https://github.com/chatmcp/mcpso/issues/2854,shirangi,p_7d69fd258c46,github.com/petropt/petro-mcp,petro-mcp 1.0.0,repo-url+mcp.so-slug=name/repo+same-author
-issue:4981080293,https://github.com/chatmcp/mcpso/issues/3313,analysthaus,p_942f0a45c7eb,github.com/tendfeed-eu/tendfeed-mcp,TendFeed,same-author(weak)
+removal_record,removal_url,project_id,canonical_key,name,match_basis
+issue:4656835290,https://github.com/chatmcp/mcpso/issues/2803,p_3d1d3961ca07,github.com/ulisesguras/agent-memory,Agent Memory,same-author(weak)
+issue:4698995978,https://github.com/chatmcp/mcpso/issues/2854,p_7d69fd258c46,github.com/petropt/petro-mcp,petro-mcp 1.0.0,repo-url+mcp.so-slug=name/repo+same-author
+issue:4981080293,https://github.com/chatmcp/mcpso/issues/3313,p_942f0a45c7eb,github.com/tendfeed-eu/tendfeed-mcp,TendFeed,same-author(weak)

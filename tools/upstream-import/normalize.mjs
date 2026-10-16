@@ -68,7 +68,7 @@ export function main(argv = process.argv.slice(2)) {
     created_at: r.source.created_at, state: r.source.state, intent: r.intent, name: r.claims.name, repo_key: r.claims.repo_key, package_ids: r.claims.package_ids,
     endpoints: r.claims.endpoints.map((e) => e.url), hosting: r.claims.hosting, transports: r.claims.transports, license: r.claims.license, category: r.claims.category,
     security_flags: r.security_flags.map((f) => f.code), quality_flags: r.quality_flags,
-  })));
+  })), { privateCols: ["author_login", "name"] });
   const intents = {};
   for (const r of rows) intents[r.intent] = (intents[r.intent] || 0) + 1;
   writeJsonAtomic(path.join(out, "normalized", "normalize-summary.json"), { generated_at: new Date().toISOString(), records: rows.length, by_source_type: { issues: issues.length, pull_requests: prs.length, submission_thread_comments: rows.filter((r) => r.source.in_submission_thread).length }, intents });

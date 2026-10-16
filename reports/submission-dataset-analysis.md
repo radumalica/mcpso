@@ -48,9 +48,9 @@ Submissions over time (issues only, by creation month): ≤2025-12 total 72 (a f
 
 Merge annotation entries (mixed units: R1 and R4 are one per multi-record project, 624 + 37 = 661; R2/R3/R5/R6 are one per record, 16/42/22/235; not a count of merge operations; see `import-count-reconciliation.md`). Ambiguous candidates (distinct projects; 228 in all, 11 with more than one flag): shared package across repos 139, shared endpoint across repos 73, same repo with incompatible names 28; informational monorepo-subpath flag 100.
 
-Largest groups: `donniertf-hub/uk-mcp-fleet` 94 source records, `g-digital-by-garrigues/mcp_market_distribution` 81, `theluckystrike/mcp-servers` 46, `work90210/apifold` 17. These are monorepos/fleets submitted once per sub-server and are the main source of ambiguity.
+Largest groups: the repositories with 94, 81, 46 and 17 source records (project identities, listed in `classified/projects-classified.csv`). These are monorepos/fleets submitted once per sub-server and are the main source of ambiguity.
 
-Submitter concentration (authors counted via authorship overlap; co-authored projects can be double-counted): 3,461 authors with ≥1 project; 26 authors with ≥10 projects account for 935 project links; **7 authors with ≥25 projects account for 655 project links (13.5% of 4,868)**; the top three (`lazymac2x` 172, `CSOAI-ORG` 169, `Ryan-Clinton` 105 distinct projects) account for 446. By issue count the top authors are CSOAI-ORG 389, Ryan-Clinton 208, donniertf-hub 94. This is a measured concentration of volume, not a judgement of intent.
+Submitter concentration (authors counted via authorship overlap; co-authored projects can be double-counted): 3,461 authors with ≥1 project; 26 authors with ≥10 projects account for 935 project links; **7 authors with ≥25 projects account for 655 project links (13.5% of 4,868)**; the top three accounts (172, 169 and 105 distinct projects) account for 446. By issue count the top three accounts submitted 389, 208 and 94 issues. Account names are deliberately omitted (personal-data policy, question Q2); they are available in the reviewer-only private files. This is a measured concentration of volume, not a judgement of intent.
 
 ## 4. Repository and registry enrichment (denominator: 3,966 GitHub-identity projects)
 

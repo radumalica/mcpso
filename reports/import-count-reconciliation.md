@@ -1,6 +1,6 @@
 # Import Count Reconciliation (Revision 5)
 
-Grounded in the stored artifacts of the 2026-10-16 09:58 UTC collection: `data/upstream-import/{collect-manifest.json, normalized/normalize-summary.json, dedup/dedup-summary.json, classified/classification-summary.json, classified/approval-lanes-summary.json, reconciliation.json}` and the code that produced them (`collect.mjs`, `normalize.mjs`, `dedup.mjs`, `enrich.mjs`, `classify.mjs`, `lib/gates.mjs`, `approval_lanes.mjs`, `reconcile.mjs`). Every row below is checked by `tools/upstream-import/reconcile.mjs` (39 identities, all passing; 55 tests). **No number was changed to make the arithmetic work**; where an earlier report labelled a figure wrongly, the label is corrected (§4), not the figure.
+Grounded in the stored artifacts of the 2026-10-16 09:58 UTC collection: `data/upstream-import/{collect-manifest.json, normalized/normalize-summary.json, dedup/dedup-summary.json, classified/classification-summary.json, classified/approval-lanes-summary.json, reconciliation.json}` and the code that produced them (`collect.mjs`, `normalize.mjs`, `dedup.mjs`, `enrich.mjs`, `classify.mjs`, `lib/gates.mjs`, `approval_lanes.mjs`, `reconcile.mjs`). Every row below is checked by `tools/upstream-import/reconcile.mjs` (41 identities, all passing; 55 tests). **No number was changed to make the arithmetic work**; where an earlier report labelled a figure wrongly, the label is corrected (§4), not the figure.
 
 ## 1. What each number counts (units)
 
@@ -41,7 +41,7 @@ The earlier confusion came from mixing units: **records** (source issues/comment
 | T10b/c | category composition | needs_review 1,353 = N1 357 + N2 221 + N3 279 + N4 6 + N5 3 + N6 196 + N7 194 + N8 24 + N9 73 (first rule); ineligible 13 = I1 1 + I2 1 + I3 11 | |
 | T11 | ambiguity | 228 ambiguous = 227 needs_review + 1 ineligible + **0 eligible** | no ambiguous candidate is eligible |
 | T12 | eligible → unblocked | 3,502 = 3,467 + 26 security-flagged + 9 removal-held (+ 0 both) | |
-| T15 | unblocked → approval lanes | 3,467 = 2,024 bulk + 382 family-sample + 1,061 individual; blocked 35 = 26 + 9 | lanes describe *how* a human may approve; they approve nothing |
+| T15 | unblocked → approval lanes | 3,467 = 1,216 bulk + 302 family-sample + 1,949 individual; blocked 35 = 26 + 9 | lanes describe *how* a human may approve; they approve nothing. Level 2 requires an SDK dependency (manifest-only candidates are level 1, individual) |
 | T13/T14 | importable / approved | importable 4,868; suppressed 0; **approved 0; published 0** | review has not started |
 
 **Source records not in the candidate count: 1,272** = 97 unplaced + 213 non-submission + 962 context-only comments (7,324 − 6,052). Pull requests (43) are among the non-submission records and are kept as provenance only.
@@ -75,6 +75,6 @@ The earlier confusion came from mixing units: **records** (source issues/comment
 
 | Concept | Meaning | Count now |
 |---|---|---|
-| **Importable** | the source record(s) can be stored with the required provenance and the key is not suppressed | 4,868 candidates (all); 0 suppressed |
+| **Importable** | the source record(s) can be stored with the required provenance and the key is not suppressed | records: 7,324 of 7,324 carry every provenance field (source repo, type, id, number, URL, collected-at; 10 issues have an empty body, which is not a provenance gap) with distinct (type, id) keys (T0e, T0f); candidates: 4,868 of 4,868, 0 suppressed |
 | **Eligible for publication** | the candidate meets the inclusion criteria (machine verdict, rule IDs stored) | 3,502 eligible; 3,467 of them unblocked |
 | **Approved for publication** | a human decision is recorded and gates P1-P8 passed (`publication-gate-checklist.md`) | **0** |

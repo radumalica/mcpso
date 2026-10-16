@@ -10,7 +10,7 @@
 import path from "node:path";
 import fs from "node:fs";
 import { parseArgs } from "node:util";
-import { readJsonl, writeJsonlAtomic, writeJsonAtomic, ensureDir, readJson, writeCsv } from "./lib/store.mjs";
+import { readJsonl, writeJsonlAtomic, writeJsonlPublicPrivate, writeJsonAtomic, ensureDir, readJson, writeCsv } from "./lib/store.mjs";
 import { repoKeyOnly } from "./lib/urls.mjs";
 
 const BLOCKING_AMBIGUITY = new Set(["same_repo_incompatible_names", "multiple_keys_merged", "shared_package_across_repos", "shared_endpoint_across_repos"]);
@@ -250,7 +250,7 @@ export function main(argv = process.argv.slice(2)) {
     record_id: r.record_id, url: r.source.url, author: r.source.author_login, state: r.source.state,
     repo_keys: r.claims.repo_candidates.map((c) => c.key), mcp_so_slugs: r.claims.mcp_so_slugs,
   }));
-  writeJsonlAtomic(path.join(dir, "removal-requests.jsonl"), removals);
+  writeJsonlPublicPrivate(path.join(dir, "removal-requests.jsonl"), removals, ["author"]);
   // Candidate mapping to projects (NEVER auto-suppressed: manual confirmation required)
   const cand = [];
   for (const rm of removals) {
@@ -264,7 +264,7 @@ export function main(argv = process.argv.slice(2)) {
       else if (basis.length === 1 && basis[0] === "same-author") cand.push({ removal_record: rm.record_id, removal_url: rm.url, requester: rm.author, project_id: p.project_id, canonical_key: p.canonical_key, name: p.name, match_basis: "same-author(weak)" });
     }
   }
-  writeCsv(path.join(dir, "removal-candidates.csv"), ["removal_record", "removal_url", "requester", "project_id", "canonical_key", "name", "match_basis"], cand);
+  writeCsv(path.join(dir, "removal-candidates.csv"), ["removal_record", "removal_url", "requester", "project_id", "canonical_key", "name", "match_basis"], cand, { privateCols: ["requester"] });
   const removalsMapped = new Set(cand.filter((c) => !c.match_basis.includes("weak")).map((c) => c.removal_record));
 
   // Removal-like wording in comments outside the submission thread (authors may ask on their own issue)
@@ -274,7 +274,7 @@ export function main(argv = process.argv.slice(2)) {
     comment_url: c.source_url, parent_issue: c.source_number, author: c.author_login,
     project_ids: projects.filter((p) => p.source_issue_numbers.includes(c.source_number)).map((p) => p.project_id),
   }));
-  writeCsv(path.join(dir, "removal-like-comments.csv"), ["comment_url", "parent_issue", "author", "project_ids"], removalLike);
+  writeCsv(path.join(dir, "removal-like-comments.csv"), ["comment_url", "parent_issue", "author", "project_ids"], removalLike, { privateCols: ["author"] });
 
   // Hold: any project a removal request may refer to (even weakly) or whose own issue carries removal-like wording
   // is NOT eligible_unblocked until a human decides. Never auto-suppressed, never auto-published.
@@ -286,7 +286,7 @@ export function main(argv = process.argv.slice(2)) {
   writeCsv(path.join(dir, "projects-classified.csv"), csvCols, rows);
   const reasonRows = (r) => ({ ...r, reason_rules: r.reasons.map((x) => `${x.rule}: ${x.detail}`).join(" | ") });
   writeCsv(path.join(dir, "needs-review.csv"), ["project_id", "name", "canonical_key", "reason_rules", "source_issue_numbers", "ambiguity_flags", "evidence_weak"], rows.filter((r) => r.category === "needs_review").map(reasonRows));
-  writeCsv(path.join(dir, "ambiguous-for-manual-review.csv"), ["project_id", "name", "canonical_key", "ambiguity_flags", "source_count", "source_issue_numbers", "authors"], rows.filter((r) => r.ambiguity_flags.some((f) => f !== "monorepo_subpath_project")));
+  writeCsv(path.join(dir, "ambiguous-for-manual-review.csv"), ["project_id", "name", "canonical_key", "ambiguity_flags", "source_count", "source_issue_numbers", "authors"], rows.filter((r) => r.ambiguity_flags.some((f) => f !== "monorepo_subpath_project")), { privateCols: ["authors"] });
   const secRows = results.filter(({ r }) => r.security_concern).map(({ p, r }) => ({ project_id: r.project_id, name: p.merged_claims.name, canonical_key: r.canonical_key, category: r.category, flags: p.security_flags.map((f) => `${f.code} [${f.record_id}]: ${f.detail}`).join(" | "), source_issue_numbers: p.source_issue_numbers }));
   writeCsv(path.join(dir, "security-concerns.csv"), ["project_id", "name", "canonical_key", "category", "flags", "source_issue_numbers"], secRows);
   const unret = rows.filter((r) => r.repo?.unresolved_reason);
@@ -301,10 +301,10 @@ export function main(argv = process.argv.slice(2)) {
   writeCsv(path.join(dir, "duplicate-source-records.csv"), ["record_id", "duplicate_of_project", "canonical_key", "primary_record"], dups);
 
 
-  writeJsonlAtomic(path.join(dir, "link-corrections.jsonl"), records.filter((r) => r.intent === "link_correction").map((r) => ({ record_id: r.record_id, url: r.source.url, author: r.source.author_login, repo_keys: r.claims.repo_candidates.map((c) => c.key), mcp_so_slugs: r.claims.mcp_so_slugs })));
+  writeJsonlPublicPrivate(path.join(dir, "link-corrections.jsonl"), records.filter((r) => r.intent === "link_correction").map((r) => ({ record_id: r.record_id, url: r.source.url, author: r.source.author_login, repo_keys: r.claims.repo_candidates.map((c) => c.key), mcp_so_slugs: r.claims.mcp_so_slugs })), ["author"]);
   const nonSub = records.filter((r) => !projOf.has(r.record_id));
   const nonSubKind = (r) => (["submission", "submission_unclear"].includes(r.intent) ? "submission_without_identity" : r.intent);
-  writeCsv(path.join(dir, "non-submission-records.csv"), ["record_id", "source_type", "url", "author", "intent", "reason"], nonSub.map((r) => ({ record_id: r.record_id, source_type: r.source.type, url: r.source.url, author: r.source.author_login, intent: nonSubKind(r), reason: r.intent_reason })));
+  writeCsv(path.join(dir, "non-submission-records.csv"), ["record_id", "source_type", "url", "author", "intent", "reason"], nonSub.map((r) => ({ record_id: r.record_id, source_type: r.source.type, url: r.source.url, author: r.source.author_login, intent: nonSubKind(r), reason: r.intent_reason })), { privateCols: ["author"] });
 
   // Records that could not be retrieved: gaps in the issue/PR number sequence (deleted, transferred, or inaccessible) + API errors
   const rawIssues = readJsonl(path.join(out, "raw", "issues.jsonl")), rawPrs = readJsonl(path.join(out, "raw", "pull_requests.jsonl"));

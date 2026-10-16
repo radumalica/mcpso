@@ -59,6 +59,8 @@ export function reconcile({ collect, normalize, dedup, classification, logs = { 
     eq("T0b raw pull-request file lines = collected pull requests", rawFiles.pull_requests, collect.counts.pull_requests);
     eq("T0c raw comment file lines = collected comments", rawFiles.comments, collect.counts.issue_comments);
     eq("T0d comments on the submission thread in the raw file = thread comments normalised", rawFiles.thread_comments, thread);
+    eq("T0e importable source records (all provenance fields present) = raw records", rawFiles.records_with_complete_provenance, rawFiles.total_records);
+    eq("T0f raw record keys are distinct (idempotent upsert key (type, id) has no collisions)", rawFiles.distinct_record_keys, rawFiles.total_records);
   }
   // T1-T4 records
   eq("T1 raw source records = normalised records + context-only comments", rawTotal, normalize.records + context);
@@ -109,7 +111,7 @@ export function reconcile({ collect, normalize, dedup, classification, logs = { 
     source: { repository: "chatmcp/mcpso (renamed chatmcp/mcp-directory)", collected_at: collect.generated_at },
     definitions: DEFINITIONS.map(([name, unit, meaning]) => ({ name, unit, meaning })),
     stages: {
-      "1_retrieved": { issues: collect.counts.issues, pull_requests: collect.counts.pull_requests, comments_total: collect.counts.issue_comments, raw_source_records: rawTotal, api_errors: collect.counts.errors, retry_events_logged: logs.retry_events, rate_limit_waits_logged: logs.rate_limit_events, source_number_gaps_unretrievable: rl.issue_number_gaps },
+      "1_retrieved": { importable_source_records: rawFiles ? rawFiles.records_with_complete_provenance : null, issues: collect.counts.issues, pull_requests: collect.counts.pull_requests, comments_total: collect.counts.issue_comments, raw_source_records: rawTotal, api_errors: collect.counts.errors, retry_events_logged: logs.retry_events, rate_limit_waits_logged: logs.rate_limit_events, source_number_gaps_unretrievable: rl.issue_number_gaps },
       "2_normalised": { normalised_records: normalize.records, submission_thread_comments: thread, context_only_comments: context, by_intent: normalize.intents },
       "3_relevant_requests": { submission_type_records: rl.submission_records, placed: rl.submission_records_grouped_into_projects, unplaced: rl.submission_records_without_identity, non_submission_records: nonSubmission },
       "4_dedup": {
@@ -143,7 +145,7 @@ export function toMarkdown(r) {
     `Generated ${r.generated_at}; upstream collected ${r.source.collected_at}. All figures come from stored pipeline summaries; each has a unit (see Definitions).`, "",
     "## Stage counts", "", "| Stage | Figure (unit) | Count |", "|---|---|---|",
     `| 1 Retrieved | issues / pull requests / all comments (records) | ${s["1_retrieved"].issues} / ${s["1_retrieved"].pull_requests} / ${s["1_retrieved"].comments_total} |`,
-    `| 1 Retrieved | raw source records (records) | ${s["1_retrieved"].raw_source_records} |`,
+    `| 1 Retrieved | raw source records / importable source records with complete provenance (records) | ${s["1_retrieved"].raw_source_records} / ${s["1_retrieved"].importable_source_records ?? "n/a"} |`,
     `| 1 Retrieved | API errors / retry events / rate-limit waits / unretrievable numbers | ${s["1_retrieved"].api_errors} / ${s["1_retrieved"].retry_events_logged} / ${s["1_retrieved"].rate_limit_waits_logged} / ${s["1_retrieved"].source_number_gaps_unretrievable} |`,
     `| 2 Normalised | normalised records / context-only comments (records) | ${s["2_normalised"].normalised_records} / ${s["2_normalised"].context_only_comments} |`,
     `| 3 Relevant | submission-type records = placed + unplaced (records) | ${s["3_relevant_requests"].submission_type_records} = ${s["3_relevant_requests"].placed} + ${s["3_relevant_requests"].unplaced} |`,
@@ -177,7 +179,11 @@ function countRawFiles(out) {
   const lines = (f) => (exists(f) ? fs.readFileSync(f, "utf8").split("\n").filter(Boolean) : null);
   const iss = lines(path.join(out, "raw/issues.jsonl")), prs = lines(path.join(out, "raw/pull_requests.jsonl")), com = lines(path.join(out, "raw/issue_comments.jsonl"));
   if (!iss || !prs || !com) return null;
-  return { issues: iss.length, pull_requests: prs.length, comments: com.length, thread_comments: com.filter((l) => JSON.parse(l).source_number === 1).length };
+  const REQUIRED = ["source_repo", "source_type", "source_id", "source_number", "source_url", "collected_at"];
+  const all = [...iss, ...prs, ...com].map((l) => JSON.parse(l));
+  const complete = all.filter((r) => REQUIRED.every((k) => r[k] !== undefined && r[k] !== null && r[k] !== "")).length;
+  const distinct = new Set(all.map((r) => `${r.source_type}:${r.source_id}`)).size;
+  return { issues: iss.length, pull_requests: prs.length, comments: com.length, thread_comments: com.filter((l) => JSON.parse(l).source_number === 1).length, records_with_complete_provenance: complete, distinct_record_keys: distinct, total_records: all.length };
 }
 
 function countLogEvents(dir) {

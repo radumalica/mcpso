@@ -25,7 +25,7 @@ Legend for each phase: **Changes** (code/schema), **Deps** (prerequisites), **Te
 ## Phase B: Importer and data model (≈ 5-6 weeks) , blocking
 
 **Changes**
-- [x] B1 Collector (paginated, rate-limit aware, backoff, resumable, incremental watermark), normaliser, deduplicator (unit-explicit statistics), GraphQL enrichment (no code execution, no install), classifier (rules, security flags, removal hold, suppression input), approval lanes, reconciliation (39 identities), reproduce-from-raw script. 55 importer tests pass.
+- [x] B1 Collector (paginated, rate-limit aware, backoff, resumable, incremental watermark), normaliser, deduplicator (unit-explicit statistics), GraphQL enrichment (no code execution, no install), classifier (rules, security flags, removal hold, suppression input), approval lanes, reconciliation (41 identities), reproduce-from-raw script. 55 importer tests pass.
 - [x] B2 Publication-gate logic and bounded bulk actions as tested pure functions (`lib/gates.mjs`, 9 tests).
 - [x] B3 Draft migrations `0001_import_pipeline.sql`, `0002_publication_boundary.sql` and draft SQL tests (**not applied or executed**).
 - [ ] B4 Importer hardening: `--dry-run` (writes nothing, prints the report); `import_batch` id on every output record; per-record `fetched_at`; errors written with retry counts; content-hash revisions for edited/vanished records (the fresh collection showed 8 new, 1 vanished and 3 edited issues in 2 h 20 min).
@@ -45,7 +45,7 @@ Legend for each phase: **Changes** (code/schema), **Deps** (prerequisites), **Te
 
 - [ ] C1 Decide the dataset cut-off date (D9); run the collector (incremental on top of the snapshot) and the full pipeline; produce `reconciliation.md`; list unretrievable records.
 - [ ] C2 Interim review workflow before the UI exists: exported queues (CSV of ids, lane, reason rules) + scripts that call the transition functions; every decision recorded with a reason.
-- [ ] C3 Review order: ambiguous groups and duplicate pairs → security-flagged → removal-held → needs_review by volume (N1 357, N2 221, N3 279, N7 194, N6 196, N9 73 ...) → individual lane (1,061) → family-sample audits (382) → bulk lane (2,024).
+- [ ] C3 Review order: ambiguous groups and duplicate pairs → security-flagged → removal-held → needs_review by volume (N1 357, N2 221, N3 279, N7 194, N6 196, N9 73 ...) → individual lane (1,949) → family-sample audits (302) → bulk lane (1,216).
 - [ ] C4 Hand-check strata for the bulk lane (stratified, fixed seed); proceed only if no stratum shows a clear false-positive rate above 5%.
 - [ ] C5 Templates for facts-only summaries approved; reviewer-written summaries where needed; rights flags set.
 - [ ] C6 Approve in bounded batches (≤ 500) with preview, count check and recorded decisions; **publish nothing until Phase D gates LG1-LG10 pass**; publish the first wave in controlled batches.

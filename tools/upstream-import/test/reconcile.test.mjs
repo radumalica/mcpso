@@ -28,7 +28,7 @@ const base = () => ({
     repository_health: { unresolved: 1 },
   },
 });
-const rawFiles = () => ({ issues: 10, pull_requests: 1, comments: 9, thread_comments: 3 });
+const rawFiles = () => ({ issues: 10, pull_requests: 1, comments: 9, thread_comments: 3, records_with_complete_provenance: 20, distinct_record_keys: 20, total_records: 20 });
 const mutate = (fn, withRaw = false) => { const b = base(); if (withRaw) b.rawFiles = rawFiles(); fn(b); return reconcile(b); };
 const failing = (r) => r.checks.filter((c) => !c.ok).map((c) => c.name.split(" ")[0]);
 
@@ -52,6 +52,8 @@ test("independent recount of the raw files (T0)", () => {
   assert.ok(failing(mutate((b) => { b.rawFiles.comments = 8; }, true)).includes("T0c"));
   assert.ok(failing(mutate((b) => { b.rawFiles.thread_comments = 2; }, true)).includes("T0d"));
   assert.ok(failing(mutate((b) => { b.rawFiles.issues = 11; }, true)).includes("T0a"));
+  assert.ok(failing(mutate((b) => { b.rawFiles.records_with_complete_provenance = 19; }, true)).includes("T0e"));
+  assert.ok(failing(mutate((b) => { b.rawFiles.distinct_record_keys = 19; }, true)).includes("T0f"));
 });
 
 test("raw / normalised record transitions (T1, T2, T2b)", () => {

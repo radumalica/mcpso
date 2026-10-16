@@ -2,7 +2,7 @@
 
 ## 1. What exists today (executed 2026-10-16)
 
-`node --test tools/upstream-import/test/*.test.mjs`: **55 tests passing**: URL canonicalisation, enrichment target scoping and manifest scanners, security-flag detection, classification rules, holds and suppression, publication gates / approval lanes / bounded bulk actions, and the reconciliation (39 identities with one failing-case test per transition family). `tools/audit/reproduce-from-raw.sh` re-runs the pipeline from the stored raw snapshot and compares every summary and row set (all IDENTICAL).
+`node --test tools/upstream-import/test/*.test.mjs`: **55 tests passing**: URL canonicalisation, enrichment target scoping and manifest scanners, security-flag detection, classification rules, holds and suppression, publication gates / approval lanes / bounded bulk actions, and the reconciliation (41 identities with one failing-case test per transition family). `tools/audit/reproduce-from-raw.sh` re-runs the pipeline from the stored raw snapshot and compares every summary and row set (all IDENTICAL).
 
 **Not yet covered** (Phase B): the GitHub client (pagination via Link headers, retry/backoff, 429/403 rate-limit waits, malformed JSON, token redaction), collector resume after interruption, idempotent re-run, incremental watermark and content-hash revisions, dry-run, batch identifiers, the database loader, and **execution** of the SQL boundary tests (`db/tests/publication_boundary.test.sql` is written but has never been run).
 
@@ -30,7 +30,7 @@ Targets: ≥ 80% line coverage on new importer and application code (project rul
 2. A run killed at a random point resumes and yields output identical to an uninterrupted run (tested on the fixture and on one real full run).
 3. `--dry-run` produces the report and writes no rows.
 4. Every source record has a batch id, retrieval time, source repo, number, URL and exactly one disposition row (query: source records without a disposition = 0; records with disposition `mapped` = 6,052 in the audit run, each pointing at one candidate; 7,324 raw records = 6,362 normalised + 962 context-only comments).
-5. The reconciliation identities hold (`reconcile.mjs` exits 0; 39 identities in the audit run), each figure with its documented unit (`import-count-reconciliation.md`): raw = normalised + context-only; submission-type = placed + unplaced; placed = candidates + duplicate records; duplicates = sum by basis; multi-record projects = R1 + R4; candidates = eligible + needs_review + ineligible; eligible = eligible_unblocked + blocked; lanes cover every candidate; approved ≤ eligible_unblocked.
+5. The reconciliation identities hold (`reconcile.mjs` exits 0; 41 identities in the audit run), each figure with its documented unit (`import-count-reconciliation.md`): raw = normalised + context-only; submission-type = placed + unplaced; placed = candidates + duplicate records; duplicates = sum by basis; multi-record projects = R1 + R4; candidates = eligible + needs_review + ineligible; eligible = eligible_unblocked + blocked; lanes cover every candidate; approved ≤ eligible_unblocked.
 6. No outbound request goes to any host other than `api.github.com` (and the read-only official registry host if enabled); concurrency ≤ the configured bound; rate-limit waits observed in logs, not exceeded.
 7. No imported code is executed, installed or built (checked by static review of the importer and a test asserting no `child_process`, `eval` or package-manager invocation in importer modules).
 

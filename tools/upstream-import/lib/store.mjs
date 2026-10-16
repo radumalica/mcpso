@@ -72,9 +72,21 @@ export function csvCell(v) {
   return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-export function writeCsv(file, cols, rows) {
-  const lines = [cols.join(","), ...rows.map((r) => cols.map((c) => csvCell(r[c])).join(","))];
-  fs.writeFileSync(file, lines.join("\n") + "\n");
+export function writeCsv(file, cols, rows, { privateCols = [] } = {}) {
+  const write = (f, cs) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, [cs.join(","), ...rows.map((r) => cs.map((c) => csvCell(r[c])).join(","))].join("\n") + "\n"); };
+  if (!privateCols.length) return write(file, cols);
+  // Public-safe view (committed): personal handles and submitter-authored names removed. The full view stays in an ignored
+  // private/ sibling directory for reviewers (policy: reports/publication-gate-checklist.md section 5, question Q2).
+  write(file, cols.filter((c) => !privateCols.includes(c)));
+  write(path.join(path.dirname(file), "private", path.basename(file)), cols);
+}
+
+/** JSONL with the same public/private split: the public file omits `privateKeys`; the private/ copy keeps everything. */
+export function writeJsonlPublicPrivate(file, rows, privateKeys = []) {
+  const strip = (r) => Object.fromEntries(Object.entries(r).filter(([k]) => !privateKeys.includes(k)));
+  writeJsonlAtomic(file, rows.map(strip));
+  fs.mkdirSync(path.join(path.dirname(file), "private"), { recursive: true });
+  writeJsonlAtomic(path.join(path.dirname(file), "private", path.basename(file)), rows);
 }
 
 export function makeLogger(logFile, { quiet = false } = {}) {

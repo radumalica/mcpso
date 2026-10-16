@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T12:15:09.066Z",
+  "generated_at": "2026-10-16T12:34:58.474Z",
   "source_repository": "chatmcp/mcpso",
   "stages": {
     "collect": {
@@ -37,7 +37,7 @@
       }
     },
     "normalize": {
-      "generated_at": "2026-10-16T10:43:21.678Z",
+      "generated_at": "2026-10-16T12:34:55.642Z",
       "records": 6362,
       "by_source_type": {
         "issues": 4869,
@@ -55,7 +55,7 @@
       }
     },
     "dedup": {
-      "generated_at": "2026-10-16T12:14:04.826Z",
+      "generated_at": "2026-10-16T12:34:56.563Z",
       "enrichment_applied": true,
       "submission_records_with_identity": 6052,
       "submission_records_without_identity": 97,
@@ -145,7 +145,7 @@
       }
     },
     "classify": {
-      "generated_at": "2026-10-16T12:15:09.043Z",
+      "generated_at": "2026-10-16T12:34:58.450Z",
       "projects": 4868,
       "category": {
         "eligible": 3502,

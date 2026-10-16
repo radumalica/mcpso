@@ -1,229 +1,229 @@
-project_id,name,canonical_key,ambiguity_flags,source_count,source_issue_numbers,authors
-p_cb4049530652,"EasyPDF - edit text inside real PDFs from ChatGPT, Claude and Cursor (remote Streamable HTTP)",github.com/user-attachments/assets,same_repo_incompatible_names,5,29; 95; 294; 4516,bystrakowa; gulihua10010; huhu415; Sfurti-yb; Lorenzino69
-p_047a7b3d9ca5,Landbot,github.com/chatmcp/mcpso,same_repo_incompatible_names,8,112; 3712; 4480; 4939,RMGzc007ss; xiaoxuzhu303-prog; lifeofjer; mybrainonfire; kevmoz; mouseart2025; ashevilleislove; alejandroreba-landbot
-p_db9927334870,slashvibe-mcp,github.com/brightseth/vibe,shared_package_across_repos; shared_package_across_repos,1,388,brightseth
-p_bf6a90c7f139,md-to-pdf-mcp,github.com/marceausolutions/dev-sandbox/projects/md-to-pdf,shared_package_across_repos; monorepo_subpath_project,1,393,wmarceau
-p_51f05f5e0059,amazon-seller-mcp,github.com/marceausolutions/dev-sandbox/projects/amazon-seller,shared_package_across_repos; monorepo_subpath_project,1,394,wmarceau
-p_92d3d320b820,fitness-influencer-mcp,github.com/marceausolutions/dev-sandbox/projects/fitness-influencer,shared_package_across_repos; monorepo_subpath_project,1,395,wmarceau
-p_8d369e7403cf,rideshare-comparison-mcp,github.com/wmarceau/rideshare-comparison-mcp,shared_package_across_repos,1,396,wmarceau
-p_251d2aad3055,hvac-quotes-mcp,github.com/wmarceau/hvac-quotes-mcp,shared_package_across_repos,1,397,wmarceau
-p_2df7e5cd4a62,MarceauSolutions MCP servers,github.com/marceausolutions/md-to-pdf-mcp,shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos,1,401,wmarceau
-p_8b925efa88b9,/vibe (slashvibe-mcp),github.com/vibecodinginc/vibe-mcp,shared_package_across_repos,2,407,brightseth
-p_38eb6d919897,clawpage-mcp: Web extraction API for agents,github.com/skypher/clawpage/mcp,shared_package_across_repos; monorepo_subpath_project,1,421,skypher
-p_c9ad8a8cc7ed,DC Hub — Data Center Intelligence MCP Server,github.com/azmartone67/dchub-mcp-server,shared_endpoint_across_repos; same_repo_incompatible_names,6,422; 443; 523; 816,azmartone67
-p_344d6b6cb199,ClawPage,github.com/skypher/clawpage,shared_package_across_repos,1,426,skypher
-p_9e3664dc67b8,joelklabo/maximumsats-mcp,github.com/joelklabo/maximumsats-mcp,shared_endpoint_across_repos,6,431; 441; 513,joelklabo
-p_7dec93fb9e7c,Agenium MCP Server,github.com/aganium/agenium,shared_package_across_repos,1,490,chorghemaruti64-creator
-p_00c954a44e57,Pylon,github.com/pylonapi/pylon,shared_package_across_repos,1,506,seanthorne10
-p_5160f881a16c,Clouvel — MCP Server for AI Code Quality,github.com/whitening-sinabro/clouvel,shared_package_across_repos,1,,Whitening-Sinabro
-p_f08c18e62448,Pylon MCP Server,github.com/pylonapi/pylon-mcp,shared_package_across_repos,1,511,seanthorne10
-p_6b22f74d8827,Kevros Governance,github.com/ndl-systems/kevros-governance-sdk,shared_package_across_repos,1,514,jmcgraw434
-p_612427709eac,CrossFin MCP Server,github.com/bubilife1202/crossfin/apps/mcp-server,shared_package_across_repos; monorepo_subpath_project,1,,bubilife1202
-p_f838986cde9b,CrossFin MCP Server,github.com/bubilife1202/crossfin,shared_package_across_repos,1,,bubilife1202
-p_e9bcd08744f5,MaximumSats MCP Server,github.com/joelklabo/satsmax,shared_endpoint_across_repos,1,531,joelklabo
-p_d2d22f1c5f39,ZuckerBot,github.com/datalishq/zuckerbot-d2fa8661,shared_package_across_repos,1,534,Crumbedsausage
-p_56d6bd7fb708,Sovereign Forge,github.com/ryudi84/sovereign-mcp-servers,shared_package_across_repos,2,535; 563,ryudi84
-p_6f531fba794d,moltrust-mcp-server,github.com/moltycel/moltrust-mcp-server,shared_package_across_repos,1,551,MoltyCel
-p_17b072be9c95,djd-agent-score-mcp,github.com/jacobsd32-cpu/djd-agent-score-mcp,shared_package_across_repos,1,557,jacobsd32-cpu
-p_1aa7c77b8650,Word Orb,github.com/lotdpbc/word-orb-mcp,shared_endpoint_across_repos,1,,nicoletterankin
-p_3c97d5d34e62,OpenClaw MCP Servers,github.com/yedanyagamiai-cmd/openclaw-mcp-servers,shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; same_repo_incompatible_names,7,606; 607; 608; 656; 739,yedanyagamiai-cmd
-p_cb9cbcdbb8c5,OpenClaw Utility MCP Servers,github.com/yedanyagamiai-cmd/openclaw-mcp-servers/json-toolkit-mcp,shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; monorepo_subpath_project,1,611,yedanyagamiai-cmd
-p_fa15ac8a9f5b,DJD Agent Score,github.com/jacobsd32-cpu/djdagentscore,shared_package_across_repos,2,665,jacobsd32-cpu; JacobsCounsel
-p_45a55c1925a8,TheArtOfService Compliance Intelligence,github.com/gjb65/compliance-platform,shared_endpoint_across_repos,1,636,GJB65
-p_1dada52fd877,Database Connector Lite,github.com/tiranmoskovitch-dev/mcp-database-connector-lite,shared_package_across_repos,1,638,tiranmoskovitch-dev
-p_fc4daba065d3,API Bridge Lite,github.com/tiranmoskovitch-dev/mcp-api-bridge-lite,shared_package_across_repos,1,639,tiranmoskovitch-dev
-p_f7f29f48b305,DC Hub Intelligence,github.com/azmartone67/dchub-backend,shared_endpoint_across_repos,2,644,azmartone67
-p_b8d54a8d4891,League of Legends MCP Server — player data and AI coaching,github.com/mrbridgehq/lol-mcp,same_repo_incompatible_names,2,,MrBridgeHQ
-p_9d34749f3df6,BirdProxies Agent Skills (44 skills for web scraping & proxy automation),github.com/luis2404123/birdproxies-skills,shared_package_across_repos,1,662,luis2404123
-p_47c3c832bf3a,MCP Server Submission: FirstData,github.com/mlt-oss/firstdata,shared_package_across_repos,2,667; 1305,firstdata-dev; Vist233
-p_110a37f71328,vtimestamp-mcp,github.com/vdappdev2/vtimestamp-mcp,shared_package_across_repos,1,,vdappdev2
-p_59ac961e7cec,vtimestamp-mcp-write,github.com/vdappdev2/vtimestamp-mcp-write,shared_package_across_repos,1,,vdappdev2
-p_ef4a99d773a9,Agenium MCP Server — Agent Discovery & Registry,github.com/agenium-net/mcp-server,shared_package_across_repos,1,,chorghemaruti64-creator
-p_6a75283b1064,The Art of Service Compliance Intelligence,github.com/gjb65/compliance-mcp-server,shared_endpoint_across_repos,2,5218,GJB65
-p_4e7365aaac98,ThumbGate — Pre-action gates for AI coding agents,github.com/igorganapolsky/thumbgate,same_repo_incompatible_names,7,765; 771; 925; 1283,IgorGanapolsky
-p_042dca6f1a83,The Daily Lesson,github.com/nicoletterankin/word-orb,shared_endpoint_across_repos,1,732,nicoletterankin
-p_963ca7b7567d,novyx-mcp-desktop,github.com/novyxlabs/novyx-mcp-desktop,shared_package_across_repos,1,,novyxlabs
-p_5ae6c03bfc72,crypto-mcp-server,github.com/apex-500/crypto-mcp-server,shared_package_across_repos,1,783,apex-500
-p_467ddf6f6275,tokenmonkey-mcp-server,github.com/lifestylearb/tokenmonkey,shared_package_across_repos,1,800,lifestylearb
-p_686cd7bdcb8d,Company Diligence MCP,github.com/two-hundred-ok/api-factory,same_repo_incompatible_names,3,809; 810; 1329,tomer-bdbd
-p_86a5e67dd8a5,ProfitPlay MCP Server,github.com/jarvismaximum-hue/profitplay-mcp,shared_package_across_repos,12,818; 1568; 1569; 1570; 1573; 1575; 1576; 1577; 1578; 1579,jarvismaximum-hue
-p_87e179ea184b,FIXGRAPH,github.com/jawdat6/fixgraph,shared_package_across_repos,1,851,voomride
-p_305d418d036e,ToolOracle,github.com/punkpeye/awesome-mcp-servers,shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos,1,874,ToolOracle
-p_df46d8a8aecb,RankOracle,github.com/tooloracle/rankoracle,shared_endpoint_across_repos,1,875,ToolOracle
-p_7c2504746703,MemeOracle,github.com/tooloracle/memeoracle,shared_endpoint_across_repos,1,877,ToolOracle
-p_81ffb005dc35,SmartMoneyOracle,github.com/tooloracle/smartmoneyoracle,shared_endpoint_across_repos,1,878,ToolOracle
-p_da23c23a5a98,YieldOracle,github.com/tooloracle/yieldoracle,shared_endpoint_across_repos,1,879,ToolOracle
-p_4005b91d6c48,FlightOracle,github.com/tooloracle/flightoracle,shared_endpoint_across_repos,1,880,ToolOracle
-p_951abadf7e5e,HotelOracle,github.com/tooloracle/hoteloracle,shared_endpoint_across_repos,1,881,ToolOracle
-p_59256471518b,sOracle,github.com/tooloracle/newsoracle,shared_endpoint_across_repos,1,883,ToolOracle
-p_a4824e6880f5,JobOracle,github.com/tooloracle/joboracle,shared_endpoint_across_repos,1,884,ToolOracle
-p_a48032179fba,MacroOracle,github.com/tooloracle/macroooracle,shared_endpoint_across_repos,1,885,ToolOracle
-p_372f9b9a55f4,Delimit,github.com/delimit-ai/delimit-gateway,shared_package_across_repos,1,886,infracore
-p_d71162b0c0df,'@voidly/mcp-server,github.com/voidly-ai/mcp-server,shared_package_across_repos,1,891,EmperorMew
-p_96106b786e6e,aegisvpn,github.com/emperormew/aegisvpn/mcp-server,shared_package_across_repos; monorepo_subpath_project,1,,EmperorMew
-p_8d59066864b3,nostr-mcp-server,github.com/jorgenclaw/nostr-mcp-server,shared_package_across_repos,4,1127; 1390,jorgenclaw
-p_e82d7714a410,FIXGRAPH MCP Server,github.com/jawdat6/fixgraph-mcp,shared_package_across_repos,4,942; 974,jawdat6; voomride
-p_df5d2b7d64f3,AgentGuard,github.com/bmdhodl/agent47,shared_package_across_repos,1,947,bmdhodl
-p_df6d8e1e18ee,AgentGuard,github.com/bmdhodl/agent47/mcp-server,shared_package_across_repos; monorepo_subpath_project,1,955,bmdhodl
-p_297047d41b4f,'@rog0x/mcp-web-tools,github.com/rog0x/mcp-web-tools,shared_package_across_repos,2,973; 1076,rog0x
-p_0d64aa2c3584,delimit,github.com/delimit-ai/delimit-mcp-server,shared_package_across_repos,1,,infracore
-p_1987af639a8f,Novyx MCP,github.com/novyxlabs/novyx-mcp,shared_package_across_repos,2,1392,novyxlabs
-p_c092663180ae,agentfolio-mcp-server,github.com/0xbrainkid/agentfolio-mcp-server,shared_package_across_repos,2,1269; 1271,0xbrainkid
-p_c0183c364d40,ZuckerBot,github.com/datalishq/zuckerbot,shared_package_across_repos,1,1316,Crumbedsausage
-p_737109262711,Thronglets,github.com/shangri-la-0428/thronglets,shared_package_across_repos,2,1317,Shangri-la-0428
-p_b97841d8246d,agent-staking-mcp-server,github.com/aiagentkarl/agent-staking-mcp-server,shared_package_across_repos,1,1362,AiAgentKarl
-p_cfae8a19814a,coda-mcp,github.com/blaisedestais/coda-mcp,shared_package_across_repos,1,1388,BlaisedEstais
-p_915d96e39c18,agent-insurance-mcp-server,github.com/aiagentkarl/agent-insurance-mcp-server,shared_package_across_repos,1,1412,AiAgentKarl
-p_98ac331144bf,openfuse-mcp,github.com/volkgg/openfused,shared_package_across_repos,1,1413,wearethecompute
-p_f65fe89db322,CoreModels MCP Server,github.com/aramai-schematica/coremodels-mcp-server,shared_endpoint_across_repos,1,1417,aramai-official
-p_e48858591213,Schematica MCP Server,github.com/aramai-schematica/schematica-mcp-server,shared_endpoint_across_repos,1,1418,aramai-official
-p_e10e173b31ae,burn-mcp-server — Personal knowledge base MCP server,github.com/fisher521/burn-mcp-server,shared_package_across_repos,1,,Fisher521
-p_34f2e28c3faf,'@solematica/mcp-server,github.com/n3m1/solematica-mcp,shared_package_across_repos,1,1479,hanicker
-p_3b1ecaa8c4f5,Commit — Supply Chain Risk Scoring,github.com/piiiico/proof-of-commitment,same_repo_incompatible_names,5,1488; 2481,piiiico
-p_9feaa3ee4394,io.github.Stewyboy1990/stockscope-mcp,github.com/stewyboy1990/companyscope-mcp,same_repo_incompatible_names,6,1529; 1610; 1648; 1649,Stewyboy1990
-p_b0c6a0177c20,What it does,github.com/which-model/whichmodel-mcp,same_repo_incompatible_names,4,1515; 1531; 1532,simonamsharp
-p_b13ae4006af5,moltrust-api,github.com/moltycel/moltrust-api,shared_package_across_repos,1,,MoltyCel
-p_e7cddb094b44,agentfolio-mcp-server,github.com/brainai-bot/agentfolio-mcp-server,shared_package_across_repos,2,,0xbrainkid
-p_346d0bdfbe74,crypto-quant-signal-mcp,github.com/algovaultlabs/crypto-quant-signal-mcp,same_repo_incompatible_names,3,,AlgoVaultFi
-p_a0963e729b25,sbb-mcp,github.com/fabsbags/sbb-mcp,shared_package_across_repos,1,,Fabsbags
-p_3649cbdf3fca,ProfitPlay MCP Server,github.com/jarvismaximum-hue/profitplay-starter,shared_package_across_repos,1,1580,jarvismaximum-hue
-p_ed4b7262f99c,BotSpot — AI Trading Bots & Backtesting,github.com/lumiwealth/lumibot,shared_endpoint_across_repos,1,1627,grzesir
-p_c49d33b274f2,Global Chat,github.com/pumanitro/global-chat,shared_package_across_repos,1,1638,globalchatapp
-p_58054467c0bb,Global Chat,github.com/pumanitro/global-chat/mcp-server,shared_package_across_repos; monorepo_subpath_project,1,1650,globalchatapp
-p_ccdbb3a50884,MEOK AI Labs — Regulatory Compliance MCP Servers,github.com/csoai-org/eu-ai-act-compliance-mcp,shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; same_repo_incompatible_names,9,1663; 1746; 1911; 2010; 2023; 2170,CSOAI-ORG
-p_f42d202ec1df,accessibility-ai-mcp,github.com/csoai-org/accessibility-ai-mcp,same_repo_incompatible_names,4,1683; 1704; 1705; 1860,CSOAI-ORG
-p_08083bfea0f3,PermitBase,github.com/thanna94/permitbase,shared_package_across_repos,1,1830,thanna94
-p_9d415285ebaa,Burn,github.com/fisher521/killmybookmark,shared_package_across_repos,1,1833,Fisher521
-p_bd83f9bea290,BotSpot — AI Trading Bots & Backtesting,github.com/lumiwealth/botspot-mcp,shared_endpoint_across_repos,1,1834,grzesir
-p_a316de143b1e,NIST AI RMF Compliance MCP,github.com/csoai-org/nist-rmf-ai-mcp,shared_package_across_repos; same_repo_incompatible_names,4,1835; 1955; 2011; 2024,CSOAI-ORG
-p_fea7e20a58e0,AI Governance Crosswalk MCP,github.com/csoai-org/csoai-governance-crosswalk-mcp,shared_package_across_repos,4,1836; 1891; 2013; 2026,CSOAI-ORG
-p_edda573fc04c,ISO 42001 AI Management System MCP,github.com/csoai-org/iso-42001-ai-mcp,shared_package_across_repos,4,1837; 1933; 2012; 2025,CSOAI-ORG
-p_9280d6cc2ba9,MEOK Governance Engine MCP,github.com/csoai-org/csoai-governance-engine-mcp,shared_package_across_repos,4,1846; 1950; 2009; 2027,CSOAI-ORG
-p_19b3271b2aa5,sbb-mcp,github.com/fabsbags/swisstrip-web/packages/sbb-mcp,shared_package_across_repos; monorepo_subpath_project,1,2019,Fabsbags
-p_06b3240d89a1,VC Deal Flow Signal,github.com/kindrat86/vc-deal-flow-signal/mcp-server,shared_package_across_repos; monorepo_subpath_project,1,2081,kindrat86
-p_93269321177e,megaswap-mcp and megalaunch-mcp,github.com/jacksun911/megaswap-mcp,shared_package_across_repos,2,2085; 2087,jacksun911
-p_5b7b7783fff8,megalaunch-mcp,github.com/jacksun911/megalaunch-mcp,shared_package_across_repos,1,2086,jacksun911
-p_ceb713f8e509,Update BuyWhere MCP server endpoint URL,github.com/buywhere/buywhere-api,shared_endpoint_across_repos; same_repo_incompatible_names,2,2140; 2202,richmondteo-code; BuyWhere
-p_04d9327961ca,ProfitSpot MCP,github.com/omniologynow-rgb/profitspot-mcp,shared_package_across_repos,2,2158,omniologynow-rgb
-p_42103b504f81,Scout Intel MCP,github.com/omniologynow-rgb/scout-intel-mcp,shared_package_across_repos,1,2159,omniologynow-rgb
-p_37f126ceb1b8,BuyWhere,github.com/buywhere/buywhere-mcp,shared_package_across_repos; shared_endpoint_across_repos,11,2161; 2216; 2236; 2705; 2819; 3641; 3709; 3714; 4499,BuyWhere
-p_0e2804b2154b,MEOK-LABS,github.com/csoai-org/meok-labs,shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos,1,2171,CSOAI-ORG
-p_47e4c0bfa909,GoldBean,github.com/wuzenghai616-lang/goldbean,shared_package_across_repos,4,2183; 2547; 2645; 3299,wuzenghai616-lang
-p_179d56594c81,vc-deal-flow-signal,github.com/kindrat86/mcp-deal-flow-signal,shared_package_across_repos,1,2201,kindrat86
-p_3e1f1b2493ab,VC Deal Flow Signal MCP Server,github.com/kindrat86/vc-deal-flow-signal,shared_package_across_repos,1,,kindrat86
-p_0272f616e4b6,ENTIA Entity Verification,github.com/entia-ia/entia_dahe,shared_endpoint_across_repos,1,2213,entia-systems-core
-p_bbe50363c6aa,'@buywhere/mcp-server,github.com/buywhere/mcp-server,shared_package_across_repos,1,2214,BuyWhere
-p_508a798148f1,'@buywhere/mcp-server,github.com/richieboyz18/buywhere-mcp,shared_package_across_repos,1,2215,BuyWhere
-p_ef511a577e57,CryptoIZ MCP,github.com/dadang11/cryptoiz-mcp,shared_package_across_repos,1,2222,dadang11
-p_b505cddcb7df,BuyWhere MCP Server,github.com/buywhere/buywhere,shared_package_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos,3,2225; 2387; 2707,BuyWhere
-p_0cade929bb86,AstraNL MCP Server,github.com/tolegm/astranl-mcp,shared_endpoint_across_repos,1,2227,tolegm
-p_6fa6a12c3c82,InsideOut,github.com/luthersystems/insideout-power,shared_endpoint_across_repos,1,2230,sam-at-luther
-p_60e53cd681c4,InsideOut,github.com/luthersystems/insideout-agent-skills,shared_endpoint_across_repos,1,2233,sam-at-luther
-p_c87a3c65c695,Manteclaw Base L2 Agent Toolkit,github.com/manteclaw/litcoiin-solutions,shared_package_across_repos,1,2242,manteclaw
-p_c3af2bbd793e,wwa-mcp,github.com/vystartasv/wwa-mcp,shared_package_across_repos,1,2247,vystartasv
-p_e9ab36f92b39,ead-factory v1.4.0,github.com/g-digital-by-garrigues/mcp_market_distribution,same_repo_incompatible_names,81,2306; 2307; 2308; 2326; 2346; 2353; 2383; 2390; 2436; 2437; 2450; 2456; 2463; 2480; 2483; 2484; 2491; 2492; 2496; 2497; 2515; 2516; 2546; 2550; 2551; 2559; 2560; 2563; 2564; 2576; 2577; 2578; 2580; 2581; 2582; 2583; 2584; 2587; 2589; 2588; 2590; 2591; 2593; 2594; 2595; 2596; 2599; 2600; 2601; 2613; 2614; 2615; 2618; 2619; 2620; 2647; 2648; 2649; 2652; 2836; 2837; 2839; 2840; 2843; 2844; 2867; 2868; 3062; 3178; 3179; 3180; 3181; 3196; 3197; 3270; 3271; 3272; 3274; 3996; 3997; 4013,g-digital-Bot
-p_ae821b9d2ae9,URL Content Extractor,github.com/drip3m/url-content-extractor,shared_package_across_repos,1,2442,Drip3m
-p_59e86d047465,Knowledge Base MCP,github.com/snowflying117-ship-it/knowledge-base-mcp,shared_package_across_repos,1,2469,snowflying117-ship-it
-p_6b72b70de975,Lumnix,github.com/moltstudios/lumnix-mcp,shared_package_across_repos,1,2499,moltstudios
-p_873a5c125dc3,fivedaylaunch,github.com/nareshdevelop/fdl-mcp-server,shared_package_across_repos,1,2555,Nareshdevelop
-p_814817fa1add,mcp-doctor,github.com/xlyoung/mcp-doctor,same_repo_incompatible_names,8,,xlyoung
-p_d3c0d8269c84,Turkey Data,github.com/bodyegypt/turkey-data-mcp,shared_package_across_repos,1,2693,bodyegypt
-p_9e42d57a2b34,HTAG Docs (com.htagai/htag-docs),github.com/htag-analytics/htag-mcp,same_repo_incompatible_names,3,2773; 2774; 2775,sasasavic82
-p_a8c4838c7144,ENTIA Entity Verification,github.com/entia-ia/entia-mcp-server,shared_endpoint_across_repos,1,2828,entia-systems-core
-p_b5a62dfc60ff,skillguard,github.com/epistemedeus/skillguard,shared_package_across_repos,1,,epistemedeus
-p_a46e6c6fcf35,Burn MCP — give your AI agent a reading workflow,github.com/fisher521/kill-my-bookmark,shared_package_across_repos,1,,Fisher521
-p_abb22bc3e980,Solematica,github.com/hanicker/solematica-mcp,shared_package_across_repos,1,2951,hanicker
-p_e6cc3992d6f3,EDGAR Events,github.com/fortifiedai/edgar-events-mcp,shared_package_across_repos,1,2959,reedox
-p_fbb4704cfe91,ton-jetton-risk-mcp,github.com/mrvlyouknowwho/ton-jetton-risk-mcp,shared_package_across_repos,1,,mrvlyouknowwho
-p_464fc49b2a3e,Fabler x402 Tools,github.com/fablerlabs/x402-tools,shared_package_across_repos,1,,fablerlabs
-p_cae43914222c,UIZZE,github.com/uizze/uizze,shared_package_across_repos,1,3117,samuelbushi
-p_d57163564c02,intelliverse-router,github.com/intelli-verse-x/router-mcp,shared_package_across_repos,1,3128,anideebee7
-p_b076dfff159a,PostgreSQL Connector,github.com/nagarjunr/data-connectors-for-ai-agents/mcp_servers/postgres,shared_package_across_repos; monorepo_subpath_project,1,3198,nagarjunr
-p_3db4ceb87538,SharePoint Connector,github.com/nagarjunr/data-connectors-for-ai-agents/mcp_servers/sharepoint,shared_package_across_repos; monorepo_subpath_project,1,3199,nagarjunr
-p_ffea756578ec,OneDrive Connector,github.com/nagarjunr/data-connectors-for-ai-agents/mcp_servers/onedrive,shared_package_across_repos; monorepo_subpath_project,1,3200,nagarjunr
-p_0587c231725e,S3 Connector,github.com/nagarjunr/data-connectors-for-ai-agents/mcp_servers/s3_bucket,shared_package_across_repos; monorepo_subpath_project,1,3201,nagarjunr
-p_5d281417f83c,GCP Bucket Connector,github.com/nagarjunr/data-connectors-for-ai-agents/mcp_servers/gcp_bucket,shared_package_across_repos; monorepo_subpath_project,1,3202,nagarjunr
-p_c8892538a171,RabbitMQ Connector,github.com/nagarjunr/data-connectors-for-ai-agents/mcp_servers/rabbitmq,shared_package_across_repos; monorepo_subpath_project,1,3204,nagarjunr
-p_ad761ad8528d,Bug Bounty Intelligence,github.com/holistis/bug-bounty-intelligence-mcp,shared_package_across_repos,2,3237,holistis
-p_97234b2bfd46,llms.txt Checker - AI Readiness Audit,github.com/apifymcpfactory-droid/mcp-factory-servers,shared_endpoint_across_repos; same_repo_incompatible_names,3,3239; 3240; 3241,apifymcpfactory-droid
-p_2e2b3900675a,sipi.bot — Spend Firewall for AI Agents,github.com/kindrat86/sipi-bot,shared_endpoint_across_repos,1,3259,kindrat86
-p_cdeca7e3e91d,Humanity4AI,github.com/humanity4ai/project_human,shared_package_across_repos,1,3296,simonmak-ascent
-p_815a7f3f5e9f,Workix MCP,github.com/facetoplace/workix,shared_package_across_repos,1,,LuckyCoders
-p_7cd591437d9b,AstraNL MCP Server,github.com/astranl/astranl-mcp,shared_endpoint_across_repos,1,3466,tolegm
-p_12d905c55c73,Verdoc,github.com/verdochello/verdoc-mcp,shared_package_across_repos,1,3489,verdochello
-p_d2e7015e560e,TruthRoute,github.com/rudrendupaul/truthroute,shared_package_across_repos,1,,RudrenduPaul
-p_c03cc1f00e3c,PaceProof,github.com/rudrendupaul/paceproof,shared_package_across_repos,1,,RudrenduPaul
-p_0cbefe0e300c,podcast-guest-crm,github.com/rudrendupaul/podcast-guest-crm,shared_package_across_repos,1,,RudrenduPaul
-p_21b533190374,koma-core-mcp,github.com/swnotmetal/project-koma,same_repo_incompatible_names,2,3572; 3573,swnotmetal
-p_cd62b4728073,SandBase CLI — open-source Apache-2.0 CLI and local MCP bridge.,github.com/sandbaseai/cli,shared_package_across_repos,3,3574; 3640,denial123789
-p_cc433a9ee8a0,agent-cold-email (Coldrig),github.com/ys-projectcalc/agent-cold-email,shared_package_across_repos,1,3602,YS-projectcalc
-p_173018a63755,cute-web-scraper,github.com/maccydee/cute-web-scraper,shared_package_across_repos,1,3620,maccydee
-p_87fce0bb861e,Krimskrams Paid APIs,github.com/kramer-hans/krimskrams-paid-apis-mcp,shared_package_across_repos,1,3653,kramer-hans
-p_9f21b92b0667,Magpie Capital,github.com/magpiecapital/magpie-mcp,shared_package_across_repos,1,3677,magpiecapital
-p_fe689c064e6d,CCS MCP Server,github.com/dshcorrectover/agent-runtime-guard,same_repo_incompatible_names,2,3695; 4020,DSHCorrectover
-p_0e7cc87353dd,ParlayAPI,github.com/jacobiusmakes/parlay-api-mcp,shared_package_across_repos,1,3749,JacobiusMakes
-p_4c233c48f96e,Axiom by Elevated AI,github.com/itr3k/axiom-relay,shared_package_across_repos,1,3786,Itr3k
-p_7324f11c975d,dataloupe,github.com/aurelio-nakamura/dataloupe,shared_package_across_repos,1,3813,aurelio-nakamura
-p_f88d8183bdec,Raposa Aval,github.com/agentlabbusiness/raposa-mcp,shared_package_across_repos,1,3914,agentlabbusiness
-p_87335f27ed49,ReadyAgents,github.com/readyagents/readyagents-core,shared_package_across_repos,1,3916,readyagents
-p_599b612beb5c,co.solsniperbot/solana-snipe-bot-mcp,github.com/solara-snipe-bot/solana-snipe-bot-mcp,shared_package_across_repos,1,3939,Airta-Admin
-p_ad2fc2202be9,Solana Sniper Bot MCP,github.com/solara-sniper-bot/mcp,shared_package_across_repos,2,3945; 3950,Airta-Admin
-p_40136c8bc530,io.github.CSOAI-ORG/eu-ai-act-compliance-mcp,github.com/meok-ai-labs/eu-ai-act-compliance-mcp,shared_package_across_repos,1,4081,CSOAI-ORG
-p_0a5eb0064523,RecipeBee MCP,github.com/praisondani/recipebee-cursor-plugin,shared_package_across_repos,1,4084,praisondani
-p_ed711f4b770d,Airbnb MCP Server (HasData),github.com/hasdata/airbnb-mcp,shared_endpoint_across_repos,1,4107,sergey-ermakovich
-p_bd0c78fca604,Amazon MCP Server (HasData),github.com/hasdata/amazon-mcp,shared_endpoint_across_repos,1,4108,sergey-ermakovich
-p_2fd1ed316e87,Bing MCP Server (HasData),github.com/hasdata/bing-mcp,shared_endpoint_across_repos,1,4109,sergey-ermakovich
-p_a6529dad3687,Booking.com MCP Server (HasData),github.com/hasdata/booking-mcp,shared_endpoint_across_repos,1,4110,sergey-ermakovich
-p_34c2a21e4f97,DuckDuckGo MCP Server (HasData),github.com/hasdata/duckduckgo-mcp,shared_endpoint_across_repos,1,4111,sergey-ermakovich
-p_afe75056859a,Facebook MCP Server (HasData),github.com/hasdata/facebook-mcp,shared_endpoint_across_repos,1,4112,sergey-ermakovich
-p_72ed001ad69a,Glassdoor MCP Server (HasData),github.com/hasdata/glassdoor-mcp,shared_endpoint_across_repos,1,4113,sergey-ermakovich
-p_d99667ca047c,Google Flights MCP Server (HasData),github.com/hasdata/google-flights-mcp,shared_endpoint_across_repos,1,4114,sergey-ermakovich
-p_d30332b994a5,Google Images MCP Server (HasData),github.com/hasdata/google-images-mcp,shared_endpoint_across_repos,1,4115,sergey-ermakovich
-p_43f3eaaff078,Google Maps MCP Server (HasData),github.com/hasdata/google-maps-mcp,shared_endpoint_across_repos,1,4116,sergey-ermakovich
-p_a2f344461c88,Google Scholar MCP Server (HasData),github.com/hasdata/google-scholar-mcp,shared_endpoint_across_repos,1,4117,sergey-ermakovich
-p_f6811d3e0298,Google Trends MCP Server (HasData),github.com/hasdata/google-trends-mcp,shared_endpoint_across_repos,1,4118,sergey-ermakovich
-p_f1eaf5fa38b5,Indeed MCP Server (HasData),github.com/hasdata/indeed-mcp,shared_endpoint_across_repos,1,4119,sergey-ermakovich
-p_33be48333aa4,Redfin MCP Server (HasData),github.com/hasdata/redfin-mcp,shared_endpoint_across_repos,1,4120,sergey-ermakovich
-p_dea5dc5ee567,Shopify MCP Server (HasData),github.com/hasdata/shopify-mcp,shared_endpoint_across_repos,1,4121,sergey-ermakovich
-p_a912b7ac7f5d,Walmart MCP Server (HasData),github.com/hasdata/walmart-mcp,shared_endpoint_across_repos,1,4122,sergey-ermakovich
-p_20f0b3490233,Web Scraping MCP Server (HasData),github.com/hasdata/web-scraping-mcp,shared_endpoint_across_repos,1,4123,sergey-ermakovich
-p_3e65ab40b295,Yellow Pages MCP Server (HasData),github.com/hasdata/yellowpages-mcp,shared_endpoint_across_repos,1,4124,sergey-ermakovich
-p_6d1d20eb56c6,Yelp MCP Server (HasData),github.com/hasdata/yelp-mcp,shared_endpoint_across_repos,1,4125,sergey-ermakovich
-p_e81e2d6ca3ac,Fidelis Memory,github.com/hermes-labs-ai/fidelis,shared_package_across_repos,1,,roli-lpci
-p_2348c1c998c7,Public tools,github.com/alicelabs-llc/marketnow,shared_package_across_repos; shared_endpoint_across_repos; same_repo_incompatible_names,3,4164; 4165,eddyflores100-lang
-p_1fd2524c58c0,purchase-requisition MCP Server,github.com/theluckystrike/mcp-servers,same_repo_incompatible_names,46,4227; 4945; 4946; 4947; 4948; 4949; 4981; 4982; 4983; 4984; 4985; 4986; 4987; 4988; 4989; 4990; 4991; 4992; 4993; 4994; 4995; 4996; 4997; 4998; 4999; 5000; 5001; 5002; 5003; 5004; 5005; 5006; 5007; 5008; 5009; 5010; 5011; 5012; 5013; 5014; 5015; 5016; 5017; 5018; 5019; 5020,theluckystrike
-p_786c6a1f2237,web-search-mcp,github.com/awslew/web-search-mcp,shared_package_across_repos,1,4312,awslew
-p_5a028303307d,SaaSCity,github.com/nyyhao/saascity-mcp,shared_package_across_repos,1,4338,nyyhao
-p_8f340c81ad45,Apify data tools (headply),github.com/headply/apify-data-tools-mcp,shared_endpoint_across_repos,1,4418,headply
-p_8df6db38f93a,WhichTrim Vehicle Records,github.com/babbagescabbages/whichtrim-mcp,shared_package_across_repos,1,4431,BabbagesCabbages
-p_3e51a82905c5,Career Page Jobs on Apify MCP,github.com/donmangudata-ops/apify-jobs-mcp,shared_endpoint_across_repos,1,4438,donmangudata-ops
-p_1d237018345a,MediaFast,github.com/arthuryuzbashev/mediafast-skills,shared_package_across_repos,1,4459,arthuryuzbashev
-p_a1e5214da36f,Web & Company Intelligence,github.com/moha-tah/web-intelligence-mcp,shared_endpoint_across_repos,1,4465,moha-tah
-p_31a19c5192d9,Internet Radio (internet-radio-mcp),github.com/alondrilich/internet-radio-mcp,shared_package_across_repos,1,4478,AlonDrilich
-p_0575c07a3e76,vaultshell MCP server,github.com/sowhati/vaultshell,shared_package_across_repos,1,4530,SoWhatI
-p_89019fbfa0fb,5 MCP servers from contentforge-press (PixHarvest intel family),github.com/contentforge-press/shopify-change-intelligence,same_repo_incompatible_names,2,4535; 4632,contentforge-press
-p_721b1ce0459a,Store Catalog (Shopify and WooCommerce product catalogs),github.com/agenttoolworks/mcp-servers,same_repo_incompatible_names,4,4538; 4539; 4540; 4566,KOUYATE
-p_03de8632d67b,marketnow,github.com/eddyflores100-lang/marketnow,shared_package_across_repos; shared_endpoint_across_repos,2,,eddyflores100-lang; AzielEliab
-p_6430109c5c29,BountyRadar MCP,github.com/panstories/bountyradar-mcp,shared_endpoint_across_repos; same_repo_incompatible_names,9,4583; 4584; 4585; 4608; 4609; 4610; 4687; 5032; 5414,MistifyTea
-p_099ab1e664fa,Etsy Sales MCP (publicrecords),github.com/geminigeorge22/etsy-sales-mcp,shared_endpoint_across_repos,1,4602,GeminiGeorge22
-p_d095b19807b1,prop-firm-rules,github.com/kburrus64-max/prop-firm-rules,shared_package_across_repos,1,,kburrus64-max
-p_779867209076,Playwright E2E MCP,github.com/trajectiq-ai/e2e,shared_package_across_repos,2,4769; 4787,trajectiq-ai
-p_22d7497cc6e5,PageWire,github.com/agentiloop/pagewire-mcp,shared_package_across_repos,1,4795,AgentiLoop
-p_631637999cdc,Australia FX Rates (RBA) MCP,github.com/donniertf-hub/uk-mcp-fleet,same_repo_incompatible_names,94,4830; 4829; 4831; 4833; 4834; 4835; 4836; 4837; 4838; 4839; 5297; 5298; 5299; 5301; 5302; 5303; 5307; 5308; 5309; 5310; 5311; 5312; 5313; 5314; 5315; 5316; 5317; 5319; 5320; 5321; 5322; 5323; 5324; 5325; 5326; 5327; 5328; 5329; 5330; 5331; 5332; 5333; 5335; 5336; 5337; 5338; 5339; 5340; 5341; 5342; 5343; 5344; 5345; 5346; 5347; 5348; 5349; 5350; 5351; 5352; 5353; 5354; 5356; 5357; 5358; 5359; 5361; 5363; 5364; 5365; 5366; 5367; 5369; 5370; 5371; 5372; 5373; 5374; 5375; 5376; 5377; 5378; 5379; 5380; 5381; 5382; 5383; 5384; 5385; 5386; 5387; 5388; 5389; 5390,donniertf-hub
-p_a73f34795e1c,Plainfold data tools,github.com/plainfold/plainfold-mcp,shared_endpoint_across_repos,1,4965,Plainfold
-p_47eb40fd572e,remove-ai-label,github.com/r24599/remove-ai-label,shared_package_across_repos,1,5068,R24599
-p_ed35c40b6bf0,Forbiz,github.com/tbernabo/forbiz-mcp,shared_package_across_repos,1,5081,tbernabo
-p_34de3221e409,zima-mcp: check and fix a ZimaBlade or Docker host over SSH,github.com/casareanderson/zima-mcp,shared_package_across_repos,1,5117,casareanderson
-p_35dc4f84670f,s: SanctionsAI (OFAC screening) + sipi.bot Spend Firewall,github.com/kindrat86/agentmail,shared_endpoint_across_repos,1,5150,kindrat86
-p_43b8fdefad3b,Agent Discovery Board by SarnAI,github.com/sarnai-dev/agent-discovery-board-public,shared_endpoint_across_repos; shared_endpoint_across_repos,1,5209,mglbagi
-p_823f993501f2,IdősotthonMérleg,github.com/trulorg/merleg-open-data,same_repo_incompatible_names,3,5232; 5233; 5234,TRULFazeAoe
-p_a30fdc8d32a3,canada-agent-tools,github.com/domaranskyi/canada-agent-tools,shared_endpoint_across_repos,1,5246,domaranskyi
-p_606efbdf72b1,Agent Output Verifier by SarnAI,github.com/sarnai-dev/agent-output-verifier,shared_endpoint_across_repos; shared_endpoint_across_repos,1,5405,mglbagi
-p_9715ba51646c,Free and Cheap Tokens (FaCT),github.com/panstories/free-and-cheap-tokens,shared_endpoint_across_repos,1,5415,MistifyTea
-p_8b8c9d01760f,Cheapest-LLM Router MCP,github.com/panstories/cheapest-llm-router,shared_endpoint_across_repos,1,5416,MistifyTea
-p_478e952eea4a,Public Data MCP,github.com/anontroll/public-data-mcp,shared_endpoint_across_repos,1,5420,AnonTroll
-p_bce001d9c110,Public Data MCP,github.com/clearline-labs/public-data-mcp,shared_endpoint_across_repos,1,5423,clearline-labs
-p_daaad07ad90f,Toolweather,github.com/toolweather/toolweather,shared_endpoint_across_repos,1,5428,toolweather
-p_82271c1162b2,China News Feed (Deletion Watch),github.com/joydai2026-del/china-news-feed-mcp,shared_package_across_repos,1,5450,joydai2026-del
-p_78f1b06144c7,Upstream,github.com/toolweather/upstream,shared_endpoint_across_repos,1,5452,toolweather
-p_9363dc61e998,"SpendGate, PayCheck, Toolweather, Upstream (MCP servers)",github.com/toolweather/spendgate,shared_endpoint_across_repos; shared_endpoint_across_repos,1,5487,toolweather
+project_id,name,canonical_key,ambiguity_flags,source_count,source_issue_numbers
+p_cb4049530652,"EasyPDF - edit text inside real PDFs from ChatGPT, Claude and Cursor (remote Streamable HTTP)",github.com/user-attachments/assets,same_repo_incompatible_names,5,29; 95; 294; 4516
+p_047a7b3d9ca5,Landbot,github.com/chatmcp/mcpso,same_repo_incompatible_names,8,112; 3712; 4480; 4939
+p_db9927334870,slashvibe-mcp,github.com/brightseth/vibe,shared_package_across_repos; shared_package_across_repos,1,388
+p_bf6a90c7f139,md-to-pdf-mcp,github.com/marceausolutions/dev-sandbox/projects/md-to-pdf,shared_package_across_repos; monorepo_subpath_project,1,393
+p_51f05f5e0059,amazon-seller-mcp,github.com/marceausolutions/dev-sandbox/projects/amazon-seller,shared_package_across_repos; monorepo_subpath_project,1,394
+p_92d3d320b820,fitness-influencer-mcp,github.com/marceausolutions/dev-sandbox/projects/fitness-influencer,shared_package_across_repos; monorepo_subpath_project,1,395
+p_8d369e7403cf,rideshare-comparison-mcp,github.com/wmarceau/rideshare-comparison-mcp,shared_package_across_repos,1,396
+p_251d2aad3055,hvac-quotes-mcp,github.com/wmarceau/hvac-quotes-mcp,shared_package_across_repos,1,397
+p_2df7e5cd4a62,MarceauSolutions MCP servers,github.com/marceausolutions/md-to-pdf-mcp,shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos,1,401
+p_8b925efa88b9,/vibe (slashvibe-mcp),github.com/vibecodinginc/vibe-mcp,shared_package_across_repos,2,407
+p_38eb6d919897,clawpage-mcp: Web extraction API for agents,github.com/skypher/clawpage/mcp,shared_package_across_repos; monorepo_subpath_project,1,421
+p_c9ad8a8cc7ed,DC Hub — Data Center Intelligence MCP Server,github.com/azmartone67/dchub-mcp-server,shared_endpoint_across_repos; same_repo_incompatible_names,6,422; 443; 523; 816
+p_344d6b6cb199,ClawPage,github.com/skypher/clawpage,shared_package_across_repos,1,426
+p_9e3664dc67b8,joelklabo/maximumsats-mcp,github.com/joelklabo/maximumsats-mcp,shared_endpoint_across_repos,6,431; 441; 513
+p_7dec93fb9e7c,Agenium MCP Server,github.com/aganium/agenium,shared_package_across_repos,1,490
+p_00c954a44e57,Pylon,github.com/pylonapi/pylon,shared_package_across_repos,1,506
+p_5160f881a16c,Clouvel — MCP Server for AI Code Quality,github.com/whitening-sinabro/clouvel,shared_package_across_repos,1,
+p_f08c18e62448,Pylon MCP Server,github.com/pylonapi/pylon-mcp,shared_package_across_repos,1,511
+p_6b22f74d8827,Kevros Governance,github.com/ndl-systems/kevros-governance-sdk,shared_package_across_repos,1,514
+p_612427709eac,CrossFin MCP Server,github.com/bubilife1202/crossfin/apps/mcp-server,shared_package_across_repos; monorepo_subpath_project,1,
+p_f838986cde9b,CrossFin MCP Server,github.com/bubilife1202/crossfin,shared_package_across_repos,1,
+p_e9bcd08744f5,MaximumSats MCP Server,github.com/joelklabo/satsmax,shared_endpoint_across_repos,1,531
+p_d2d22f1c5f39,ZuckerBot,github.com/datalishq/zuckerbot-d2fa8661,shared_package_across_repos,1,534
+p_56d6bd7fb708,Sovereign Forge,github.com/ryudi84/sovereign-mcp-servers,shared_package_across_repos,2,535; 563
+p_6f531fba794d,moltrust-mcp-server,github.com/moltycel/moltrust-mcp-server,shared_package_across_repos,1,551
+p_17b072be9c95,djd-agent-score-mcp,github.com/jacobsd32-cpu/djd-agent-score-mcp,shared_package_across_repos,1,557
+p_1aa7c77b8650,Word Orb,github.com/lotdpbc/word-orb-mcp,shared_endpoint_across_repos,1,
+p_3c97d5d34e62,OpenClaw MCP Servers,github.com/yedanyagamiai-cmd/openclaw-mcp-servers,shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; same_repo_incompatible_names,7,606; 607; 608; 656; 739
+p_cb9cbcdbb8c5,OpenClaw Utility MCP Servers,github.com/yedanyagamiai-cmd/openclaw-mcp-servers/json-toolkit-mcp,shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; monorepo_subpath_project,1,611
+p_fa15ac8a9f5b,DJD Agent Score,github.com/jacobsd32-cpu/djdagentscore,shared_package_across_repos,2,665
+p_45a55c1925a8,TheArtOfService Compliance Intelligence,github.com/gjb65/compliance-platform,shared_endpoint_across_repos,1,636
+p_1dada52fd877,Database Connector Lite,github.com/tiranmoskovitch-dev/mcp-database-connector-lite,shared_package_across_repos,1,638
+p_fc4daba065d3,API Bridge Lite,github.com/tiranmoskovitch-dev/mcp-api-bridge-lite,shared_package_across_repos,1,639
+p_f7f29f48b305,DC Hub Intelligence,github.com/azmartone67/dchub-backend,shared_endpoint_across_repos,2,644
+p_b8d54a8d4891,League of Legends MCP Server — player data and AI coaching,github.com/mrbridgehq/lol-mcp,same_repo_incompatible_names,2,
+p_9d34749f3df6,BirdProxies Agent Skills (44 skills for web scraping & proxy automation),github.com/luis2404123/birdproxies-skills,shared_package_across_repos,1,662
+p_47c3c832bf3a,MCP Server Submission: FirstData,github.com/mlt-oss/firstdata,shared_package_across_repos,2,667; 1305
+p_110a37f71328,vtimestamp-mcp,github.com/vdappdev2/vtimestamp-mcp,shared_package_across_repos,1,
+p_59ac961e7cec,vtimestamp-mcp-write,github.com/vdappdev2/vtimestamp-mcp-write,shared_package_across_repos,1,
+p_ef4a99d773a9,Agenium MCP Server — Agent Discovery & Registry,github.com/agenium-net/mcp-server,shared_package_across_repos,1,
+p_6a75283b1064,The Art of Service Compliance Intelligence,github.com/gjb65/compliance-mcp-server,shared_endpoint_across_repos,2,5218
+p_4e7365aaac98,ThumbGate — Pre-action gates for AI coding agents,github.com/igorganapolsky/thumbgate,same_repo_incompatible_names,7,765; 771; 925; 1283
+p_042dca6f1a83,The Daily Lesson,github.com/nicoletterankin/word-orb,shared_endpoint_across_repos,1,732
+p_963ca7b7567d,novyx-mcp-desktop,github.com/novyxlabs/novyx-mcp-desktop,shared_package_across_repos,1,
+p_5ae6c03bfc72,crypto-mcp-server,github.com/apex-500/crypto-mcp-server,shared_package_across_repos,1,783
+p_467ddf6f6275,tokenmonkey-mcp-server,github.com/lifestylearb/tokenmonkey,shared_package_across_repos,1,800
+p_686cd7bdcb8d,Company Diligence MCP,github.com/two-hundred-ok/api-factory,same_repo_incompatible_names,3,809; 810; 1329
+p_86a5e67dd8a5,ProfitPlay MCP Server,github.com/jarvismaximum-hue/profitplay-mcp,shared_package_across_repos,12,818; 1568; 1569; 1570; 1573; 1575; 1576; 1577; 1578; 1579
+p_87e179ea184b,FIXGRAPH,github.com/jawdat6/fixgraph,shared_package_across_repos,1,851
+p_305d418d036e,ToolOracle,github.com/punkpeye/awesome-mcp-servers,shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos,1,874
+p_df46d8a8aecb,RankOracle,github.com/tooloracle/rankoracle,shared_endpoint_across_repos,1,875
+p_7c2504746703,MemeOracle,github.com/tooloracle/memeoracle,shared_endpoint_across_repos,1,877
+p_81ffb005dc35,SmartMoneyOracle,github.com/tooloracle/smartmoneyoracle,shared_endpoint_across_repos,1,878
+p_da23c23a5a98,YieldOracle,github.com/tooloracle/yieldoracle,shared_endpoint_across_repos,1,879
+p_4005b91d6c48,FlightOracle,github.com/tooloracle/flightoracle,shared_endpoint_across_repos,1,880
+p_951abadf7e5e,HotelOracle,github.com/tooloracle/hoteloracle,shared_endpoint_across_repos,1,881
+p_59256471518b,sOracle,github.com/tooloracle/newsoracle,shared_endpoint_across_repos,1,883
+p_a4824e6880f5,JobOracle,github.com/tooloracle/joboracle,shared_endpoint_across_repos,1,884
+p_a48032179fba,MacroOracle,github.com/tooloracle/macroooracle,shared_endpoint_across_repos,1,885
+p_372f9b9a55f4,Delimit,github.com/delimit-ai/delimit-gateway,shared_package_across_repos,1,886
+p_d71162b0c0df,'@voidly/mcp-server,github.com/voidly-ai/mcp-server,shared_package_across_repos,1,891
+p_96106b786e6e,aegisvpn,github.com/emperormew/aegisvpn/mcp-server,shared_package_across_repos; monorepo_subpath_project,1,
+p_8d59066864b3,nostr-mcp-server,github.com/jorgenclaw/nostr-mcp-server,shared_package_across_repos,4,1127; 1390
+p_e82d7714a410,FIXGRAPH MCP Server,github.com/jawdat6/fixgraph-mcp,shared_package_across_repos,4,942; 974
+p_df5d2b7d64f3,AgentGuard,github.com/bmdhodl/agent47,shared_package_across_repos,1,947
+p_df6d8e1e18ee,AgentGuard,github.com/bmdhodl/agent47/mcp-server,shared_package_across_repos; monorepo_subpath_project,1,955
+p_297047d41b4f,'@rog0x/mcp-web-tools,github.com/rog0x/mcp-web-tools,shared_package_across_repos,2,973; 1076
+p_0d64aa2c3584,delimit,github.com/delimit-ai/delimit-mcp-server,shared_package_across_repos,1,
+p_1987af639a8f,Novyx MCP,github.com/novyxlabs/novyx-mcp,shared_package_across_repos,2,1392
+p_c092663180ae,agentfolio-mcp-server,github.com/0xbrainkid/agentfolio-mcp-server,shared_package_across_repos,2,1269; 1271
+p_c0183c364d40,ZuckerBot,github.com/datalishq/zuckerbot,shared_package_across_repos,1,1316
+p_737109262711,Thronglets,github.com/shangri-la-0428/thronglets,shared_package_across_repos,2,1317
+p_b97841d8246d,agent-staking-mcp-server,github.com/aiagentkarl/agent-staking-mcp-server,shared_package_across_repos,1,1362
+p_cfae8a19814a,coda-mcp,github.com/blaisedestais/coda-mcp,shared_package_across_repos,1,1388
+p_915d96e39c18,agent-insurance-mcp-server,github.com/aiagentkarl/agent-insurance-mcp-server,shared_package_across_repos,1,1412
+p_98ac331144bf,openfuse-mcp,github.com/volkgg/openfused,shared_package_across_repos,1,1413
+p_f65fe89db322,CoreModels MCP Server,github.com/aramai-schematica/coremodels-mcp-server,shared_endpoint_across_repos,1,1417
+p_e48858591213,Schematica MCP Server,github.com/aramai-schematica/schematica-mcp-server,shared_endpoint_across_repos,1,1418
+p_e10e173b31ae,burn-mcp-server — Personal knowledge base MCP server,github.com/fisher521/burn-mcp-server,shared_package_across_repos,1,
+p_34f2e28c3faf,'@solematica/mcp-server,github.com/n3m1/solematica-mcp,shared_package_across_repos,1,1479
+p_3b1ecaa8c4f5,Commit — Supply Chain Risk Scoring,github.com/piiiico/proof-of-commitment,same_repo_incompatible_names,5,1488; 2481
+p_9feaa3ee4394,io.github.Stewyboy1990/stockscope-mcp,github.com/stewyboy1990/companyscope-mcp,same_repo_incompatible_names,6,1529; 1610; 1648; 1649
+p_b0c6a0177c20,What it does,github.com/which-model/whichmodel-mcp,same_repo_incompatible_names,4,1515; 1531; 1532
+p_b13ae4006af5,moltrust-api,github.com/moltycel/moltrust-api,shared_package_across_repos,1,
+p_e7cddb094b44,agentfolio-mcp-server,github.com/brainai-bot/agentfolio-mcp-server,shared_package_across_repos,2,
+p_346d0bdfbe74,crypto-quant-signal-mcp,github.com/algovaultlabs/crypto-quant-signal-mcp,same_repo_incompatible_names,3,
+p_a0963e729b25,sbb-mcp,github.com/fabsbags/sbb-mcp,shared_package_across_repos,1,
+p_3649cbdf3fca,ProfitPlay MCP Server,github.com/jarvismaximum-hue/profitplay-starter,shared_package_across_repos,1,1580
+p_ed4b7262f99c,BotSpot — AI Trading Bots & Backtesting,github.com/lumiwealth/lumibot,shared_endpoint_across_repos,1,1627
+p_c49d33b274f2,Global Chat,github.com/pumanitro/global-chat,shared_package_across_repos,1,1638
+p_58054467c0bb,Global Chat,github.com/pumanitro/global-chat/mcp-server,shared_package_across_repos; monorepo_subpath_project,1,1650
+p_ccdbb3a50884,MEOK AI Labs — Regulatory Compliance MCP Servers,github.com/csoai-org/eu-ai-act-compliance-mcp,shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; same_repo_incompatible_names,9,1663; 1746; 1911; 2010; 2023; 2170
+p_f42d202ec1df,accessibility-ai-mcp,github.com/csoai-org/accessibility-ai-mcp,same_repo_incompatible_names,4,1683; 1704; 1705; 1860
+p_08083bfea0f3,PermitBase,github.com/thanna94/permitbase,shared_package_across_repos,1,1830
+p_9d415285ebaa,Burn,github.com/fisher521/killmybookmark,shared_package_across_repos,1,1833
+p_bd83f9bea290,BotSpot — AI Trading Bots & Backtesting,github.com/lumiwealth/botspot-mcp,shared_endpoint_across_repos,1,1834
+p_a316de143b1e,NIST AI RMF Compliance MCP,github.com/csoai-org/nist-rmf-ai-mcp,shared_package_across_repos; same_repo_incompatible_names,4,1835; 1955; 2011; 2024
+p_fea7e20a58e0,AI Governance Crosswalk MCP,github.com/csoai-org/csoai-governance-crosswalk-mcp,shared_package_across_repos,4,1836; 1891; 2013; 2026
+p_edda573fc04c,ISO 42001 AI Management System MCP,github.com/csoai-org/iso-42001-ai-mcp,shared_package_across_repos,4,1837; 1933; 2012; 2025
+p_9280d6cc2ba9,MEOK Governance Engine MCP,github.com/csoai-org/csoai-governance-engine-mcp,shared_package_across_repos,4,1846; 1950; 2009; 2027
+p_19b3271b2aa5,sbb-mcp,github.com/fabsbags/swisstrip-web/packages/sbb-mcp,shared_package_across_repos; monorepo_subpath_project,1,2019
+p_06b3240d89a1,VC Deal Flow Signal,github.com/kindrat86/vc-deal-flow-signal/mcp-server,shared_package_across_repos; monorepo_subpath_project,1,2081
+p_93269321177e,megaswap-mcp and megalaunch-mcp,github.com/jacksun911/megaswap-mcp,shared_package_across_repos,2,2085; 2087
+p_5b7b7783fff8,megalaunch-mcp,github.com/jacksun911/megalaunch-mcp,shared_package_across_repos,1,2086
+p_ceb713f8e509,Update BuyWhere MCP server endpoint URL,github.com/buywhere/buywhere-api,shared_endpoint_across_repos; same_repo_incompatible_names,2,2140; 2202
+p_04d9327961ca,ProfitSpot MCP,github.com/omniologynow-rgb/profitspot-mcp,shared_package_across_repos,2,2158
+p_42103b504f81,Scout Intel MCP,github.com/omniologynow-rgb/scout-intel-mcp,shared_package_across_repos,1,2159
+p_37f126ceb1b8,BuyWhere,github.com/buywhere/buywhere-mcp,shared_package_across_repos; shared_endpoint_across_repos,11,2161; 2216; 2236; 2705; 2819; 3641; 3709; 3714; 4499
+p_0e2804b2154b,MEOK-LABS,github.com/csoai-org/meok-labs,shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos; shared_package_across_repos,1,2171
+p_47e4c0bfa909,GoldBean,github.com/wuzenghai616-lang/goldbean,shared_package_across_repos,4,2183; 2547; 2645; 3299
+p_179d56594c81,vc-deal-flow-signal,github.com/kindrat86/mcp-deal-flow-signal,shared_package_across_repos,1,2201
+p_3e1f1b2493ab,VC Deal Flow Signal MCP Server,github.com/kindrat86/vc-deal-flow-signal,shared_package_across_repos,1,
+p_0272f616e4b6,ENTIA Entity Verification,github.com/entia-ia/entia_dahe,shared_endpoint_across_repos,1,2213
+p_bbe50363c6aa,'@buywhere/mcp-server,github.com/buywhere/mcp-server,shared_package_across_repos,1,2214
+p_508a798148f1,'@buywhere/mcp-server,github.com/richieboyz18/buywhere-mcp,shared_package_across_repos,1,2215
+p_ef511a577e57,CryptoIZ MCP,github.com/dadang11/cryptoiz-mcp,shared_package_across_repos,1,2222
+p_b505cddcb7df,BuyWhere MCP Server,github.com/buywhere/buywhere,shared_package_across_repos; shared_endpoint_across_repos; shared_endpoint_across_repos,3,2225; 2387; 2707
+p_0cade929bb86,AstraNL MCP Server,github.com/tolegm/astranl-mcp,shared_endpoint_across_repos,1,2227
+p_6fa6a12c3c82,InsideOut,github.com/luthersystems/insideout-power,shared_endpoint_across_repos,1,2230
+p_60e53cd681c4,InsideOut,github.com/luthersystems/insideout-agent-skills,shared_endpoint_across_repos,1,2233
+p_c87a3c65c695,Manteclaw Base L2 Agent Toolkit,github.com/manteclaw/litcoiin-solutions,shared_package_across_repos,1,2242
+p_c3af2bbd793e,wwa-mcp,github.com/vystartasv/wwa-mcp,shared_package_across_repos,1,2247
+p_e9ab36f92b39,ead-factory v1.4.0,github.com/g-digital-by-garrigues/mcp_market_distribution,same_repo_incompatible_names,81,2306; 2307; 2308; 2326; 2346; 2353; 2383; 2390; 2436; 2437; 2450; 2456; 2463; 2480; 2483; 2484; 2491; 2492; 2496; 2497; 2515; 2516; 2546; 2550; 2551; 2559; 2560; 2563; 2564; 2576; 2577; 2578; 2580; 2581; 2582; 2583; 2584; 2587; 2589; 2588; 2590; 2591; 2593; 2594; 2595; 2596; 2599; 2600; 2601; 2613; 2614; 2615; 2618; 2619; 2620; 2647; 2648; 2649; 2652; 2836; 2837; 2839; 2840; 2843; 2844; 2867; 2868; 3062; 3178; 3179; 3180; 3181; 3196; 3197; 3270; 3271; 3272; 3274; 3996; 3997; 4013
+p_ae821b9d2ae9,URL Content Extractor,github.com/drip3m/url-content-extractor,shared_package_across_repos,1,2442
+p_59e86d047465,Knowledge Base MCP,github.com/snowflying117-ship-it/knowledge-base-mcp,shared_package_across_repos,1,2469
+p_6b72b70de975,Lumnix,github.com/moltstudios/lumnix-mcp,shared_package_across_repos,1,2499
+p_873a5c125dc3,fivedaylaunch,github.com/nareshdevelop/fdl-mcp-server,shared_package_across_repos,1,2555
+p_814817fa1add,mcp-doctor,github.com/xlyoung/mcp-doctor,same_repo_incompatible_names,8,
+p_d3c0d8269c84,Turkey Data,github.com/bodyegypt/turkey-data-mcp,shared_package_across_repos,1,2693
+p_9e42d57a2b34,HTAG Docs (com.htagai/htag-docs),github.com/htag-analytics/htag-mcp,same_repo_incompatible_names,3,2773; 2774; 2775
+p_a8c4838c7144,ENTIA Entity Verification,github.com/entia-ia/entia-mcp-server,shared_endpoint_across_repos,1,2828
+p_b5a62dfc60ff,skillguard,github.com/epistemedeus/skillguard,shared_package_across_repos,1,
+p_a46e6c6fcf35,Burn MCP — give your AI agent a reading workflow,github.com/fisher521/kill-my-bookmark,shared_package_across_repos,1,
+p_abb22bc3e980,Solematica,github.com/hanicker/solematica-mcp,shared_package_across_repos,1,2951
+p_e6cc3992d6f3,EDGAR Events,github.com/fortifiedai/edgar-events-mcp,shared_package_across_repos,1,2959
+p_fbb4704cfe91,ton-jetton-risk-mcp,github.com/mrvlyouknowwho/ton-jetton-risk-mcp,shared_package_across_repos,1,
+p_464fc49b2a3e,Fabler x402 Tools,github.com/fablerlabs/x402-tools,shared_package_across_repos,1,
+p_cae43914222c,UIZZE,github.com/uizze/uizze,shared_package_across_repos,1,3117
+p_d57163564c02,intelliverse-router,github.com/intelli-verse-x/router-mcp,shared_package_across_repos,1,3128
+p_b076dfff159a,PostgreSQL Connector,github.com/nagarjunr/data-connectors-for-ai-agents/mcp_servers/postgres,shared_package_across_repos; monorepo_subpath_project,1,3198
+p_3db4ceb87538,SharePoint Connector,github.com/nagarjunr/data-connectors-for-ai-agents/mcp_servers/sharepoint,shared_package_across_repos; monorepo_subpath_project,1,3199
+p_ffea756578ec,OneDrive Connector,github.com/nagarjunr/data-connectors-for-ai-agents/mcp_servers/onedrive,shared_package_across_repos; monorepo_subpath_project,1,3200
+p_0587c231725e,S3 Connector,github.com/nagarjunr/data-connectors-for-ai-agents/mcp_servers/s3_bucket,shared_package_across_repos; monorepo_subpath_project,1,3201
+p_5d281417f83c,GCP Bucket Connector,github.com/nagarjunr/data-connectors-for-ai-agents/mcp_servers/gcp_bucket,shared_package_across_repos; monorepo_subpath_project,1,3202
+p_c8892538a171,RabbitMQ Connector,github.com/nagarjunr/data-connectors-for-ai-agents/mcp_servers/rabbitmq,shared_package_across_repos; monorepo_subpath_project,1,3204
+p_ad761ad8528d,Bug Bounty Intelligence,github.com/holistis/bug-bounty-intelligence-mcp,shared_package_across_repos,2,3237
+p_97234b2bfd46,llms.txt Checker - AI Readiness Audit,github.com/apifymcpfactory-droid/mcp-factory-servers,shared_endpoint_across_repos; same_repo_incompatible_names,3,3239; 3240; 3241
+p_2e2b3900675a,sipi.bot — Spend Firewall for AI Agents,github.com/kindrat86/sipi-bot,shared_endpoint_across_repos,1,3259
+p_cdeca7e3e91d,Humanity4AI,github.com/humanity4ai/project_human,shared_package_across_repos,1,3296
+p_815a7f3f5e9f,Workix MCP,github.com/facetoplace/workix,shared_package_across_repos,1,
+p_7cd591437d9b,AstraNL MCP Server,github.com/astranl/astranl-mcp,shared_endpoint_across_repos,1,3466
+p_12d905c55c73,Verdoc,github.com/verdochello/verdoc-mcp,shared_package_across_repos,1,3489
+p_d2e7015e560e,TruthRoute,github.com/rudrendupaul/truthroute,shared_package_across_repos,1,
+p_c03cc1f00e3c,PaceProof,github.com/rudrendupaul/paceproof,shared_package_across_repos,1,
+p_0cbefe0e300c,podcast-guest-crm,github.com/rudrendupaul/podcast-guest-crm,shared_package_across_repos,1,
+p_21b533190374,koma-core-mcp,github.com/swnotmetal/project-koma,same_repo_incompatible_names,2,3572; 3573
+p_cd62b4728073,SandBase CLI — open-source Apache-2.0 CLI and local MCP bridge.,github.com/sandbaseai/cli,shared_package_across_repos,3,3574; 3640
+p_cc433a9ee8a0,agent-cold-email (Coldrig),github.com/ys-projectcalc/agent-cold-email,shared_package_across_repos,1,3602
+p_173018a63755,cute-web-scraper,github.com/maccydee/cute-web-scraper,shared_package_across_repos,1,3620
+p_87fce0bb861e,Krimskrams Paid APIs,github.com/kramer-hans/krimskrams-paid-apis-mcp,shared_package_across_repos,1,3653
+p_9f21b92b0667,Magpie Capital,github.com/magpiecapital/magpie-mcp,shared_package_across_repos,1,3677
+p_fe689c064e6d,CCS MCP Server,github.com/dshcorrectover/agent-runtime-guard,same_repo_incompatible_names,2,3695; 4020
+p_0e7cc87353dd,ParlayAPI,github.com/jacobiusmakes/parlay-api-mcp,shared_package_across_repos,1,3749
+p_4c233c48f96e,Axiom by Elevated AI,github.com/itr3k/axiom-relay,shared_package_across_repos,1,3786
+p_7324f11c975d,dataloupe,github.com/aurelio-nakamura/dataloupe,shared_package_across_repos,1,3813
+p_f88d8183bdec,Raposa Aval,github.com/agentlabbusiness/raposa-mcp,shared_package_across_repos,1,3914
+p_87335f27ed49,ReadyAgents,github.com/readyagents/readyagents-core,shared_package_across_repos,1,3916
+p_599b612beb5c,co.solsniperbot/solana-snipe-bot-mcp,github.com/solara-snipe-bot/solana-snipe-bot-mcp,shared_package_across_repos,1,3939
+p_ad2fc2202be9,Solana Sniper Bot MCP,github.com/solara-sniper-bot/mcp,shared_package_across_repos,2,3945; 3950
+p_40136c8bc530,io.github.CSOAI-ORG/eu-ai-act-compliance-mcp,github.com/meok-ai-labs/eu-ai-act-compliance-mcp,shared_package_across_repos,1,4081
+p_0a5eb0064523,RecipeBee MCP,github.com/praisondani/recipebee-cursor-plugin,shared_package_across_repos,1,4084
+p_ed711f4b770d,Airbnb MCP Server (HasData),github.com/hasdata/airbnb-mcp,shared_endpoint_across_repos,1,4107
+p_bd0c78fca604,Amazon MCP Server (HasData),github.com/hasdata/amazon-mcp,shared_endpoint_across_repos,1,4108
+p_2fd1ed316e87,Bing MCP Server (HasData),github.com/hasdata/bing-mcp,shared_endpoint_across_repos,1,4109
+p_a6529dad3687,Booking.com MCP Server (HasData),github.com/hasdata/booking-mcp,shared_endpoint_across_repos,1,4110
+p_34c2a21e4f97,DuckDuckGo MCP Server (HasData),github.com/hasdata/duckduckgo-mcp,shared_endpoint_across_repos,1,4111
+p_afe75056859a,Facebook MCP Server (HasData),github.com/hasdata/facebook-mcp,shared_endpoint_across_repos,1,4112
+p_72ed001ad69a,Glassdoor MCP Server (HasData),github.com/hasdata/glassdoor-mcp,shared_endpoint_across_repos,1,4113
+p_d99667ca047c,Google Flights MCP Server (HasData),github.com/hasdata/google-flights-mcp,shared_endpoint_across_repos,1,4114
+p_d30332b994a5,Google Images MCP Server (HasData),github.com/hasdata/google-images-mcp,shared_endpoint_across_repos,1,4115
+p_43f3eaaff078,Google Maps MCP Server (HasData),github.com/hasdata/google-maps-mcp,shared_endpoint_across_repos,1,4116
+p_a2f344461c88,Google Scholar MCP Server (HasData),github.com/hasdata/google-scholar-mcp,shared_endpoint_across_repos,1,4117
+p_f6811d3e0298,Google Trends MCP Server (HasData),github.com/hasdata/google-trends-mcp,shared_endpoint_across_repos,1,4118
+p_f1eaf5fa38b5,Indeed MCP Server (HasData),github.com/hasdata/indeed-mcp,shared_endpoint_across_repos,1,4119
+p_33be48333aa4,Redfin MCP Server (HasData),github.com/hasdata/redfin-mcp,shared_endpoint_across_repos,1,4120
+p_dea5dc5ee567,Shopify MCP Server (HasData),github.com/hasdata/shopify-mcp,shared_endpoint_across_repos,1,4121
+p_a912b7ac7f5d,Walmart MCP Server (HasData),github.com/hasdata/walmart-mcp,shared_endpoint_across_repos,1,4122
+p_20f0b3490233,Web Scraping MCP Server (HasData),github.com/hasdata/web-scraping-mcp,shared_endpoint_across_repos,1,4123
+p_3e65ab40b295,Yellow Pages MCP Server (HasData),github.com/hasdata/yellowpages-mcp,shared_endpoint_across_repos,1,4124
+p_6d1d20eb56c6,Yelp MCP Server (HasData),github.com/hasdata/yelp-mcp,shared_endpoint_across_repos,1,4125
+p_e81e2d6ca3ac,Fidelis Memory,github.com/hermes-labs-ai/fidelis,shared_package_across_repos,1,
+p_2348c1c998c7,Public tools,github.com/alicelabs-llc/marketnow,shared_package_across_repos; shared_endpoint_across_repos; same_repo_incompatible_names,3,4164; 4165
+p_1fd2524c58c0,purchase-requisition MCP Server,github.com/theluckystrike/mcp-servers,same_repo_incompatible_names,46,4227; 4945; 4946; 4947; 4948; 4949; 4981; 4982; 4983; 4984; 4985; 4986; 4987; 4988; 4989; 4990; 4991; 4992; 4993; 4994; 4995; 4996; 4997; 4998; 4999; 5000; 5001; 5002; 5003; 5004; 5005; 5006; 5007; 5008; 5009; 5010; 5011; 5012; 5013; 5014; 5015; 5016; 5017; 5018; 5019; 5020
+p_786c6a1f2237,web-search-mcp,github.com/awslew/web-search-mcp,shared_package_across_repos,1,4312
+p_5a028303307d,SaaSCity,github.com/nyyhao/saascity-mcp,shared_package_across_repos,1,4338
+p_8f340c81ad45,Apify data tools (headply),github.com/headply/apify-data-tools-mcp,shared_endpoint_across_repos,1,4418
+p_8df6db38f93a,WhichTrim Vehicle Records,github.com/babbagescabbages/whichtrim-mcp,shared_package_across_repos,1,4431
+p_3e51a82905c5,Career Page Jobs on Apify MCP,github.com/donmangudata-ops/apify-jobs-mcp,shared_endpoint_across_repos,1,4438
+p_1d237018345a,MediaFast,github.com/arthuryuzbashev/mediafast-skills,shared_package_across_repos,1,4459
+p_a1e5214da36f,Web & Company Intelligence,github.com/moha-tah/web-intelligence-mcp,shared_endpoint_across_repos,1,4465
+p_31a19c5192d9,Internet Radio (internet-radio-mcp),github.com/alondrilich/internet-radio-mcp,shared_package_across_repos,1,4478
+p_0575c07a3e76,vaultshell MCP server,github.com/sowhati/vaultshell,shared_package_across_repos,1,4530
+p_89019fbfa0fb,5 MCP servers from contentforge-press (PixHarvest intel family),github.com/contentforge-press/shopify-change-intelligence,same_repo_incompatible_names,2,4535; 4632
+p_721b1ce0459a,Store Catalog (Shopify and WooCommerce product catalogs),github.com/agenttoolworks/mcp-servers,same_repo_incompatible_names,4,4538; 4539; 4540; 4566
+p_03de8632d67b,marketnow,github.com/eddyflores100-lang/marketnow,shared_package_across_repos; shared_endpoint_across_repos,2,
+p_6430109c5c29,BountyRadar MCP,github.com/panstories/bountyradar-mcp,shared_endpoint_across_repos; same_repo_incompatible_names,9,4583; 4584; 4585; 4608; 4609; 4610; 4687; 5032; 5414
+p_099ab1e664fa,Etsy Sales MCP (publicrecords),github.com/geminigeorge22/etsy-sales-mcp,shared_endpoint_across_repos,1,4602
+p_d095b19807b1,prop-firm-rules,github.com/kburrus64-max/prop-firm-rules,shared_package_across_repos,1,
+p_779867209076,Playwright E2E MCP,github.com/trajectiq-ai/e2e,shared_package_across_repos,2,4769; 4787
+p_22d7497cc6e5,PageWire,github.com/agentiloop/pagewire-mcp,shared_package_across_repos,1,4795
+p_631637999cdc,Australia FX Rates (RBA) MCP,github.com/donniertf-hub/uk-mcp-fleet,same_repo_incompatible_names,94,4830; 4829; 4831; 4833; 4834; 4835; 4836; 4837; 4838; 4839; 5297; 5298; 5299; 5301; 5302; 5303; 5307; 5308; 5309; 5310; 5311; 5312; 5313; 5314; 5315; 5316; 5317; 5319; 5320; 5321; 5322; 5323; 5324; 5325; 5326; 5327; 5328; 5329; 5330; 5331; 5332; 5333; 5335; 5336; 5337; 5338; 5339; 5340; 5341; 5342; 5343; 5344; 5345; 5346; 5347; 5348; 5349; 5350; 5351; 5352; 5353; 5354; 5356; 5357; 5358; 5359; 5361; 5363; 5364; 5365; 5366; 5367; 5369; 5370; 5371; 5372; 5373; 5374; 5375; 5376; 5377; 5378; 5379; 5380; 5381; 5382; 5383; 5384; 5385; 5386; 5387; 5388; 5389; 5390
+p_a73f34795e1c,Plainfold data tools,github.com/plainfold/plainfold-mcp,shared_endpoint_across_repos,1,4965
+p_47eb40fd572e,remove-ai-label,github.com/r24599/remove-ai-label,shared_package_across_repos,1,5068
+p_ed35c40b6bf0,Forbiz,github.com/tbernabo/forbiz-mcp,shared_package_across_repos,1,5081
+p_34de3221e409,zima-mcp: check and fix a ZimaBlade or Docker host over SSH,github.com/casareanderson/zima-mcp,shared_package_across_repos,1,5117
+p_35dc4f84670f,s: SanctionsAI (OFAC screening) + sipi.bot Spend Firewall,github.com/kindrat86/agentmail,shared_endpoint_across_repos,1,5150
+p_43b8fdefad3b,Agent Discovery Board by SarnAI,github.com/sarnai-dev/agent-discovery-board-public,shared_endpoint_across_repos; shared_endpoint_across_repos,1,5209
+p_823f993501f2,IdősotthonMérleg,github.com/trulorg/merleg-open-data,same_repo_incompatible_names,3,5232; 5233; 5234
+p_a30fdc8d32a3,canada-agent-tools,github.com/domaranskyi/canada-agent-tools,shared_endpoint_across_repos,1,5246
+p_606efbdf72b1,Agent Output Verifier by SarnAI,github.com/sarnai-dev/agent-output-verifier,shared_endpoint_across_repos; shared_endpoint_across_repos,1,5405
+p_9715ba51646c,Free and Cheap Tokens (FaCT),github.com/panstories/free-and-cheap-tokens,shared_endpoint_across_repos,1,5415
+p_8b8c9d01760f,Cheapest-LLM Router MCP,github.com/panstories/cheapest-llm-router,shared_endpoint_across_repos,1,5416
+p_478e952eea4a,Public Data MCP,github.com/anontroll/public-data-mcp,shared_endpoint_across_repos,1,5420
+p_bce001d9c110,Public Data MCP,github.com/clearline-labs/public-data-mcp,shared_endpoint_across_repos,1,5423
+p_daaad07ad90f,Toolweather,github.com/toolweather/toolweather,shared_endpoint_across_repos,1,5428
+p_82271c1162b2,China News Feed (Deletion Watch),github.com/joydai2026-del/china-news-feed-mcp,shared_package_across_repos,1,5450
+p_78f1b06144c7,Upstream,github.com/toolweather/upstream,shared_endpoint_across_repos,1,5452
+p_9363dc61e998,"SpendGate, PayCheck, Toolweather, Upstream (MCP servers)",github.com/toolweather/spendgate,shared_endpoint_across_repos; shared_endpoint_across_repos,1,5487

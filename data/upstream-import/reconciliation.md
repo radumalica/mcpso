@@ -1,13 +1,13 @@
 # Import reconciliation
 
-Generated 2026-10-16T12:28:51.453Z; upstream collected 2026-10-16T09:58:33.644Z. All figures come from stored pipeline summaries; each has a unit (see Definitions).
+Generated 2026-10-16T14:49:23.025Z; upstream collected 2026-10-16T09:58:33.644Z. All figures come from stored pipeline summaries; each has a unit (see Definitions).
 
 ## Stage counts
 
 | Stage | Figure (unit) | Count |
 |---|---|---|
 | 1 Retrieved | issues / pull requests / all comments (records) | 4869 / 43 / 2412 |
-| 1 Retrieved | raw source records (records) | 7324 |
+| 1 Retrieved | raw source records / importable source records with complete provenance (records) | 7324 / 7324 |
 | 1 Retrieved | API errors / retry events / rate-limit waits / unretrievable numbers | 0 / 0 / 0 / 595 |
 | 2 Normalised | normalised records / context-only comments (records) | 6362 / 962 |
 | 3 Relevant | submission-type records = placed + unplaced (records) | 6149 = 6052 + 97 |
@@ -26,7 +26,7 @@ Generated 2026-10-16T12:28:51.453Z; upstream collected 2026-10-16T09:58:33.644Z.
 | 5 Evaluation | unavailable or under-documented: repos not found / N7 / N8 / N5 (projects) | 436 / 194 / 24 / 3 |
 | 6 Gates | importable / suppressed (projects) | 4868 / 0 |
 | 6 Gates | eligible = eligible_unblocked + blocked (security only 26, hold only 9, both 0) | 3502 = 3467 + 35 |
-| 6 Gates | approval lanes (projects): {"bulk":2024,"individual":1061,"needs_review":1353,"not_eligible":13,"blocked":35,"family_sample":382}; eligible by evidence level {"0":644,"1":385,"2":2473} | |
+| 6 Gates | approval lanes (projects): {"bulk":1216,"individual":1949,"needs_review":1353,"not_eligible":13,"blocked":35,"family_sample":302}; eligible by evidence level {"0":644,"1":1286,"2":1572} | |
 | 6 Gates | approved_for_publication / published (projects) | 0 / 0 |
 
 ## Identities (every stage transition)
@@ -37,6 +37,8 @@ Generated 2026-10-16T12:28:51.453Z; upstream collected 2026-10-16T09:58:33.644Z.
 | T0b raw pull-request file lines = collected pull requests | 43 | = 43 | yes |
 | T0c raw comment file lines = collected comments | 2412 | = 2412 | yes |
 | T0d comments on the submission thread in the raw file = thread comments normalised | 1450 | = 1450 | yes |
+| T0e importable source records (all provenance fields present) = raw records | 7324 | = 7324 | yes |
+| T0f raw record keys are distinct (idempotent upsert key (type, id) has no collisions) | 7324 | = 7324 | yes |
 | T1 raw source records = normalised records + context-only comments | 7324 | = 7324 | yes |
 | T2 normalised records = issues + PRs + submission-thread comments | 6362 | = 6362 | yes |
 | T2b thread-comment count agrees between normalise and classify | 1450 | = 1450 | yes |

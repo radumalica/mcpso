@@ -76,22 +76,57 @@ do $$ declare s uuid; h uuid; r uuid; u uuid; ok uuid; begin
   perform _expect_error(format('select review_candidate(%L, ''approve'', ''try'')', ok), 'P6');
 end $$;
 
--- ---- 5. publish only from approved; listing carries no raw data; audit trail exists
+-- ---- 5. publish only from approved; the public view shows it; audit trail exists
 do $$ declare s uuid := (select id from candidate where canonical_key = 'github.com/t/sec'); begin
   perform publish_listing(s, 'sec-server');
   assert (select status from candidate where id = s) = 'published';
+  assert exists (select 1 from public_listing where slug = 'sec-server'), 'published listing must be visible';
   assert (select count(*) from audit_log where entity_id = s::text) >= 3, 'transitions must be audited';
   assert (select count(*) from review_decision where candidate_id = s) >= 2;
 end $$;
 
--- ---- 6. re-import cannot resurrect a withdrawn/suppressed candidate
-do $$ declare s uuid := (select id from candidate where canonical_key = 'github.com/t/sec'); begin
+-- ---- 6. unpublish and suppression take the listing off the public view; re-import cannot resurrect
+do $$ declare s uuid := (select id from candidate where canonical_key = 'github.com/t/sec'); rm uuid; sub uuid; begin
   perform review_candidate(s, 'unpublish', 'owner asked for removal');
-  insert into suppression (canonical_key, reason, created_by) values ('github.com/t/sec', 'owner request', '00000000-0000-0000-0000-0000000000a1');
-  perform import_upsert_candidate('github.com/t/sec', 'github_repo', '{}', '11111111-1111-1111-1111-111111111111');
-  assert (select status from candidate where id = s) = 'withdrawn', 're-import must not change status';
-  assert (select importable from candidate where id = s) = false, 're-import must mark suppressed key not importable';
-  perform _expect_error(format('select review_candidate(%L, ''approve'', ''again'')', s), 'P3');
+  assert not exists (select 1 from public_listing where slug = 'sec-server'), 'unpublished listing must leave the public view';
+  assert (select unpublished_at from listing where candidate_id = s) is not null, 'unpublish must set unpublished_at';
+  perform _expect_error(format('update listing set title = ''x'', unpublished_at = null where candidate_id = %L', s), 'requires an approved');
+
+  -- suppression of a PUBLISHED listing: one call suppresses, withdraws and removes it from the view
+  rm := _mk('github.com/t/removeme');
+  perform review_candidate(rm, 'approve', 'ok'); perform publish_listing(rm, 'removeme');
+  assert exists (select 1 from public_listing where slug = 'removeme');
+  perform suppress_candidate(rm, 'owner request');
+  assert not exists (select 1 from public_listing where slug = 'removeme'), 'suppressed listing must leave the public view';
+  assert (select status from candidate where id = rm) = 'withdrawn' and (select importable from candidate where id = rm) = false;
+  perform import_upsert_candidate('github.com/t/removeme', 'github_repo', '{}', '11111111-1111-1111-1111-111111111111');
+  assert (select status from candidate where id = rm) = 'withdrawn', 're-import must not change status';
+  assert (select importable from candidate where id = rm) = false, 're-import must keep the key non-importable';
+  perform _expect_error(format('select review_candidate(%L, ''approve'', ''again'')', rm), 'P3');
+
+  -- suppression matching: case-insensitive, and a repository suppression covers its subpaths
+  insert into suppression (canonical_key, reason, created_by) values ('GitHub.com/T/Whole', 'owner request', '00000000-0000-0000-0000-0000000000a1');
+  sub := _mk('github.com/t/whole/pkg/a');
+  assert (select importable from candidate where id = sub) = false, 'subpath of a suppressed repository must import as not importable';
+  perform _expect_error(format('select review_candidate(%L, ''approve'', ''try'')', sub), 'P3');
+end $$;
+
+-- ---- 6b. takedown requests block approval whether open or accepted, and whether they reference the candidate or only its listing
+do $$ declare t1 uuid; t2 uuid; lid uuid; begin
+  t1 := _mk('github.com/t/takedown-open');
+  insert into takedown_request (kind, candidate_id, status) values ('removal', t1, 'open');
+  perform _expect_error(format('select review_candidate(%L, ''approve'', ''try'')', t1), 'P3');
+  update takedown_request set status = 'accepted' where candidate_id = t1;
+  perform _expect_error(format('select review_candidate(%L, ''approve'', ''try'')', t1), 'P3');   -- accepted still blocks
+  update takedown_request set status = 'rejected' where candidate_id = t1;
+  perform review_candidate(t1, 'approve', 'takedown rejected, reviewed');
+
+  t2 := _mk('github.com/t/takedown-listing');
+  perform review_candidate(t2, 'approve', 'ok'); lid := publish_listing(t2, 'td-listing');
+  insert into takedown_request (kind, listing_id, status) values ('rights_complaint', lid, 'open');   -- references only the listing
+  perform review_candidate(t2, 'unpublish', 'complaint');
+  perform review_candidate(t2, 'reopen', 'reconsider');
+  perform _expect_error(format('select review_candidate(%L, ''approve'', ''try'')', t2), 'P3');
 end $$;
 
 -- ---- 7. bulk approval: bounded, count-checked, excludes flagged/held/declared-only, undoable

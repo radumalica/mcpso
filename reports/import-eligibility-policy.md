@@ -20,7 +20,7 @@ The old name `import-ready` is retired. The pipeline field `eligible_unblocked` 
 | `needs_review` | uncertain or held: N-rules, ambiguity, security flag, removal hold | evaluator | reviewer decision |
 | `eligible` | passes the criteria; **not approved** | evaluator | reviewer approve/reject |
 | `ineligible` | positive evidence it is out of scope (I1 registry infrastructure, I2 empty/template repo, I3 no MCP signal) | evaluator | reviewer may overturn with reason |
-| `duplicate` | merged into another candidate (`merged_into`); reversible via merge history | dedup rule or reviewer | undo merge |
+| `duplicate` | a candidate merged into another by a **reviewer** merge (`merged_into`); reversible via merge history. Automatic deduplication does not produce this status: it maps duplicate *records* (1,184) to their canonical candidate, so no candidate in the audit data has this status yet | reviewer | undo merge |
 | `unavailable` | repository 404/private/deleted on two checks at least 7 days apart, or archived with no successor | evaluator (second confirmation) or reviewer | re-check succeeds |
 | `approved` | human decision recorded and gates P1-P8 pass; **no listing exists yet** | reviewer only | publish, reject, or unpublish path |
 | `published` | a `listing` row exists | `publish_listing` only | `unpublish` → `withdrawn` |
@@ -35,7 +35,7 @@ Only without executing anything: GitHub API facts (exists, public, archived, for
 
 ## 4. Resolution of D7: weak or declaration-only evidence
 
-Registry-only candidates (1,029 of 3,502 eligible: 644 with no resolved repository, 385 with a resolved repository but no manifest/SDK evidence) are **eligible but not approvable in bulk**. They may be published only after an individual approval, at evidence level 0 or 1, with the required wording ("Declared only ..." or "Repository facts checked ..."), and they are excluded from the default catalogue view. Full table in `publication-gate-checklist.md` §2. Proposed default; the owner must confirm.
+Candidates whose evidence is a registry listing and/or a manifest file only (1,930 of 3,502 eligible: 644 with no resolved repository = level 0, 1,286 with a resolved repository but no SDK dependency = level 1) are **eligible but not approvable in bulk**: a registry entry and a `server.json`/`mcpName` field are both the publisher's own declaration. They may be published only after an individual approval, at evidence level 0 or 1, with the required wording ("Declared only ..." or "Repository facts checked ..."); level 0 entries are excluded from the default catalogue view. Level 2 (1,572 eligible) requires an SDK dependency with server wording. Full table in `publication-gate-checklist.md` §2. Proposed default; the owner must confirm.
 
 ## 5. Automation boundaries
 

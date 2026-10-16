@@ -50,8 +50,11 @@ begin
   if coalesce(ev.category, '') <> 'eligible' and coalesce(btrim(c.override_reason), '') = '' then f := f || 'P1 not eligible and no written reviewer override'; end if;
   if cardinality(c.security_flags) > 0 and c.security_cleared_at is null then f := f || 'P2 unresolved security flag'; end if;
   if c.removal_hold then f := f || 'P3 removal hold'; end if;
-  if exists (select 1 from suppression s where s.canonical_key = c.canonical_key) or not c.importable then f := f || 'P3 suppressed or not importable'; end if;
-  if exists (select 1 from takedown_request t where (t.candidate_id = c.id) and t.status = 'open') then f := f || 'P3 open takedown or rights complaint'; end if;
+  if is_suppressed(c.canonical_key) or not c.importable then f := f || 'P3 suppressed or not importable'; end if;
+  -- an open OR accepted takedown/rights request blocks, whether it references the candidate or only its listing
+  if exists (select 1 from takedown_request t
+             where t.status in ('open','accepted')
+               and (t.candidate_id = c.id or t.listing_id in (select l.id from listing l where l.candidate_id = c.id))) then f := f || 'P3 open or accepted takedown or rights complaint'; end if;
   if exists (select 1 from duplicate_group_member m join duplicate_group g on g.id = m.group_id
              where m.candidate_id = c.id and g.needs_manual_review) then f := f || 'P4 unresolved duplicate group'; end if;
   if d.candidate_id is null or coalesce(d.title,'') = '' or coalesce(d.install_text,'') = '' or coalesce(d.licence,'') = ''
@@ -80,6 +83,13 @@ create trigger candidate_status_guard before update of status on candidate for e
 create or replace function guard_listing() returns trigger language plpgsql as $$
 declare st candidate_status; f text[];
 begin
+  -- withdrawing a listing (setting unpublished_at) must always be possible, whatever the candidate status or gate state
+  if tg_op = 'UPDATE' and old.unpublished_at is null and new.unpublished_at is not null then
+    if (new.candidate_id, new.slug, new.title, new.summary, new.facts, new.evidence_level, new.evidence_checked_at, new.source_links, new.published_by, new.published_at)
+       is distinct from (old.candidate_id, old.slug, old.title, old.summary, old.facts, old.evidence_level, old.evidence_checked_at, old.source_links, old.published_by, old.published_at)
+    then raise exception 'a withdrawal may not change other listing columns' using errcode = '42501'; end if;
+    return new;
+  end if;
   select status into st from candidate where id = new.candidate_id;
   if st is distinct from 'approved' and st is distinct from 'published' then
     raise exception 'listing requires an approved candidate (status is %)', st using errcode = '42501';
@@ -97,7 +107,7 @@ create or replace function import_upsert_candidate(p_key text, p_identity text, 
 language plpgsql security definer set search_path = public as $$
 declare cid uuid; sup boolean;
 begin
-  sup := exists (select 1 from suppression where canonical_key = p_key);
+  sup := is_suppressed(p_key);
   insert into candidate (canonical_key, identity_type, facts, created_batch_id, importable)
   values (p_key, p_identity, p_facts, p_batch, not sup)
   on conflict (canonical_key) do update
@@ -134,6 +144,7 @@ begin
     if p_bulk is null then f := array_remove(f, 'P8 declared-only evidence needs an individual approval'); end if;
     if cardinality(f) > 0 then raise exception 'approval blocked by gates: %', array_to_string(f, '; ') using errcode = '42501'; end if;
   end if;
+  if p_action = 'unpublish' then update listing set unpublished_at = now() where candidate_id = p_candidate and unpublished_at is null; end if;
   update candidate set status = p_to, updated_at = now() where id = p_candidate;
   insert into review_decision (candidate_id, action, from_status, to_status, reason, reviewer_id, bulk_action_id)
     values (p_candidate, p_action, cur, p_to, p_reason, auth.uid(), p_bulk);
@@ -171,6 +182,30 @@ begin
   insert into audit_log (actor, action, entity, entity_id, after) values (auth.uid(), 'clear_removal_hold', 'candidate', p_candidate::text, jsonb_build_object('reason', p_reason));
 end $$;
 
+-- Removal path: suppression, importability, unpublication and status change happen together in one transaction.
+create or replace function suppress_candidate(p_candidate uuid, p_reason text, p_takedown uuid default null) returns void
+language plpgsql security definer set search_path = public as $$
+declare k text; cur candidate_status;
+begin
+  if not is_reviewer() then raise exception 'reviewer role required' using errcode = '42501'; end if;
+  if coalesce(btrim(p_reason), '') = '' then raise exception 'a reason is required'; end if;
+  select canonical_key, status into k, cur from candidate where id = p_candidate for update;
+  if k is null then raise exception 'unknown candidate'; end if;
+  insert into suppression (canonical_key, reason, takedown_id, created_by) values (k, p_reason, p_takedown, auth.uid()) on conflict (canonical_key) do nothing;
+  perform set_config('app.in_transition', 'on', true);
+  update candidate set importable = false, removal_hold = true, updated_at = now() where id = p_candidate;
+  update listing set unpublished_at = coalesce(unpublished_at, now()) where candidate_id = p_candidate;
+  if cur = 'published' then
+    update candidate set status = 'withdrawn' where id = p_candidate;
+    insert into review_decision (candidate_id, action, from_status, to_status, reason, reviewer_id) values (p_candidate, 'suppress', cur, 'withdrawn', p_reason, auth.uid());
+  elsif cur not in ('rejected','withdrawn') then
+    update candidate set status = 'rejected' where id = p_candidate;
+    insert into review_decision (candidate_id, action, from_status, to_status, reason, reviewer_id) values (p_candidate, 'suppress', cur, 'rejected', p_reason, auth.uid());
+  end if;
+  perform set_config('app.in_transition', 'off', true);
+  insert into audit_log (actor, action, entity, entity_id, after) values (auth.uid(), 'suppress', 'candidate', p_candidate::text, jsonb_build_object('reason', p_reason, 'previous_status', cur));
+end $$;
+
 create or replace function publish_listing(p_candidate uuid, p_slug text) returns uuid
 language plpgsql security definer set search_path = public as $$
 declare d listing_draft%rowtype; lid uuid;
@@ -195,7 +230,8 @@ begin
   insert into bulk_action (action, filter, candidate_count, decided_by, confirmed_count_shown)
     values ('approve', p_filter, n, auth.uid(), p_confirmed_count) returning id into b;
   foreach cid in array p_candidates loop
-    if exists (select 1 from candidate c where c.id = cid and (cardinality(c.security_flags) > 0 or c.removal_hold or not c.importable))
+    if exists (select 1 from candidate c where c.id = cid and (cardinality(c.security_flags) > 0 or c.removal_hold or not c.importable or is_suppressed(c.canonical_key)))
+       or exists (select 1 from takedown_request t where t.candidate_id = cid and t.status in ('open','accepted'))
        or exists (select 1 from listing_draft d where d.candidate_id = cid and d.evidence_level < 2) then
       raise exception 'candidate % is not eligible for bulk approval (flag, hold, suppression or evidence level)', cid;
     end if;
@@ -223,8 +259,8 @@ end $$;
 
 -- Only authenticated sessions may call the public entry points; each re-checks is_reviewer().
 revoke all on function publication_gate_failures(uuid), review_candidate(uuid, review_action, text), clear_security_flag(uuid, text),
-  clear_removal_hold(uuid, text), publish_listing(uuid, text), apply_bulk_approval(uuid[], integer, jsonb), undo_bulk_action(uuid, text) from public, anon;
+  clear_removal_hold(uuid, text), publish_listing(uuid, text), apply_bulk_approval(uuid[], integer, jsonb), undo_bulk_action(uuid, text), suppress_candidate(uuid, text, uuid) from public, anon;
 grant execute on function review_candidate(uuid, review_action, text), clear_security_flag(uuid, text), clear_removal_hold(uuid, text),
-  publish_listing(uuid, text), apply_bulk_approval(uuid[], integer, jsonb), undo_bulk_action(uuid, text) to authenticated;
+  publish_listing(uuid, text), apply_bulk_approval(uuid[], integer, jsonb), undo_bulk_action(uuid, text), suppress_candidate(uuid, text, uuid) to authenticated;
 
 commit;

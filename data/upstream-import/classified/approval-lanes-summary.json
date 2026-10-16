@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-10-16T12:21:15.839Z",
+  "generated_at": "2026-10-16T12:34:58.842Z",
   "denominator_projects": 4868,
   "by_lane": {
-    "bulk": 2024,
-    "individual": 1061,
+    "bulk": 1216,
+    "individual": 1949,
     "needs_review": 1353,
     "not_eligible": 13,
     "blocked": 35,
-    "family_sample": 382
+    "family_sample": 302
   },
   "eligible_by_evidence_level": {
     "0": 644,
-    "1": 385,
-    "2": 2473
+    "1": 1286,
+    "2": 1572
   },
   "approved_for_publication": 0
 }

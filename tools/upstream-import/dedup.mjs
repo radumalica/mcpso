@@ -18,7 +18,7 @@
 import path from "node:path";
 import crypto from "node:crypto";
 import { parseArgs } from "node:util";
-import { readJsonl, writeJsonlAtomic, ensureDir, writeJsonAtomic, readJson } from "./lib/store.mjs";
+import { readJsonl, writeJsonlAtomic, writeJsonlPublicPrivate, ensureDir, writeJsonAtomic, readJson } from "./lib/store.mjs";
 import { repoKeyOnly } from "./lib/urls.mjs";
 import fs from "node:fs";
 
@@ -280,7 +280,7 @@ export function main(argv = process.argv.slice(2)) {
   ensureDir(path.join(out, "dedup"));
   const tag = a.enrichment ? "projects.jsonl" : "projects.pre-enrichment.jsonl";
   writeJsonlAtomic(path.join(out, "dedup", tag), projects);
-  writeJsonlAtomic(path.join(out, "dedup", "unresolved-submissions.jsonl"), unresolved.map((r) => ({ record_id: r.record_id, url: r.source.url, author: r.source.author_login, name: r.claims.name, intent: r.intent })));
+  writeJsonlPublicPrivate(path.join(out, "dedup", "unresolved-submissions.jsonl"), unresolved.map((r) => ({ record_id: r.record_id, url: r.source.url, author: r.source.author_login, name: r.claims.name, intent: r.intent })), ["author", "name"]);
   const bySize = {};
   for (const p of projects) bySize[p.source_count] = (bySize[p.source_count] || 0) + 1;
   const summary = {

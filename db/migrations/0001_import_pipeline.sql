@@ -244,6 +244,13 @@ create table suppression (                          -- re-import prevention; con
   created_at timestamptz not null default now()
 );
 
+-- Suppression matching (used by the importer, the gates and the public view): case-insensitive exact key, OR a key below a
+-- suppressed repository (suppressing github.com/o/r also covers github.com/o/r/subpath). Renames: a renamed repository is
+-- re-keyed by the importer BEFORE this check, and reviewers add both keys when removing a renamed project.
+create or replace function is_suppressed(p_key text) returns boolean language sql stable as
+$$ select exists (select 1 from suppression s
+                  where lower(p_key) = lower(s.canonical_key) or lower(p_key) like lower(s.canonical_key) || '/%') $$;
+
 create table audit_log (
   id bigint generated always as identity primary key,
   actor uuid,
@@ -285,8 +292,13 @@ grant select on candidate, eligibility_evaluation, review_decision to authentica
 -- this definer view returns rows because its owner bypasses RLS. Alternative if that is not acceptable: add an explicit select
 -- policy on listing limited to unpublished_at is null and make the view security_invoker = true. Prove with the RLS test suite.
 create view public_listing with (security_invoker = false) as
-  select slug, title, summary, facts, evidence_level, evidence_checked_at, source_links, published_at
-  from listing where unpublished_at is null;
+  select l.slug, l.title, l.summary, l.facts, l.evidence_level, l.evidence_checked_at, l.source_links, l.published_at
+  from listing l
+  join candidate c on c.id = l.candidate_id
+  where l.unpublished_at is null
+    and c.status = 'published'                       -- second, independent check: a withdrawn/suppressed candidate is never shown
+    and c.importable
+    and not is_suppressed(c.canonical_key);
 grant select on public_listing to anon, authenticated;
 
 -- source_record.raw, author_login, requester_contact and every import table remain unreachable from the client roles.

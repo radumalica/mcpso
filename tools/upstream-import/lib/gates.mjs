@@ -9,20 +9,22 @@ export const SAMPLE_FRACTION = 0.05;
 /** Evidence levels (D7 resolution). Level 3 (tested) is reserved and never produced here. */
 export const EVIDENCE_WORDING = {
   0: "Declared only: this entry comes from a publisher or registry declaration dated {date}. The registry has not checked the server or its repository.",
-  1: "Repository facts checked on {date} (exists, public, licence, last activity). The server has not been tested or security-reviewed.",
-  2: "Static inspection on {date}: a manifest or SDK dependency indicates an MCP server. The server has not been tested or security-reviewed.",
+  1: "Repository facts checked on {date} (exists, public, licence, last activity); any manifest or registry entry is the publisher's own declaration. The server has not been tested or security-reviewed.",
+  2: "Static inspection on {date}: the repository depends on an MCP SDK and describes itself as a server. The server has not been tested or security-reviewed.",
 };
 
 /**
  * Evidence level from stored classification facts (no network, no execution).
- *  2: repository resolved AND a manifest file or SDK dependency evidence (code-level signal)
- *  1: repository resolved but only registry/weak evidence
+ *  2: repository resolved AND an SDK dependency with server wording (a code-level signal that the repository depends on an MCP SDK)
+ *  1: repository resolved; evidence is a registry listing and/or a manifest file (server.json, mcpName). A manifest is a
+ *     self-published declaration just like a registry entry, so it does NOT raise the level (decision recorded in
+ *     reports/publication-gate-checklist.md section 2)
  *  0: no resolved repository (endpoint/package identity, or unresolved repo), declaration only
  */
 export function evidenceLevel(row) {
   const kinds = new Set(row.evidence_kinds || []);
   const resolved = !!(row.repo && row.repo.name_with_owner);
-  if (resolved && (kinds.has("manifest-file") || kinds.has("sdk-dependency"))) return 2;
+  if (resolved && kinds.has("sdk-dependency")) return 2;
   if (resolved) return 1;
   return 0;
 }

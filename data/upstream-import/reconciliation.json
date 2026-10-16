@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T12:28:51.453Z",
+  "generated_at": "2026-10-16T14:49:23.025Z",
   "source": {
     "repository": "chatmcp/mcpso (renamed chatmcp/mcp-directory)",
     "collected_at": "2026-10-16T09:58:33.644Z"
@@ -103,6 +103,7 @@
   ],
   "stages": {
     "1_retrieved": {
+      "importable_source_records": 7324,
       "issues": 4869,
       "pull_requests": 43,
       "comments_total": 2412,
@@ -214,17 +215,17 @@
     },
     "approval_lanes": {
       "by_lane": {
-        "bulk": 2024,
-        "individual": 1061,
+        "bulk": 1216,
+        "individual": 1949,
         "needs_review": 1353,
         "not_eligible": 13,
         "blocked": 35,
-        "family_sample": 382
+        "family_sample": 302
       },
       "eligible_by_evidence_level": {
         "0": 644,
-        "1": 385,
-        "2": 2473
+        "1": 1286,
+        "2": 1572
       }
     },
     "6_importable_eligible_approved": {
@@ -263,6 +264,18 @@
       "name": "T0d comments on the submission thread in the raw file = thread comments normalised",
       "left": 1450,
       "right": 1450,
+      "ok": true
+    },
+    {
+      "name": "T0e importable source records (all provenance fields present) = raw records",
+      "left": 7324,
+      "right": 7324,
+      "ok": true
+    },
+    {
+      "name": "T0f raw record keys are distinct (idempotent upsert key (type, id) has no collisions)",
+      "left": 7324,
+      "right": 7324,
       "ok": true
     },
     {

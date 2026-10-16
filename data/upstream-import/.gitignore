@@ -11,3 +11,6 @@ dedup/projects.jsonl
 dedup/projects.pre-enrichment.jsonl
 classified/projects-classified.jsonl
 classified/eligible-unblocked.jsonl
+
+# Personal handles and submitter-authored names: reviewer-only copies, never committed (policy Q2)
+private/

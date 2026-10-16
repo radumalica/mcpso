@@ -14,6 +14,9 @@ const okCandidate = () => ({
 test("evidence levels and wording: declaration-only never claims more than it knows", () => {
   assert.equal(evidenceLevel(row("a")), 2);
   assert.equal(evidenceLevel(row("b", { evidence_kinds: ["registry"] })), 1);
+  // a manifest file is a self-published declaration like a registry entry: level 1, never bulk
+  assert.equal(evidenceLevel(row("m", { evidence_kinds: ["manifest-file", "registry"] })), 1);
+  assert.equal(approvalLane(row("m", { evidence_kinds: ["manifest-file"] })), "individual");
   assert.equal(evidenceLevel(row("c", { evidence_kinds: ["registry"], repo: null })), 0);
   assert.match(EVIDENCE_WORDING[0], /has not checked/);
   assert.ok(!Object.values(EVIDENCE_WORDING).some((w) => /verified|safe|secure/i.test(w.replace(/security-reviewed/g, ""))));

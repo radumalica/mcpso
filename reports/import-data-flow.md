@@ -57,7 +57,7 @@ GitHub API --1 collect--> source_record (raw, internal)
 
 ## 3. Reconciliation (measured, audit run)
 
-Units, relationships and all 39 stage identities: `import-count-reconciliation.md`. In the flow above, "importable", "eligible" and "approved" are three separate states; the gate between review and publication (P1-P8) is enforced in the database (`db/migrations/0002_publication_boundary.sql`), not in the UI.
+Units, relationships and all 41 stage identities: `import-count-reconciliation.md`. In the flow above, "importable", "eligible" and "approved" are three separate states; the gate between review and publication (P1-P8) is enforced in the database (`db/migrations/0002_publication_boundary.sql`), not in the UI.
 
 | Stage | Figure |
 |---|---|

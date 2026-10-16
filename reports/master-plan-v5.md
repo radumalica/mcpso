@@ -12,7 +12,7 @@ Independence: no runtime dependence on the upstream project; no upstream brandin
 
 | # | Finding | Evidence | Fixed in v5 |
 |---|---|---|---|
-| 1 | Count relationships were ambiguous and partly mislabelled: "197 renames merged" counted **repositories mapped**, not merges (235 records re-keyed, only 21 candidates actually joined by a rename); the merge-rule counts mixed units (R1/R4 per project, R2/R3/R5/R6 per record); ambiguity flag counts were entries, not projects; N6 "246" are reason entries over 196 projects | `dedup.mjs` code, `projects.jsonl`, `import-count-reconciliation.md` §3-4 | unit-explicit summaries, 39 identities, corrections table |
+| 1 | Count relationships were ambiguous and partly mislabelled: "197 renames merged" counted **repositories mapped**, not merges (235 records re-keyed, only 21 candidates actually joined by a rename); the merge-rule counts mixed units (R1/R4 per project, R2/R3/R5/R6 per record); ambiguity flag counts were entries, not projects; N6 "246" are reason entries over 196 projects | `dedup.mjs` code, `projects.jsonl`, `import-count-reconciliation.md` §3-4 | unit-explicit summaries, 41 identities, corrections table |
 | 2 | "import-ready" was used as importable, eligible and approvable at once | field name in `classify.mjs`, plan text | three separate concepts in policy, schema, statuses, reports; field retired (`eligible_unblocked`) |
 | 3 | The rev 4 reconciliation had a tautological identity and an invalid "exact/probable" split | `reconcile.mjs` rev 4 | rewritten; raw files recounted independently (T0a-d) |
 | 4 | D7 (registry-only evidence) was left open while 1,029 eligible candidates depend on it | lane counts | resolved as a proposed default: levels 0/1/2, wording, never bulk (§5) |
@@ -38,8 +38,8 @@ Full table, units and identities: `import-count-reconciliation.md` (39 checks pa
 | Ambiguous (projects) | **228** (227 needs review, 1 ineligible, 0 eligible) |
 | Evaluation (projects) | eligible **3,502**, needs review **1,353**, ineligible **13** |
 | eligible_unblocked (projects) | **3,467** (= 3,502 − 26 security-flagged − 9 removal-held) |
-| Approval lanes (projects) | bulk 2,024; family-sample 382; individual 1,061; blocked 35 |
-| Importable / suppressed | 4,868 / 0 |
+| Approval lanes (projects) | bulk 1,216; family-sample 302; individual 1,949; blocked 35 |
+| Importable: source records with full provenance / candidates / suppressed | 7,324 of 7,324 / 4,868 / 0 |
 | **Approved / published** | **0 / 0** |
 
 Records not in the candidate count: 1,272 (97 unplaced + 213 non-submission + 962 context-only comments).
@@ -60,7 +60,7 @@ Importable ≠ eligible ≠ approved. Lifecycle statuses: `candidate`, `needs_re
 
 ## 5. Evidence levels and wording (resolution of D7, proposed default)
 
-Level 0 declared only (no resolved repository): individual approval only, hidden from the default catalogue, mandatory wording "Declared only ... not checked". Level 1 repository facts checked: individual approval, labelled "not tested or security-reviewed". Level 2 static inspection (manifest or SDK evidence): eligible for bulk approval within lane rules. Level 3 reserved. Forbidden words at launch: verified, safe, secure, trusted, recommended, star ratings. Measured on eligible candidates: 644 / 385 / 2,473 for levels 0 / 1 / 2. Owner confirmation required.
+Level 0 declared only (no resolved repository): individual approval only, hidden from the default catalogue, mandatory wording "Declared only ... not checked". Level 1 repository facts checked (evidence is a registry listing and/or a manifest file, i.e. the publisher's own declaration): individual approval, labelled "not tested or security-reviewed". Level 2 static inspection (an SDK dependency with server wording): eligible for bulk approval within lane rules. A manifest file alone does **not** reach level 2. Level 3 reserved. Forbidden words at launch: verified, safe, secure, trusted, recommended, star ratings. Measured on eligible candidates: 644 / 1,286 / 1,572 for levels 0 / 1 / 2 (levels 0+1 = the 1,930 candidates on cheap evidence). Owner confirmation required.
 
 ## 6. Reduced MVP
 
@@ -96,7 +96,7 @@ Interim behaviour if unresolved: facts-only listings, repository-derived names, 
 
 ## 9. Decisions needed
 
-D1 name/domain; D2 stack/hosting; D3 official-registry stance (evidence reference only at launch); D4 governance and reviewer authentication; D5 rights/privacy (Q1-Q7); D6 no LLM public text at launch; **D7 evidence thresholds: proposed default in §5, owner to confirm**; D8 sustainability and cost estimate; D9 dataset cut-off and size of the first wave; D10 raw storage location and retention.
+D1 name/domain; D2 stack/hosting; D3 official-registry stance (evidence reference only at launch); D4 governance and reviewer authentication; D5 rights/privacy (Q1-Q7); D6 no LLM public text at launch; **D7 evidence thresholds: proposed default in §5, owner to confirm**; D8 sustainability and cost estimate; D9 dataset cut-off and size of the first wave; D10 raw storage location and retention; **D11 exposure already in the pushed history**: earlier commits of the audit branch in the public fork contain submitter GitHub handles (about 2,800 distinct authors, in `normalized.csv` and several review lists). From this revision committed files carry no handles (reviewer-only copies live in ignored `private/` directories) and the reports name no accounts, but history cannot be rewritten without a force-push, which was not done. Whether to make the repository or branch private, or delete the branch, is the owner's decision.
 
 ## 10. Findings that cannot be verified here
 
