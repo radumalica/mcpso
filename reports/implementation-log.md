@@ -209,3 +209,8 @@ Two read-only review agents re-ran on the pushed branch and reported. Their outp
 **Still not verified:** nothing has run on a real Supabase/PostgreSQL server.
 
 **Follow-up (automated commit review, assessed on the merits):** the notification named an information disclosure in 0007 without detail. The credible instance: `is_suppressed()` stayed executable by `anon`, an oracle for takedown subjects. Confirmed that Postgres checks function privileges for the caller even inside a view, so revoking alone broke the view (caught by `roles_rls.test.sql`). Fixed by inlining the suppression test in `public_listing` (0007) and revoking execute from clients; test added. `npm run test:db`: 59 pass. No other disclosure was identified; the review gave no further detail.
+
+## Item 24: B6 synthetic edge-case fixture (196 raw records)
+* **Added:** `test/fixtures/synthetic-raw.mjs` (deterministic, invented names under reserved domains) and `test/edge-cases.test.mjs` (15 tests) that push the records through the real `normalizeOne` and `buildProjects`. Expectations come from the documented merge policy, with a negative control (without rename evidence nothing merges).
+* **Result:** all 15 pass on the first run, so this fixture found no defect; its value is regression protection for the edge cases listed in the checklist.
+* **Verified (run here):** `npm test` 149 pass; tsc, lint and secret scan clean.
